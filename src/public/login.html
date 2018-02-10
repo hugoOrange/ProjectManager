@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录界面</title>
+</head>
+<body>
+    <div id="login">
+        <h3 id="login_header">登录</h3>
+
+        <form action="">
+            <img id="login_username_img" src="/assets/user.svg">
+            <input type="text" name="username" class="user-info" id="login_username" placeholder="username" maxlength="20" required>
+
+            <br>
+
+            <img id="login_password_img" src="/assets/password.svg">
+            <input type="password" name="password" class="user-info" id="login_password" placeholder="password" maxlength="20" required>
+        </form>
+
+        <div id="login_button">
+            <button class="user-button" id="login_signUp">注册</button>
+            <p></p>
+            <button class="user-button" id="login_loginIn">登录</button>
+        </div>
+    </div>
+
+    <div id="signup">
+        <h3 id="signup_header">登录</h3>
+
+        <form action="">
+            <input type="text" name="username" class="user-info" id="signup_username" placeholder="username" maxlength="20" required>
+
+            <br>
+
+            <input type="password" name="password" class="user-info" id="signup_password" placeholder="password" maxlength="20" required>
+
+            <br>
+
+            <input type="password" name="password" class="user-info" id="signup_passwordAgain" placeholder="password again" maxlength="20" required>
+        </form>
+
+        <div id="signup_button">
+            <button class="user-button" id="signup_signUp">注册</button>
+            <p></p>
+            <button class="user-button" id="signup_loginIn">登录</button>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/transferServer.js"></script>
+    <script src="js/login.js"></script>
+    <link rel="stylesheet" href="css/login.css">
+</body>
+</html>

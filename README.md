@@ -7,7 +7,8 @@
  	1. 项目成员任务分配及查看功能
  	2. 项目组长查看项目总进度的功能
  	3. 任务提醒功能
- 	4. （可选）导出为excel功能
+	4. 有一个+按钮，点了以后出一个框，选日期，填进度。写完，自动添加一条进度在表里
+ 	5. （可选）导出为excel功能
 
 ## 安装
 
@@ -43,11 +44,12 @@ nvm alias default node
 
 ### 安装依赖包
 
-​	需要安装的依赖包括`express`：
+​	需要安装的依赖包括`express` `mysql`：
 
 ```shell
 # 进入到项目目录: cd ProjectManager
 cd src
-npm install express
+npm install express --save
+npm install mysql --save
 ```
 

@@ -1,0 +1,96 @@
+body, html {
+    height: 100%; /* guarantee full screen */
+    margin: 0;
+}
+
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display:table;
+}
+
+.clearfix:after {
+    clear:both;
+}
+
+.clearfix {
+    *zoom:1;
+}
+
+.margin_overlap {
+    display: table-cell;
+}
+
+@font-face {
+    font-family: "Inconsolata";
+    src: url('/css/fonts/Inconsolata/Inconsolata-Bold.ttf');
+}
+
+/* container */
+article {
+    width: 80%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 20px 20px 10px 20px;
+}
+
+/* manager information */
+
+/* mission table */
+#manager_mission {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse:collapse;
+    opacity: 0.8;
+}
+
+#manager_mission tr th {
+    padding: 9px 10px 10px;
+    font-size: 14px;
+    color: rgba(10,21,90,1);
+    line-height: 17px;
+    background-color: #d5dde6;
+    border: 1px solid rgba(27,31,35,0.15);
+    border-radius: 3px 3px 0 0;
+}
+
+#manager_mission tr td {
+    padding: 9px 10px 10px;
+    font-size: 14px;
+    color: rgba(10,21,90,1);
+    line-height: 17px;
+    background-color: #f6f8fa;
+    border: 1px solid rgba(27,31,35,0.15);
+    border-radius: 3px 3px 0 0;
+}
+
+#manager_mission tr td:nth-child(1) {
+    width: 15%;
+}
+#manager_mission tr td:nth-child(2) {
+    width: 10%;
+}
+#manager_mission tr td:nth-child(3) {
+    width: 30%;
+}
+#manager_mission tr td:nth-child(4) {
+    font-family: "Inconsolata", monospace;
+    text-align: center;
+    width: 10%;
+    text-align: center;
+}
+#manager_mission tr td:nth-child(5) {
+    width: 22%;
+}
+#manager_mission tr td:nth-child(6) {
+    width: 8%;
+    text-align: center;
+}
+
+.project-status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0;
+}
