@@ -1,4 +1,7 @@
 module.exports = {
+    // global
+    progressSep: "^#^",
+
     // server js
     indexUrlHost: "localhost",
     indexUrlPort: "4200",

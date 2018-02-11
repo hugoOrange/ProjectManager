@@ -20,9 +20,11 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: 5 * 60 * 1000  // valid time: 5min
+        maxAge: 15 * 60 * 1000  // valid time: 15min
+        // maxAge: 5 * 60 * 1000  // valid time: 5min
     }
 }));
+
 app.get('/', function (req, res) {
     var sess = req.session;
     var loginUser = sess.loginUser;

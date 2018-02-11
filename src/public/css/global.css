@@ -1,0 +1,51 @@
+/* element style */
+body, html {
+    height: 100%; /* guarantee full screen */
+    margin: 0;
+}
+
+button:focus {
+    outline: 0;
+}
+
+/* font */
+@font-face {
+    font-family: "Inconsolata";
+    src: url('/css/fonts/Inconsolata/Inconsolata-Bold.ttf');
+}
+
+/* class style */
+/* clear float */
+.clearfix:before,
+.clearfix:after {
+    content: "";
+    display:table;
+}
+
+.clearfix:after {
+    clear:both;
+}
+
+.clearfix {
+    *zoom:1;
+}
+
+/* prevent margin overlap */
+.margin_overlap {
+    display: table-cell;
+}
+
+/* special button */
+.floatBtn {
+    position: fixed;
+    right: 3%;
+    width: 50px;
+    height: 50px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: .2s all ease-in-out;
+}
+.floatBtn:hover {
+    box-shadow: 0 0 5px rgb(3, 14, 37);
+}

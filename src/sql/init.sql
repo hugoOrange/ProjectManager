@@ -14,25 +14,18 @@ CREATE TABLE User (
 
 CREATE TABLE Project (
     projectId INT(10) unsigned NOT NULL auto_increment,
+    projectStatus INT(8) unsigned NOT NULL,
     projectName VARCHAR(30) NOT NULL,
-    projectProgress TEXT NOT NULL,
-    deadline DATE NOT NULL,
-    userId INT(10) unsigned NOT NULL,
+    projectTarget TEXT NOT NULL,
     projectManager VARCHAR(30) NOT NULL,
+    deadline DATE NOT NULL,
+    projectProgress TEXT NOT NULL,
+    priority INT(8) unsigned NOT NULL DEFAULT 0,
+    userId INT(10) unsigned NOT NULL,
 
     PRIMARY KEY (projectId)
 ) CHARACTER SET = utf8;
 
-CREATE TABLE Milestone (
-    milestoneId INT(10) unsigned NOT NULL auto_increment,
-    projectId INT(10) unsigned NOT NULL,
-    description TEXT NOT NULL,
-    priority INT(10) unsigned NOT NULL DEFAULT 0,
-    remarks TEXT NOT NULL,
-
-    PRIMARY KEY (milestoneId),
-    FOREIGN KEY (projectId) REFERENCES Project(projectId)
-) CHARACTER SET = utf8;
 
 -- row level
 -- the manager account
@@ -40,19 +33,20 @@ INSERT INTO User VALUE (1, "admin", "123456");
 INSERT INTO User VALUE (2, "member", "000000");
 -- test， comment when in production
 
-INSERT INTO Project VALUE (1, "小型移动机器人系统", "海外部分已经完成65%，国内完成5%，国内反馈缓慢。\n2018/1/25已分配IP，除腾讯和淘宝外，其他已修改",
-        "2018-03-01", 2, "张三");
-INSERT INTO Project VALUE (2, "快速通讯", "2018/5/1北京至天津线路已开通，等待测试",
-        "2018-05-01", 2, "张三");
-INSERT INTO Project VALUE (3, "黄沙快线交通系统", "2018/1/4天津至北京中新电路完成",
-        "2017-05-01", 2, "张三");
-
-INSERT INTO Milestone VALUE (1, 1, "联通传输设备铺设，并安排开通GP总头", 0, "");
-INSERT INTO Milestone (projectId, description, priority, remarks) VALUES
-    (1, "割接4个convertor客户", 0, ""),
-    (1, "联通四条汉信线路割接完成", 1, ""),
-    (2, "亦庄中信云GE总头割接完成", 2, ""),
-    (2, "完成7条联通线路的割接", 2, ""),
-    (3, "科创机房的电信和联通设备已经安装完成", 2, ""),
-    (3, "天津两条本地骨干移动500M，中电中华1G", 2, "");
-
+INSERT INTO Project VALUE (1, 0, "小型移动机器人系统", "打入国内市场", "张三", "2018-02-01", 
+        "海外部分已经完成65%，国内完成5%，国内反馈缓慢。^#^2018/1/25已分配IP，除腾讯和淘宝外，其他已修改", 1, 2);
+INSERT INTO Project VALUES
+    (2, 1, "快速通讯", "中国日报创办“新时代大讲堂”，致敬新时代、拥抱新时代、阐释新时代、传播新时代", "李四", "2018-05-10",
+        "2018/5/1北京至天津线路已开通^#^等待测试", 0, 2),
+    (3, 0, "广深铁路", "中国进入新时代，将是世界历史的一个重要转折点", "李四", "2018-10-10",
+        "2018/1/5割接4个convertor客户", 2, 2),
+    (4, 0, "黄沙快线交通系统", "刘欣分享了作为对外传播工作者的经历以及在新时代的使命", "李四", "2015-05-10",
+        "2018/5/12联通四条汉信线路割接完成", 1, 2),
+    (5, 1, "客户通知系统", "部分国家倾向实施孤立主义和单边主义政策，将国际合作拒之门外", "李四", "2017-12-20",
+        "2018/5/4亦庄中信云GE总头割接完成", 1, 2),
+    (6, 0, "智能交通系统", "甚至对于世贸组织的职能和定位也存在不同意见", "李四", "2018-01-10",
+        "2018/2/5完成7条联通线路的割接", 1, 2),
+    (7, 1, "快捷通讯", "中国社会主要矛盾已经转化为人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾", "李四", "2018-04-10",
+        "2018/6/5/科创机房的电信和联通设备已经安装完成", 0, 2),
+    (8, 0, "稳定通讯", "中国希望在发展的同时兼顾公平，希望发展惠及所有中国人，这样的发展目标对其他国家具有示范意义", "李四", "2018-06-20",
+        "2018/3/25天津两条本地骨干移动500M^#^中电中华1G设置了一些数据当做 session 存在内存中", 0, 2);

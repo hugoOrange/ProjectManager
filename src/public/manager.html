@@ -9,24 +9,55 @@
 <body>
     
     <article>
+        <header id="manager_header">
+            <h1>管理员界面</h1>
+        </header>
 
         <table id="manager_mission">
             <tr>
+                <th>项目状态</th>
                 <th>项目名称</th>
+                <th>项目目的</th>
                 <th>项目负责人</th>
-                <th>项目进度</th>
                 <th>预计完成时间</th>
-                <th>milestone</th>
+                <th>目前进度</th>
                 <th>优先度</th>
+            </tr>
+
+            <tr id="manager_mission_edit">
+                <td>                    
+                    <select name="staus" id="new_projectStatus">
+                        <option value="0">正常</option>
+                        <option value="1">延期</option>
+                    </select>
+                </td>
+                <td><input type="text" name="projectName" id="new_projectName"></td>
+                <td><input type="text" name="projectTarget" id="new_projectTarget"></td>
+                <td><input type="text" name="projectManager" id="new_projectManager"></td>
+                <td><input type="date" name="deadline" id="new_deadline"></td>
+                <td><input type="text" name="projectProgress" id="new_projectProgress"></td>
+                <td>
+                    <select name="priority" id="priority">
+                        <option value="1">高</option>
+                        <option value="2">中</option>
+                        <option value="3">低</option>
+                    </select>
+                </td>
             </tr>
         </table>
     </article>
+
+
+    <button id="manager_confirm" class="floatBtn"></button>
+    <button id="manager_add" class="floatBtn"></button>
+    <button id="manager_edit" class="floatBtn"></button>
+    <button id="manager_delete" class="floatBtn"></button>
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/transferServer.js"></script>
     <script src="js/table.js"></script>
     <script src="js/manager.js"></script>
-    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/manager.css">
 </body>
 </html>

@@ -4,7 +4,6 @@ module.exports = (function() {
     var connection = null;
     const userTable = 'User';
     const projectTable = 'Project';
-    const milestoneTable = 'Milestone';
 
     return {
         connect: () => {
@@ -32,7 +31,7 @@ module.exports = (function() {
         },
 
         queryAllProject: (succ, fail = () => {}) => {
-            const ql = `select * from ${projectTable} left join ${milestoneTable} on ${projectTable}.projectId = ${milestoneTable}.projectId`;
+            const ql = `select * from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     fail();
@@ -40,12 +39,15 @@ module.exports = (function() {
                 }
 
                 console.log(" # Successfully query all projects from database");
+                for (let i = 0; i < results.length; i++) {
+                    results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
+                }
                 succ(results);
             });
         },
 
         queryProject: (userId, succ, fail = () => {})=> {
-            const ql = `select * from ${projectTable} left join ${milestoneTable} on ${projectTable}.projectId = ${milestoneTable}.projectId where ${projectTable}.userId = ${userId}`;
+            const ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     fail();
