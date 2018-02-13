@@ -50,6 +50,10 @@ var serverIO = (function () {
 
         queryProject: (succ = () => {}, fail = () => {}) => {
             ajaxSend({}, 'POST', '/project', succ, fail);
+        },
+
+        addProject: (projectInfo, succ = () => {}, fail = () => {}) => {
+            ajaxSend(projectInfo, 'POST', '/addProject', succ, fail);
         }
     }
 })();

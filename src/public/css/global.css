@@ -49,3 +49,18 @@ button:focus {
 .floatBtn:hover {
     box-shadow: 0 0 5px rgb(3, 14, 37);
 }
+
+/* base button */
+.baseBtn{
+    font-size: 15px;
+    background: #4b84b9e6;
+    color: #fff;
+    padding: 0.2em 1.2em;
+    border: 0;
+    cursor: pointer;
+    transition: 0.2s ease-in-out all;
+}
+.baseBtn:hover {
+    background: #0a143c;
+  color: #c7c7c7;
+}

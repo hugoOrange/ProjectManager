@@ -57,6 +57,20 @@ module.exports = (function() {
                 console.log(" # Successfully query project from database");
                 succ(results);
             });
+        },
+
+        addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
+            const ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority)
+                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority})`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                console.log(" # Successfully add project to database");
+                succ(results);
+            });
         }
     }
 })();

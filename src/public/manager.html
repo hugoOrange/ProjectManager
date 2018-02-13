@@ -25,8 +25,8 @@
             </tr>
 
             <tr id="manager_mission_edit">
-                <td>                    
-                    <select name="staus" id="new_projectStatus">
+                <td>
+                    <select name="staus" id="new_projectStatus" value="0">
                         <option value="0">正常</option>
                         <option value="1">延期</option>
                     </select>
@@ -35,18 +35,25 @@
                 <td><input type="text" name="projectTarget" id="new_projectTarget"></td>
                 <td><input type="text" name="projectManager" id="new_projectManager"></td>
                 <td><input type="date" name="deadline" id="new_deadline"></td>
-                <td><input type="text" name="projectProgress" id="new_projectProgress"></td>
+                <td><div id="new_projectProgress"></div></td>
                 <td>
-                    <select name="priority" id="priority">
-                        <option value="1">高</option>
-                        <option value="2">中</option>
-                        <option value="3">低</option>
+                    <select name="priority" id="new_priority" value="0">
+                        <option value="0">高</option>
+                        <option value="1">中</option>
+                        <option value="2">低</option>
                     </select>
                 </td>
             </tr>
         </table>
     </article>
 
+    <div id="confirm_alert">
+        <p>确定添加新的项目吗?</p>
+
+        <button class="baseBtn" id="confirm_ok">确定</button>
+        <button class="baseBtn" id="confirm_cancel">取消</button>
+    </div>
+    <div id="mask_layer"></div>
 
     <button id="manager_confirm" class="floatBtn"></button>
     <button id="manager_add" class="floatBtn"></button>

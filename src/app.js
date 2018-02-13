@@ -117,3 +117,20 @@ app.post('/project', (req, res) => {
         });
     }
 });
+
+app.post('/addProject', (req, res) => {
+    var sess = req.session;
+    var loginUser = sess.loginUser;
+    var isLogined = !!loginUser;
+
+    if (isLogined) {
+        let info = req.body;
+        db.addProject(loginUser, info.projectStatus, info.projectName, info.projectTarget, info.projectManager, info.deadline,
+            info.projectProgress, info.priority, () => {
+                res.json({
+                    ret_code: 0,
+                    ret_msg: '成功添加新项目',
+                });
+            });
+    }
+});
