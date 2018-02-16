@@ -122,14 +122,29 @@ $(document).ready(() => {
 
     serverIO.queryAllProjectName(nameList => {
         $("#manager_sidebar_content ul").empty();
+        nameList.ret_con.unshift("全部");
         for (let i = 0; i < nameList.ret_con.length; i++) {
-            $("#manager_sidebar_content ul").append($('<li></li>').append(`<button>${nameList.ret_con[i]}</button>`));
+            $("#manager_sidebar_content ul").append($('<li></li>')
+                .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
+                    .click(function (event) {
+                        var projectName = $(event.target).text();
+                        $("#manager_mission tr").each((index, val) => {
+                            if (index > 1) {
+                                if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
+                                    $(val).hide();
+                                } else {
+                                    $(val).show();
+                                }
+                            }
+                        });
+                    })
+                ));
         }
     });
 
-
     $("#manager_sidebar_shrink").click(event => {
         var sidebarWid = parseFloat($("#manager_sidebar").css("width")) + 40 + "px";
+                
         if ($(event.target).css("left") === "0px") {
             // show
             $(event.target).css("left", sidebarWid);
@@ -148,14 +163,32 @@ $(document).ready(() => {
             // has been focus
             return;
         }
+        
+        var btnEvent = function (event) {
+        }
 
         $("#manager_projectView").css("fontSize", "24px");
         $("#manager_managerList").css("fontSize", "14px");
 
         serverIO.queryAllProjectName(nameList => {
             $("#manager_sidebar_content ul").empty();
+            nameList.ret_con.unshift("全部");
             for (let i = 0; i < nameList.ret_con.length; i++) {
-                $("#manager_sidebar_content ul").append($('<li></li>').append(`<button>${nameList.ret_con[i]}</button>`));
+                $("#manager_sidebar_content ul").append($('<li></li>')
+                    .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
+                        .click(function (event) {
+                            var projectName = $(event.target).text();
+                            $("#manager_mission tr").each((index, val) => {
+                                if (index > 1) {
+                                    if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
+                                        $(val).hide();
+                                    } else {
+                                        $(val).show();
+                                    }
+                                }
+                            });
+                        })
+                    ));
             }
         });
     });
@@ -170,10 +203,24 @@ $(document).ready(() => {
         $("#manager_managerList").css("fontSize", "24px");
 
         serverIO.queryAllManagerName(nameList => {
-            console.dir(nameList)
             $("#manager_sidebar_content ul").empty();
+            nameList.ret_con.unshift("全部");
             for (let i = 0; i < nameList.ret_con.length; i++) {
-                $("#manager_sidebar_content ul").append($('<li></li>').append(`<button>${nameList.ret_con[i]}</button>`));
+                $("#manager_sidebar_content ul").append($('<li></li>')
+                    .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
+                        .click(function (event) {
+                            var managerName = $(event.target).text();
+                            $("#manager_mission tr").each((index, val) => {
+                                if (index > 1) {
+                                    if ($(val).children("td").eq(3).children(".project-watch-mode").text() !== managerName && managerName !== "全部") {
+                                        $(val).hide();
+                                    } else {
+                                        $(val).show();
+                                    }
+                                }
+                            });
+                        })
+                    ));
             }
         });
     });

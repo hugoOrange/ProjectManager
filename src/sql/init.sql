@@ -33,7 +33,7 @@ INSERT INTO User VALUE (1, "admin", "123456");
 INSERT INTO User VALUE (2, "member", "000000");
 -- test， comment when in production
 
-INSERT INTO Project VALUE (1, 0, "小型移动机器人系统", "打入国内市场", "张三", "2018-02-01", 
+INSERT INTO Project VALUE (1, 0, "小型移动机器人与航空航天卫星巡游智能识别自动充电无导航系统", "打入国内市场", "张三", "2018-02-01", 
         "2018-01-15 - 海外部分已经完成65%，国内完成5%，国内反馈缓慢。^#^2018-01-25 - 已分配IP，除腾讯和淘宝外，其他已修改", 1, 2);
 INSERT INTO Project VALUES
     (2, 1, "快速通讯", "中国日报创办“新时代大讲堂”，致敬新时代、拥抱新时代、阐释新时代、传播新时代", "李四", "2018-05-10",
