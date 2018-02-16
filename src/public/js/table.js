@@ -31,9 +31,24 @@ var tableOperation = (function () {
         } else if (pTo[0].tagName === "SELECT") {
             // edit projectStatus, projectPriority
             pTo.val(td.dataset.store);
-        } else if (pTo.tagName === "INPUT") {
+        } else if (pTo[0].tagName === "INPUT") {
             // edit deadline
             pTo.val(p);
+        } else if (pTo[0].tagName === "DIV") {
+            // edit progress
+            var pCon = "";
+            var pDate = "";
+            var pCount = 0;
+            var pTxt = "";
+            progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
+            $(td).children(".project-watch-mode").children("p").each((index, val) => {
+                pCon = $(val).text();
+                pCount = pCon.search(" - ");
+                pDate = pCon.slice(0, pCount);
+                pTxt = pCon.slice(pCount + 3);
+                $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
+                $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
+            });
         }
     }
 
@@ -56,15 +71,15 @@ var tableOperation = (function () {
                 </td>
                 <td>
                     <p class="project-watch-mode">${project.projectName}</p>
-                    <textarea class="project-edit-mode"></textarea>
+                    <textarea class="project-edit-mode" rows="4"></textarea>
                 </td>
                 <td>
                     <p class="project-watch-mode">${project.projectTarget}</p>
-                    <textarea class="project-edit-mode"></textarea>
+                    <textarea class="project-edit-mode" rows="4"></textarea>
                 </td>
                 <td>
                     <p class="project-watch-mode">${project.projectManager}</p>
-                    <textarea class="project-edit-mode"></textarea>
+                    <textarea class="project-edit-mode" rows="2"></textarea>
                 </td>
                 <td>
                     <p class="project-watch-mode">${project.deadline}</p>
@@ -82,6 +97,9 @@ var tableOperation = (function () {
                         <option value="1">中</option>
                         <option value="2">低</option>
                     </select>
+                </td>
+                <td class="delete-part">
+                    <input type="checkbox" name="project-delete" value="${project.projectId}">
                 </td>
             </tr>`);
             tableEle.append(tr);
@@ -145,22 +163,55 @@ var tableOperation = (function () {
                 }
                 giveEditModeElementVal(val);
             });
+        },
+
+        changeInWatchMode: (tableId) => {
+            $(".project-watch-mode").show();
+            $(".project-edit-mode").hide();
+        },
+
+        chooseAllDelete: () => {
+            $(".delete-part input").attr("checked", true);
+        },
+
+        chooseZeroDelete: () => {
+            $(".delete-part input").attr("checked", false);
         }
     }
 })();
 
 var progressElement = (function () {
     const progressSep = "^#^";
-    function progressAddEvent(event) {
+    var progressChangeRecord = {};
+
+    // add button event
+    function addEvent(event) {
         let ele = event.target.parentNode.parentNode;
+
+        let changeProjectId = ele.parentNode.dataset.id;
+        progressChangeRecord[changeProjectId] = changeProjectId;
+
         progressElement.createProgressInput(ele);
     }
 
-    function progressDeleteEvent(event) {
-        if ($(".progress-line").length > 1) {
+    // delete button event
+    function deleteEvent(event) {
+        if ($(event.target.parentNode.parentNode).children(".progress-line").length > 1) {
             let line = event.target.parentNode;
+
+            let changeProjectId = line.parentNode.parentNode.parentNode.dataset.id;
+            progressChangeRecord[changeProjectId] = changeProjectId;
+
             $(line).remove();
+            return;
         }
+        alert("最小的项目进度数为1");
+    }
+
+    // date input and textarea change event
+    function lineChangeEvent(event) {
+        let changeProjectId = event.target.parentNode.parentNode.parentNode.parentNode.dataset.id;
+        progressChangeRecord[changeProjectId] = changeProjectId;
     }
 
     return {
@@ -168,32 +219,57 @@ var progressElement = (function () {
             var div = $(`
             <div class='progress-line'>
                 <input type='date' name='progressTime'>
-                <input type='text' name='progressText'>
+                <textarea name='progressText'></textarea>
             </div>
             `);
-            $(div).append($("<button class='progress-add'></button>").click(progressAddEvent))
-                .append($("<button class='progress-delete'></button>").click(progressDeleteEvent));
+            $(div).append($("<button class='progress-delete'></button>").click(deleteEvent));
             $(wrap).append(div);
         },
 
         getProgressInputText: function (wrap) {
             let p = [];
             $(wrap).children(".progress-line").each((index, val) => {
-                p.push($(val).children("input[name='progressTime']").val() + " - " + $(val).children("input[name='progressText']").val());
+                p.push($(val).children("input[name='progressTime']").val() + " - " + $(val).children("textarea[name='progressText']").text());
             });
             return p;
         },
 
-        createProgressEdit: function (wrap) {
-            var div = $(`
-            <div class='progress-line'>
-                <input type='date' name='progressTime'>
-                <input type='text' name='progressText'>
-            </div>
-            `);
-            $(div).append($("<button class='progress-add'></button>").click(progressAddEvent))
-                .append($("<button class='progress-delete'></button>").click(progressDeleteEvent));
-            $(wrap).append(div);
+        getProgressEditText: function (wrap) {
+            let progressText = "";
+            let tmpTxt = "";
+            $(wrap).children(".progress-line").each((index, val) => {
+                if (index > 0) {
+                    tmpTxt = progressSep;
+                } else {
+                    tmpTxt = "";
+                }
+                tmpTxt += $(val).children("input[type='date']").val();
+                tmpTxt += " - ";
+                tmpTxt += $(val).children("textarea").val();
+                progressText += tmpTxt;
+            });
+            return progressText;
+        },
+
+        setProgressEditNum: function (wrap, num) {
+            $(wrap).empty();
+            num = Math.max(num, 1);
+            $(wrap).append($("<button class='progress-add'></button>").click(addEvent))
+            for (let i = 0; i < num; i++) {
+                $(wrap)
+                    .append($(`<div class='progress-line'></div>`)
+                            .append($(`<input type='date' name='progressTime'>`).on("change", lineChangeEvent))
+                            .append($(`<textarea name='progressText' rows="4"></textarea>`).on("change", lineChangeEvent)))
+                    .append($("<button class='progress-delete'></button>").click(deleteEvent));
+            }
+        },
+
+        resetChangeRecord: function () {
+            progressChangeRecord = {};
+        },
+
+        getChangeRecord: function () {
+            return progressChangeRecord;
         }
     }
 })();

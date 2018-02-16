@@ -46,7 +46,7 @@ module.exports = (function() {
             });
         },
 
-        queryProject: (userId, succ, fail = () => {})=> {
+        queryProjectsName: (userId, succ, fail = () => {})=> {
             const ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -55,6 +55,32 @@ module.exports = (function() {
                 }
 
                 console.log(" # Successfully query project from database");
+                succ(results);
+            });
+        },
+
+        queryAllProjectName: (userId, succ, fail = () => {})=> {
+            const ql = `select projectName from ${projectTable}`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                console.log(" # Successfully query all projects' name from database");
+                succ(results);
+            });
+        },
+
+        queryAllManagerName: (userId, succ, fail = () => {})=> {
+            const ql = `select projectManager from ${projectTable}`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                console.log(" # Successfully query all managers' name from database");
                 succ(results);
             });
         },
@@ -71,6 +97,66 @@ module.exports = (function() {
                 console.log(" # Successfully add project to database");
                 succ(results);
             });
+        },
+        
+        deleteProjects: (userId, projectList, succ, fail = () => {}) => {
+            if (projectList.length === 0) {
+                succ(0);
+                return;
+            }
+
+            var ql = `DELETE FROM ${projectTable} WHERE ${projectTable}.projectId = ${projectList[0]}`;
+            for (let i = 1; i < projectList.length; i++) {
+                ql += `and ${projectTable}.projectId = ${projectList[i]}`;
+            }
+            ql += ";";
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                console.log(" # Successfully delete projects to database");
+                succ(results.changeRows);
+            });
+        },
+
+        changeProjects: async (userId, changeList, callback) => {
+            if (changeList.length === 0) {
+                succ([], []);
+                return;
+            }
+
+            var ql = "";
+            var succChangeList = [];
+            var failChangeList = [];
+            for (const projectId in changeList) {
+                if (changeList.hasOwnProperty(projectId)) {
+                    const changeItem = changeList[projectId];
+                    ql = `UPDATE ${projectTable} SET `;
+                    
+                    for (const ci in changeItem) {
+                        if (changeItem.hasOwnProperty(ci)) {
+                            if (ci === "projectStatus" || ci === "priority") {                                
+                                ql += `${projectTable}.${ci} = ${changeItem[ci]}`;
+                            } else {
+                                ql += `${projectTable}.${ci} = "${changeItem[ci]}"`;
+                            }
+                        }
+                    }
+                    ql += ` WHERE ${projectTable}.projectId = ${projectId};`
+                    connection.query(ql, function (error, results, fields) {
+                        if (error) {
+                            failChangeList.push(projectId);
+                            throw error;
+                        }
+                        succChangeList.push(projectId);
+                        if ((succChangeList.length + failChangeList.length) === Object.keys(changeList).length) {
+                            callback(succChangeList, failChangeList);
+                        }
+                    });
+                }
+            }
         }
     }
 })();

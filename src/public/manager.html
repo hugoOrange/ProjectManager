@@ -13,6 +13,22 @@
             <h1>管理员界面</h1>
         </header>
 
+        <aside id="manager_sidebar">
+            <div id="manager_sidebar_navbar">
+                <button id="manager_projectView">项目概览</button>
+                <button id="manager_managerList">负责人列表</button>
+            </div>
+
+            <div id="manager_sidebar_content">
+                <ul>
+                    <li></li>
+                </ul>
+            </div>
+
+            <div id="manager_sidebar_shrink_mask"></div>
+            <button id="manager_sidebar_shrink"></button>
+        </aside>
+
         <table id="manager_mission">
             <tr>
                 <th>项目状态</th>
@@ -22,6 +38,10 @@
                 <th>预计完成时间</th>
                 <th>目前进度</th>
                 <th>优先度</th>
+                <th id="delete_all">
+                    <button></button>
+                    <p>全选</p>
+                </th>
             </tr>
 
             <tr id="manager_mission_edit">
@@ -31,10 +51,22 @@
                         <option value="1">延期</option>
                     </select>
                 </td>
-                <td><input type="text" name="projectName" id="new_projectName"></td>
-                <td><input type="text" name="projectTarget" id="new_projectTarget"></td>
-                <td><input type="text" name="projectManager" id="new_projectManager"></td>
-                <td><input type="date" name="deadline" id="new_deadline"></td>
+                <td>
+                    <p style="color:red;">*</p>
+                    <input type="text" name="projectName" id="new_projectName" placeholder="请输入6-30位字符">
+                </td>
+                <td>
+                    <input type="text" name="projectTarget" id="new_projectTarget" placeholder="可为空">
+                </td>
+                <td>
+                    <p style="color:red;">*</p>
+                    <input type="text" name="projectManager" id="new_projectManager">
+                </td>
+                <td>
+                    <p style="color:red;">*</p>
+                    <input type="date" name=".delete-part {
+                        deadline" id="new_deadline">
+                </td>
                 <td><div id="new_projectProgress"></div></td>
                 <td>
                     <select name="priority" id="new_priority" value="0">

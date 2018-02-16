@@ -52,8 +52,24 @@ var serverIO = (function () {
             ajaxSend({}, 'POST', '/project', succ, fail);
         },
 
+        queryAllProjectName: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({}, 'POST', '/projectName', succ, fail);
+        },
+
+        queryAllManagerName: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({}, 'POST', '/managerName', succ, fail)
+        },
+
         addProject: (projectInfo, succ = () => {}, fail = () => {}) => {
             ajaxSend(projectInfo, 'POST', '/addProject', succ, fail);
+        },
+
+        deleteProjects: (projectList, succ = () => {}, fail = () => {}) => {
+            ajaxSend(projectList, 'POST', '/deleteProjects', succ, fail);
+        },
+
+        changeProjects: (changeList, succ = () => {}, fail = () => {}) => {
+            ajaxSend(changeList, 'POST', '/changeProjects', succ, fail);
         }
     }
 })();

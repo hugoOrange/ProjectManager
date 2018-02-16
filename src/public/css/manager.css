@@ -5,6 +5,81 @@ article {
     padding: 20px 8%;
 }
 
+/* sidebar */
+#manager_sidebar {
+    position: fixed;
+    height: 100%;
+    left: -100%;
+    top: 0;
+    margin: 0;
+    padding: 0px 20px;
+    background: #fff;
+    box-shadow: 0 0 25px #2568b4;
+    z-index: 10;
+    transition: .3s all ease-in-out;
+}
+
+#manager_projectView, #manager_managerList {
+    display: inline-block;
+    vertical-align: bottom;
+    background: 0;
+    border: 0;
+    border-bottom: 2px solid #7f97ce82;
+    cursor: pointer;
+    padding: 10px;
+    margin: 0 5px;
+    font-size: 24px;
+    color: #156ca9;
+    transition: .2s all linear;
+}
+#manager_managerList { font-size: 14px; }
+
+#manager_sidebar_content ul {
+    list-style: none;
+    padding: 0;
+    overflow: auto;
+}
+#manager_sidebar_content ul li button {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    margin: 3px 0;
+    font-size: 18px;
+    color: #207deac7;
+    cursor: pointer;
+}
+#manager_sidebar_content ul li button:hover {
+    color: #207dea;
+}
+
+#manager_sidebar_shrink_mask {
+    position: fixed;
+    width: 22px;
+    height: 45px;
+    left: 0;
+    top: 8%;
+    border: 0;
+    background: #fff;
+    z-index: 10;
+    transform: translateX(-22px);
+    transition: .3s all ease-in-out;
+}
+#manager_sidebar_shrink {
+    position: fixed;
+    width: 21px;
+    height: 45px;
+    left: 0;
+    top: 8%;
+    border: 0;
+    border-radius: 0 5px 5px 0;
+    background: url(/assets/shrink.svg) no-repeat #fff;
+    background-position: -2px 11px;
+    background-size: 22px;
+    box-shadow: 0 0 25px #2568b4;
+    cursor: pointer;
+    transition: .3s all ease-in-out;
+}
+
 /* manager information */
 #manager_header {
     position: fixed;
@@ -24,10 +99,12 @@ article {
     border-radius: 0 0 5px 5px;
 }
 
+
 /* mission table */
 #manager_mission {
     width: 100%;
     margin-top: 83px;
+    margin-bottom: 1em;
     border-collapse:collapse;
     opacity: 0.8;
 }
@@ -52,10 +129,24 @@ article {
     border-radius: 3px 3px 0 0;
 }
 
+#manager_mission tr td textarea,
+#manager_mission tr td input {
+    border: 1px solid #2568b4c7;
+    border-radius: 3px;
+}
+#manager_mission tr td textarea:focus {
+    box-shadow: 0 0 5px #2568b4;
+}
+#manager_mission tr td input:focus {
+    box-shadow: 0 0 5px #2568b4;
+}
+
 #manager_mission tr td p {
     margin: 0;
 }
-#manager_mission tr td textarea {
+#manager_mission tr td:nth-child(2) textarea,
+#manager_mission tr td:nth-child(3) textarea,
+#manager_mission tr td:nth-child(4) textarea {
     display: none;
     width: 100%;
     resize: none;
@@ -85,7 +176,21 @@ article {
     width: 5%;
     text-align: center;
 }
+#manager_mission tr td:nth-child(8) {
+    width: 5%;
+    text-align: center;
+}
 
+/* progress paragraph */
+#manager_mission tr td:nth-child(6) .project-watch-mode p {
+    padding: 6px 0;
+    border-bottom: 1px solid #6f6fe2e3;
+}
+#manager_mission tr td:nth-child(6) .project-watch-mode p:last-child {
+    border: 0;
+}
+
+/* progress show and hide button */
 .project-progressShow {
     position: absolute;
     width: 16px;
@@ -103,8 +208,36 @@ article {
     opacity: 0.8;
 }
 
+/* project priority */
 .project-priority {
     margin: 0;
+}
+
+/* button to delete */
+#delete_all, .delete-part {
+    display: none;
+}
+.delete-part input {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #2568b4;
+    margin: 0;
+    background: #fff;
+    cursor: pointer;
+}
+#delete_all button {
+    width: 13px;
+    height: 13px;
+    outline: 1px solid #2568b4;
+    border: 2px solid #fff;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    cursor: pointer;    
+}
+#delete_all p {
+    margin: 0;
+    display: inline;
 }
 
 /* watch and edit mode */
@@ -119,6 +252,7 @@ article {
 
 #manager_mission_edit input {
     width: 100%;
+    height: 17px; 
     padding: 0.2em 0;
     font-size: 14px;
     line-height: 14px;
