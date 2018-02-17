@@ -11,6 +11,7 @@ var config = require('./config.js');
 var db = require('./DB.js');
 db.connect();
 
+
 // about server
 app.listen(+config.indexUrlPort);
 console.log(" * Run on http://" + config.indexUrlHost + ":" + config.indexUrlPort);
@@ -81,6 +82,22 @@ app.post('/login', (req, res) => {
             });
         }
     });
+});
+
+app.get('/signout', (req, res) => {
+    var sess = req.session;
+    var loginUser = sess.loginUser;
+    var isLogined = !!loginUser;
+    console.log(" * Request: sign out");
+
+    if (loginUser) {
+        sess.destroy(err => {
+            res.send({
+                ret_code: 0,
+                ret_msg: '成功注销'
+            });
+        });
+    }
 });
 
 app.post('/project', (req, res) => {

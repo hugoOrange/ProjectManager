@@ -48,6 +48,10 @@ var serverIO = (function () {
             }, 'POST', '/login', succ, fail);
         },
 
+        signoutLogin: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({}, 'GET', '/signout', succ, fail);
+        },
+
         queryProject: (succ = () => {}, fail = () => {}) => {
             ajaxSend({}, 'POST', '/project', succ, fail);
         },

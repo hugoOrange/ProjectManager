@@ -267,7 +267,7 @@ $(document).ready(() => {
         }
     });
     
-    $("#manager_edit").click(function () {
+    $("#manager_edit").click(event => {
         progressElement.resetChangeRecord();
         attributesChangeRecord = {};
 
@@ -282,7 +282,7 @@ $(document).ready(() => {
         }
     });
 
-    $("#manager_delete").click(function () {
+    $("#manager_delete").click(event => {
         if (!$("#delete_all").is(":hidden")) {
             resetStatus();
             $("#delete_all").hide();
@@ -294,6 +294,13 @@ $(document).ready(() => {
             $(".delete-part").show();
             $("#manager_confirm").show();
         }
+    });
+
+    $("#manager_signout").click(event => {
+        serverIO.signoutLogin(() => {
+            console.log("Successfully login out");
+            location.reload();
+        });
     });
 
     $("#confirm_ok").click(event => {

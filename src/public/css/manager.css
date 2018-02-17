@@ -137,6 +137,7 @@ article {
 
 #manager_mission tr td textarea,
 #manager_mission tr td input {
+    width: 100%;
     border: 1px solid #2568b4c7;
     border-radius: 3px;
 }
@@ -165,7 +166,7 @@ article {
     width: 10%;
 }
 #manager_mission tr td:nth-child(3) {
-    width: 20%;
+    width: 15%;
 }
 #manager_mission tr td:nth-child(4) {
     width: 5%;
@@ -176,7 +177,7 @@ article {
     width: 10%;
 }
 #manager_mission tr td:nth-child(6) {
-    width: 20%;
+    width: 25%;
 }
 #manager_mission tr td:nth-child(7) {
     width: 5%;
@@ -316,31 +317,38 @@ article {
 /* button style */
 #manager_confirm {
     display: none;
-    top: 58%;
+    top: 48%;
     background: url("/assets/confirm.svg") no-repeat #d5dde6;
-    background-size: 28px 28px;
-    background-position: 10px 10px;
+    background-size: 28px;
+    background-position: 10px;
 }
 
 #manager_add {
-    top: 68%;
+    top: 58%;
     background: url("/assets/plus.svg") no-repeat #d5dde6;
-    background-size: 28px 28px;
-    background-position: 10px 10px;
+    background-size: 28px;
+    background-position: 10px;
 }
 
 #manager_edit {
-    top: 78%;
+    top: 68%;
     background: url("/assets/edit.svg") no-repeat #d5dde6;
-    background-size: 28px 28px;
-    background-position: 10px 10px;
+    background-size: 28px;
+    background-position: 10px;
 }
 
 #manager_delete {
-    top: 88%;
+    top: 78%;
     background: url("/assets/delete.svg") no-repeat #d5dde6;
-    background-size: 28px 28px;
-    background-position: 10px 10px;
+    background-size: 28px;
+    background-position: 10px;
+}
+
+#manager_signout {
+    top: 88%;
+    background: url("/assets/sign-out.svg") no-repeat #d5dde6;
+    background-size: 28px;
+    background-position: 10px;
 }
 
 /* confirm dialog */

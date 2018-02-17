@@ -5,6 +5,18 @@ module.exports = (function() {
     const userTable = 'User';
     const projectTable = 'Project';
 
+    function getNowDate() {
+        return new Date().toISOString().slice(0, 10);
+    }
+
+    function mapProjectStatus(projectList) {
+        return projectList.map((val, index) => {
+            console.log(val.deadline, getNowDate())
+            val.projectStatus = val.deadline > getNowDate() ? 0 : 1;
+            return val;
+        });
+    }
+
     return {
         connect: () => {
             connection = mysql.createConnection({
@@ -42,7 +54,7 @@ module.exports = (function() {
                 for (let i = 0; i < results.length; i++) {
                     results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
                 }
-                succ(results);
+                succ(mapProjectStatus(results));
             });
         },
 
