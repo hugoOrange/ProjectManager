@@ -11,7 +11,6 @@ module.exports = (function() {
 
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
-            console.log(val.deadline, getNowDate())
             val.projectStatus = val.deadline > getNowDate() ? 0 : 1;
             return val;
         });

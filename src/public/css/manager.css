@@ -351,6 +351,96 @@ article {
     background-position: 10px;
 }
 
+/* deadline alarm area */
+#alarmShow_area {
+    position: fixed;
+    min-width: 300px;
+    max-width: 400px;
+    right: 6%;
+    top: 6%;
+    background: #fff;
+    padding: 22px 40px 15px 40px;
+    z-index: 12;
+    box-shadow: 0 0 10px hsl(244, 62%, 80%);
+    /* transform: .4s all ease-in-out; */
+}
+
+#alarmShow_area h2 {    
+    font-size: 20px;
+    color: #4178a3d1;
+    margin: 0;
+    text-align: center;
+}
+
+#alarmShow_area ul {
+    list-style: none;
+    padding: 0;
+    min-height: 3em;
+    max-height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#alarmShow_area ul li button {
+    width: 100%;
+    height: 2em;
+    background: transparent;
+    border: 0;
+    margin: 3px 0;
+    padding: 0;
+    font-size: 17px;
+    color: #ea7d20c7;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+#alarmShow_area ul li button:hover {
+    color: #ea3c20c7;
+}
+
+#alarmShow_area ul li p {
+    text-align: center;
+    width: 100%;
+    height: 2em;
+    border: 0;
+    margin: 3px 0;
+    padding: 0;
+    font-size: 17px;
+    color: #ea7d20c7;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#alarmShow_btn {
+    position: fixed;
+    width: 52px;
+    height: 52px;
+    left: 93%;
+    top: 3%;
+    border: 2px solid #4349c3c9;
+    border-radius: 50%;
+    background: url(/assets/info-sign.svg) no-repeat #f6fbffbf;
+    background-position: 6px 6px;
+    background-size: 33px;
+    z-index: 11;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+#alarmShow_btn::after {
+    content: attr(data-inform);
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    margin-top: -26px;
+    margin-left: 12px;
+    border: 1px solid #f31313d4;
+    border-radius: 50%;
+    background: #f31313d4;
+    font-size: 14px;
+    color: #fff;
+}
+
 /* confirm dialog */
 #confirm_alert {
     display: none;
