@@ -100,6 +100,15 @@ app.get('/signout', (req, res) => {
     }
 });
 
+app.post('/signup', (req, res) => {
+    db.addUser(req.body.username, req.body.password, (results) => {
+        res.send({
+            ret_code: 0,
+            ret_msg: '成功添加新用户'
+        })
+    })
+});
+
 app.post('/project', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;

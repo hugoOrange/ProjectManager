@@ -2,6 +2,7 @@ var serverIO = (function () {
     const indexUrl = 'http://localhost:4200';
 
     function ajaxSend(data, method, suffix, succ, fail) {
+        console.dir(data)
         if (method === 'GET') {
             $.ajax({
                 type: 'GET',
@@ -50,6 +51,10 @@ var serverIO = (function () {
 
         signoutLogin: (succ = () => {}, fail = () => {}) => {
             ajaxSend({}, 'GET', '/signout', succ, fail);
+        },
+
+        signUp: (data, succ = () => {}, fail = () => {}) => {
+            ajaxSend(data, 'POST', '/signup', succ, fail);
         },
 
         queryProject: (succ = () => {}, fail = () => {}) => {

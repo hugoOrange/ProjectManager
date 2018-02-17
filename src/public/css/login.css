@@ -39,7 +39,7 @@ body {
     margin-bottom: 1.3em;
 }
 
-#login_username_img, #login_password_img {
+.username-img, .password-img {
     position: absolute;
     width: 26px;
     background: #9ea6ef;

@@ -41,6 +41,19 @@ module.exports = (function() {
             });
         },
 
+        addUser: (username, password, succ, fail = () => {}) => {
+            const ql = `insert into ${userTable} (username, password) value ("${username}", "${password}");`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                console.log(" # Successfully add new user to database");
+                succ(results);
+            });
+        },
+
         queryAllProject: (succ, fail = () => {}) => {
             const ql = `select * from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
