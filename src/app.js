@@ -11,18 +11,30 @@ var config = require('./config.js');
 var db = require('./DB.js');
 db.connect();
 
+// command parameters
+const cn_args = process.argv;
+if (cn_args.indexOf('-h') !== -1) {
+    console.log("--HELP: Maybe configurable arguments: -P: port number");
+    process.exit();
+}
+// var hostName = cn_args[cn_args.indexOf('-H') < 0 ? -1 : cn_args.indexOf('-H') + 1] || config.indexUrlHost;
+var hostName = config.indexUrlHost;
+var port = cn_args[cn_args.indexOf('-P') < 0 ? -1 : cn_args.indexOf('-P') + 1] || config.indexUrlPort;
+if (port.search(/[^\d]/) !== -1 || port.length > 8) {
+    console.error("Arguments Error: Port number has unexpected character or it is too long");
+    process.exit();
+}
 
 // about server
-app.listen(+config.indexUrlPort);
-console.log(" * Run on http://" + config.indexUrlHost + ":" + config.indexUrlPort);
+console.log(" * Run on http://" + hostName + ":" + port);
+
 app.use(session({
     name: 'skey',
     secret: 'project manager',
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: 15 * 60 * 1000  // valid time: 15min
-        // maxAge: 5 * 60 * 1000  // valid time: 5min
+        maxAge: config.sessionTime
     }
 }));
 
@@ -32,10 +44,11 @@ app.get('/', function (req, res) {
     var isLogined = !!loginUser;
 
     if (isLogined) {
-        if (loginUser === 1) {
+        if (loginUser > 0) {
+        // if (loginUser === 1) {
             res.sendfile(__dirname + '/public/manager.html');
-        } else if (loginUser > 1) {
-            res.sendfile(__dirname + '/public/member.html');
+        // } else if (loginUser > 1) {
+        //     res.sendfile(__dirname + '/public/member.html');
         } else {
             res.sendfile(__dirname + '/public/login.html');            
         }
@@ -105,7 +118,7 @@ app.post('/signup', (req, res) => {
         res.send({
             ret_code: 0,
             ret_msg: '成功添加新用户'
-        })
+        });
     })
 });
 
@@ -116,7 +129,8 @@ app.post('/project', (req, res) => {
     console.log(" * Request: query all projects");
 
     if (isLogined) {
-        if (loginUser === 1) {
+        if (loginUser > 0) {
+        // if (loginUser === 1) {
             db.queryAllProject((projectInfo) => {
                 res.json({
                     ret_code: 0,
@@ -124,14 +138,14 @@ app.post('/project', (req, res) => {
                     ret_con: projectInfo
                 });
             });
-        } else if (loginUser > 1) {
-            db.queryProject(loginUser, (projectInfo) => {
-                res.json({
-                    ret_code: 0,
-                    ret_msg: '成功获取信息',
-                    ret_con: projectInfo
-                });
-            });
+        // } else if (loginUser > 1) {
+        //     db.queryProject(loginUser, (projectInfo) => {
+        //         res.json({
+        //             ret_code: 0,
+        //             ret_msg: '成功获取信息',
+        //             ret_con: projectInfo
+        //         });
+        //     });
         } else {
             res.json({
                 ret_code: 1,

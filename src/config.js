@@ -5,6 +5,7 @@ module.exports = {
     // server js
     indexUrlHost: "localhost",
     indexUrlPort: "4200",
+    sessionTime: 15 * 60 * 1000,
 
     // database js
     dbHost: "localhost",

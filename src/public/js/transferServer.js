@@ -2,7 +2,6 @@ var serverIO = (function () {
     const indexUrl = 'http://localhost:4200';
 
     function ajaxSend(data, method, suffix, succ, fail) {
-        console.dir(data)
         if (method === 'GET') {
             $.ajax({
                 type: 'GET',

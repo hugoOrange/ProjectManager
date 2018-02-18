@@ -143,9 +143,9 @@ $(document).ready(() => {
         });
         if (willDelay === 0) {
             container.append("<li><p>未有将到期项目</p></li>");
-            $("#alarmShow_btn").hide();
+            $("#alarmShow_btn").removeClass("alarmShow-tip");
         } else {
-            $("#alarmShow_btn").show();
+            $("#alarmShow_btn").addClass("alarmShow-tip");
             document.querySelector("#alarmShow_btn").dataset.inform = willDelay;
         }
     }
@@ -176,6 +176,12 @@ $(document).ready(() => {
     /** run when page load */
 
     serverIO.queryProject((data) => {
+        if (data.ret_con.length === 0) {
+            $("#no_project").show();
+        } else {
+            $("#no_project").hide();
+        }
+
         tableOperation.addProjects(data.ret_con, $("#manager_mission"));
         tableOperation.statusSet("manager_mission");
         tableOperation.progressSet("manager_mission");
@@ -188,7 +194,7 @@ $(document).ready(() => {
                 opacity: 0,
                 transfrom: "scale(0)"
             }, 300);
-        }, 1500);
+        }, 1000);
     });
 
     progressElement.createProgressInput(document.querySelector("#new_projectProgress"));

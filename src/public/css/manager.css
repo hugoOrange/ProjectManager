@@ -427,7 +427,7 @@ article {
     cursor: pointer;
 }
 
-#alarmShow_btn::after {
+.alarmShow-tip::after {
     content: attr(data-inform);
     position: absolute;
     width: 17px;
@@ -439,6 +439,20 @@ article {
     background: #f31313d4;
     font-size: 14px;
     color: #fff;
+}
+
+/* tip when no project */
+#no_project {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 80%;
+    height: 21%;
+    text-align: center;
+    font-size: 63px;
+    color: #41498a82;
+    margin: 0;
+    transform: translate(-50%, -50%);
 }
 
 /* confirm dialog */
