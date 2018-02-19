@@ -164,11 +164,19 @@ $(document).ready(() => {
     function resetStatus() {
         $("#confirm_alert").hide();
         $("#mask_layer").hide();
+
         $("#manager_mission_edit").hide();
         $("#manager_confirm").hide();
         tableOperation.changeInWatchMode("manager_mission");
         $("#delete_all").hide();
         $(".delete-part").hide();
+        
+        $("#new_projectName").val();
+        $("#new_projectTarget").val();
+        $("#new_projectManager").val();
+        progressElement.createProgressInput(document.querySelector("#new_projectProgress"));
+
+        $("#no_project").hide();
     }
 
 
@@ -194,6 +202,7 @@ $(document).ready(() => {
                 opacity: 0,
                 transfrom: "scale(0)"
             }, 300);
+            $("#alarmShow_area").hide();
         }, 1000);
     });
 
@@ -322,6 +331,8 @@ $(document).ready(() => {
         }
     });
 
+    // the button in the right down cornor
+
     $("#manager_confirm").click(event => {
         $("body").css({
             // ban scroll
@@ -346,6 +357,9 @@ $(document).ready(() => {
             $("#manager_confirm").show();
         } else {
             resetStatus();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
             $("#manager_mission_edit").hide();
             $("#manager_confirm").hide();
         }
@@ -359,10 +373,16 @@ $(document).ready(() => {
             resetStatus();
             tableOperation.changeInEditMode("manager_mission");
             $("#manager_confirm").show();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
         } else{
             resetStatus();
             tableOperation.changeInWatchMode("manager_mission");
             $("#manager_confirm").hide();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
         }
     });
 
@@ -372,11 +392,17 @@ $(document).ready(() => {
             $("#delete_all").hide();
             $(".delete-part").hide();
             $("#manager_confirm").hide();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
         } else{
             resetStatus();
             $("#delete_all").show();
             $(".delete-part").show();
             $("#manager_confirm").show();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
         }
     });
 
@@ -395,12 +421,14 @@ $(document).ready(() => {
                 opacity: 1,
                 transfrom: "scale(1)"
             }, 500);
+            area.show();
         } else {
             // need hide
             area.animate({
                 opacity: 0,
                 transfrom: "scale(0)"
             }, 500);
+            area.hide();
         }
     });
 

@@ -28,16 +28,20 @@ $(document).ready(() => {
                     username: username,
                     password: firstPassword
                 }, (data) => {
+                    alert("注册成功");
                     $("#signup_username").val("");
                     $("#signup_password").val("");
                     $("#signup_passwordAgain").val("");
-
 
                     $("#signup").hide();
                     $("#login").show();
 
                     $("#login_username").val(username);
                     $("#login_password").val(firstPassword);
+                }, () => {
+                    $("#signup_username").val("");
+                    $("#signup_password").val("");
+                    $("#signup_passwordAgain").val("");
                 });
             } else {
                 alert("两次密码不一致");
@@ -50,6 +54,10 @@ $(document).ready(() => {
     });
 
     $("#signup_loginIn").click(event => {
+        $("#signup_username").val("");
+        $("#signup_password").val("");
+        $("#signup_passwordAgain").val("");
+
         $("#signup").hide();
         $("#login").show();
     });

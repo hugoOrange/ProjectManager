@@ -171,11 +171,11 @@ var tableOperation = (function () {
         },
 
         chooseAllDelete: () => {
-            $(".delete-part input").attr("checked", true);
+            $(".delete-part input[name='project-delete']").attr("checked", true);
         },
 
         chooseZeroDelete: () => {
-            $(".delete-part input").attr("checked", false);
+            $(".delete-part input[name='project-delete']").attr("checked", false);
         }
     }
 })();
@@ -184,6 +184,10 @@ var progressElement = (function () {
     const progressSep = "^#^";
     var progressChangeRecord = {};
 
+    function getNowDate() {
+        return (new Date().toISOString()).slice(0, 10);
+    }
+
     // add button event
     function addEvent(event) {
         let ele = event.target.parentNode.parentNode;
@@ -191,12 +195,12 @@ var progressElement = (function () {
         let changeProjectId = ele.parentNode.dataset.id;
         progressChangeRecord[changeProjectId] = changeProjectId;
 
-        progressElement.createProgressInput(ele);
+        progressElement.createProgressInput($(event.target.parentNode), false);
     }
 
     // delete button event
     function deleteEvent(event) {
-        if ($(event.target.parentNode.parentNode).children(".progress-line").length > 1) {
+        if ($(event.target.parentNode.parentNode).children(".progress-line").length > 0) {
             let line = event.target.parentNode;
 
             let changeProjectId = line.parentNode.parentNode.parentNode.dataset.id;
@@ -215,7 +219,11 @@ var progressElement = (function () {
     }
 
     return {
-        createProgressInput: function (wrap) {
+        createProgressInput: function (wrap, firstCreate = true) {
+            if (firstCreate) {
+                $(wrap).empty();
+                $(wrap).append($("<button class='progress-add'></button>").click(addEvent));
+            }
             var div = $(`
             <div class='progress-line'>
                 <input type='date' name='progressTime'>
@@ -228,8 +236,10 @@ var progressElement = (function () {
 
         getProgressInputText: function (wrap) {
             let p = [];
+            var d = "";
             $(wrap).children(".progress-line").each((index, val) => {
-                p.push($(val).children("input[name='progressTime']").val() + " - " + $(val).children("textarea[name='progressText']").text());
+                d = $(val).children("input[name='deadline']").val() || getNowDate();;
+                p.push(d + " - " + $(val).children("textarea[name='progressText']").val());
             });
             return p;
         },
@@ -243,7 +253,7 @@ var progressElement = (function () {
                 } else {
                     tmpTxt = "";
                 }
-                tmpTxt += $(val).children("input[type='date']").val();
+                tmpTxt += $(val).children("input[type='date']").val() || getNowDate();
                 tmpTxt += " - ";
                 tmpTxt += $(val).children("textarea").val();
                 progressText += tmpTxt;
@@ -252,15 +262,14 @@ var progressElement = (function () {
         },
 
         setProgressEditNum: function (wrap, num) {
-            $(wrap).empty();
+            wrap.empty();
             num = Math.max(num, 1);
-            $(wrap).append($("<button class='progress-add'></button>").click(addEvent))
+            wrap.append($("<button class='progress-add'></button>").click(addEvent))
             for (let i = 0; i < num; i++) {
-                $(wrap)
-                    .append($(`<div class='progress-line'></div>`)
+                wrap.append($(`<div class='progress-line'></div>`)
                             .append($(`<input type='date' name='progressTime'>`).on("change", lineChangeEvent))
-                            .append($(`<textarea name='progressText' rows="4"></textarea>`).on("change", lineChangeEvent)))
-                    .append($("<button class='progress-delete'></button>").click(deleteEvent));
+                            .append($(`<textarea name='progressText' rows="4"></textarea>`).on("change", lineChangeEvent))
+                            .append($("<button class='progress-delete'></button>").click(deleteEvent)));
             }
         },
 

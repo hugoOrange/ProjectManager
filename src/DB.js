@@ -29,7 +29,7 @@ module.exports = (function() {
         },
 
         queryUser: (username, password, succ, fail = () => {}) => {
-            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = ${password}`;
+            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     fail();
@@ -51,6 +51,22 @@ module.exports = (function() {
 
                 console.log(" # Successfully add new user to database");
                 succ(results);
+            });
+        },
+
+        isUserExisted: (username, succ, fail = () => {}) => {
+            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    fail();
+                    throw error;
+                }
+
+                if (results.length === 0) {
+                    succ(false);
+                } else {
+                    succ(true);
+                }
             });
         },
 
@@ -129,11 +145,11 @@ module.exports = (function() {
                 return;
             }
 
-            var ql = `DELETE FROM ${projectTable} WHERE ${projectTable}.projectId = ${projectList[0]}`;
-            for (let i = 1; i < projectList.length; i++) {
-                ql += `and ${projectTable}.projectId = ${projectList[i]}`;
+            var ql = `DELETE FROM ${projectTable} WHERE`;
+            for (let i = 0; i < projectList.length - 1; i++) {
+                ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }
-            ql += ";";
+            ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]};`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     fail();

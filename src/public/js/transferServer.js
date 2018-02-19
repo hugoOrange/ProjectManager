@@ -1,11 +1,10 @@
 var serverIO = (function () {
-    const indexUrl = 'http://localhost:4200';
 
     function ajaxSend(data, method, suffix, succ, fail) {
         if (method === 'GET') {
             $.ajax({
                 type: 'GET',
-                url: indexUrl + suffix,
+                url: suffix,
                 data: data,
                 success: function(data) {
                     if (data.ret_code === 0) {
@@ -20,7 +19,7 @@ var serverIO = (function () {
         } else if (method === 'POST') {
             $.ajax({
                 type: 'POST',
-                url: indexUrl + suffix,
+                url: suffix,
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 processData: false,

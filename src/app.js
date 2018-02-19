@@ -14,11 +14,11 @@ db.connect();
 // command parameters
 const cn_args = process.argv;
 if (cn_args.indexOf('-h') !== -1) {
-    console.log("--HELP: Maybe configurable arguments: -P: port number");
+    console.log("--HELP: Maybe configurable arguments: \n-H: host name\n-P: port number");
     process.exit();
 }
-// var hostName = cn_args[cn_args.indexOf('-H') < 0 ? -1 : cn_args.indexOf('-H') + 1] || config.indexUrlHost;
-var hostName = config.indexUrlHost;
+var hostName = cn_args[cn_args.indexOf('-H') < 0 ? -1 : cn_args.indexOf('-H') + 1] || config.indexUrlHost;
+// var hostName = config.indexUrlHost;
 var port = cn_args[cn_args.indexOf('-P') < 0 ? -1 : cn_args.indexOf('-P') + 1] || config.indexUrlPort;
 if (port.search(/[^\d]/) !== -1 || port.length > 8) {
     console.error("Arguments Error: Port number has unexpected character or it is too long");
@@ -26,7 +26,7 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 }
 
 // about server
-console.log(" * Run on http://" + hostName + ":" + port);
+app.listen(port, () => console.log(" * Run on http://" + hostName + ":" + port))
 
 app.use(session({
     name: 'skey',
@@ -114,12 +114,26 @@ app.get('/signout', (req, res) => {
 });
 
 app.post('/signup', (req, res) => {
-    db.addUser(req.body.username, req.body.password, (results) => {
+    db.isUserExisted(req.body.username, (isExisted) => {
+        if (isExisted) {
+            res.send({
+                ret_code: 2,
+                ret_msg: '用户名已存在'
+            });
+        } else {
+            db.addUser(req.body.username, req.body.password, (results) => {
+                res.send({
+                    ret_code: 0,
+                    ret_msg: '成功添加新用户'
+                });
+            });
+        }
+    }, () => {
         res.send({
-            ret_code: 0,
-            ret_msg: '成功添加新用户'
+            ret_code: 1,
+            ret_msg: '注册失败'
         });
-    })
+    });
 });
 
 app.post('/project', (req, res) => {
