@@ -277,6 +277,9 @@ article {
 #manager_mission tr td input:focus {
     box-shadow: 0 0 7px #2568b4;
 }
+#manager_mission tr td input:last-child:focus {
+    box-shadow: none;
+}
 
 #manager_mission tr td p {
     margin: 0;

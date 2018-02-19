@@ -48,7 +48,11 @@ module.exports = (function() {
         },
 
         queryUser: (username, password, succ, fail = () => {}) => {
+<<<<<<< HEAD
             var ql = `SELECT userId FROM ${userTable} WHERE ${userTable}.username = "${username}" and ${userTable}.password = "${password}";`;
+=======
+            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
+>>>>>>> 8980c6e... ver1.1
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryUser: " + ql, "db");
@@ -188,7 +192,11 @@ module.exports = (function() {
             }
 
             var ql = `DELETE FROM ${projectTable} WHERE`;
+<<<<<<< HEAD
             for (var i = 0; i < projectList.length - 1; i++) {
+=======
+            for (let i = 0; i < projectList.length - 1; i++) {
+>>>>>>> 8980c6e... ver1.1
                 ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }
             ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]};`;
