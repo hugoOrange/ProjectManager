@@ -11,7 +11,7 @@ module.exports = (function() {
 
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
-            val.projectStatus = val.deadline > getNowDate() ? 0 : 1;
+            val.projectStatus = val.deadline >= getNowDate() ? 0 : 1;
             return val;
         });
     }
@@ -32,8 +32,10 @@ module.exports = (function() {
             const ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully query user from database");
@@ -45,8 +47,10 @@ module.exports = (function() {
             const ql = `insert into ${userTable} (username, password) value ("${username}", "${password}");`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully add new user to database");
@@ -58,8 +62,10 @@ module.exports = (function() {
             const ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 if (results.length === 0) {
@@ -74,8 +80,10 @@ module.exports = (function() {
             const ql = `select * from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully query all projects from database");
@@ -90,8 +98,10 @@ module.exports = (function() {
             const ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully query project from database");
@@ -103,8 +113,10 @@ module.exports = (function() {
             const ql = `select projectName from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully query all projects' name from database");
@@ -116,8 +128,10 @@ module.exports = (function() {
             const ql = `select projectManager from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully query all managers' name from database");
@@ -130,8 +144,10 @@ module.exports = (function() {
                 VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority})`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully add project to database");
@@ -152,8 +168,10 @@ module.exports = (function() {
             ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]};`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
                     fail();
-                    throw error;
+                    return;
                 }
 
                 console.log(" # Successfully delete projects to database");
@@ -188,7 +206,6 @@ module.exports = (function() {
                     connection.query(ql, function (error, results, fields) {
                         if (error) {
                             failChangeList.push(projectId);
-                            throw error;
                         }
                         succChangeList.push(projectId);
                         if ((succChangeList.length + failChangeList.length) === Object.keys(changeList).length) {

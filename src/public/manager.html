@@ -34,9 +34,9 @@
                 <th>项目名称</th>
                 <th>项目目的</th>
                 <th>项目负责人</th>
-                <th>预计完成时间</th>
+                <th>预计完成时间<button id="deadline_sort" class="top-arrow"></button></th>
                 <th>目前进度</th>
-                <th>优先度</th>
+                <th>优先度<button id="priority_sort" class="top-arrow"></button></th>
                 <th id="delete_all">
                     <button></button>
                     <p>全选</p>
@@ -77,14 +77,14 @@
     </article>
 
     <div id="alarmShow_area">
-        <h2>即将到期的项目</h2>
+        <h2>加急项目</h2>
 
         <ul></ul>
     </div>
-    <button id="alarmShow_btn" class="alarmShow-tip" data-inform="0"></button>
+    <button id="alarmShow_btn" class="alarmShow-tip" data-maydelay="0" data-delay="0"></button>
 
     <div id="confirm_alert">
-        <p>确定添加新的项目吗?</p>
+        <p>对话框语句</p>
 
         <button class="baseBtn" id="confirm_ok">确定</button>
         <button class="baseBtn" id="confirm_cancel">取消</button>
@@ -100,6 +100,7 @@
     <button id="manager_signout" class="floatBtn" title="注销"></button>
 
     <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/socket.io.js"></script>
     <script src="js/transferServer.js"></script>
     <script src="js/table.js"></script>
     <script src="js/manager.js"></script>

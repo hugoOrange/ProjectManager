@@ -1,6 +1,8 @@
 // package dependencies
 var express = require('express');
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -26,7 +28,7 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 }
 
 // about server
-app.listen(port, () => console.log(" * Run on http://" + hostName + ":" + port))
+server.listen(port, () => console.log(" * Run on http://" + hostName + ":" + port));
 
 app.use(session({
     name: 'skey',
@@ -240,6 +242,12 @@ app.post('/addProject', (req, res) => {
                     ret_code: 0,
                     ret_msg: '成功添加新项目',
                 });
+                // broadcast
+                io.sockets.emit('broadcast', {
+                    type: 0,
+                    op: "add",
+                    data: info
+                });
             }, () => {
                 res.json({
                     ret_code: 1,
@@ -261,6 +269,12 @@ app.post('/deleteProjects', (req, res) => {
             res.json({
                 ret_code: 0,
                 ret_msg: '成功删除新项目',
+            });
+            // broadcast
+            io.sockets.emit('broadcast', {
+                type: 0,
+                op: "delete",
+                data: deleteList
             });
         }, () => {
             res.json({
@@ -284,6 +298,12 @@ app.post('/changeProjects', (req, res) => {
                 res.json({
                     ret_code: 0,
                     ret_msg: '成功修改项目'
+                });
+                // broadcast
+                io.sockets.emit('broadcast', {
+                    type: 0,
+                    op: "change",
+                    data: changeList
                 });
             } else if (failRows.length === Object.keys(changeList).length) {
                 res.json({

@@ -3,7 +3,7 @@ var tableOperation = (function () {
         color: "green",
         text: "正常",
     }, {
-        color: "yellow",
+        color: "red",
         text: "延期",
     }];
     const progressSep = "^#^";
@@ -19,37 +19,15 @@ var tableOperation = (function () {
     }];
 
     // private method
-    function giveEditModeElementVal(td) {
-        let p = $(td).children(".project-watch-mode").text();
-        let pTo = $(td).children(".project-edit-mode");
-        if (pTo[0] === undefined) {
-            return;
-        }
-        if (pTo[0].tagName === "TEXTAREA") {
-            // edit projectName, projectManager, projectTarget
-            pTo.text(p);
-        } else if (pTo[0].tagName === "SELECT") {
-            // edit projectStatus, projectPriority
-            pTo.val(td.dataset.store);
-        } else if (pTo[0].tagName === "INPUT") {
-            // edit deadline
-            pTo.val(p);
-        } else if (pTo[0].tagName === "DIV") {
-            // edit progress
-            var pCon = "";
-            var pDate = "";
-            var pCount = 0;
-            var pTxt = "";
-            progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
-            $(td).children(".project-watch-mode").children("p").each((index, val) => {
-                pCon = $(val).text();
-                pCount = pCon.search(" - ");
-                pDate = pCon.slice(0, pCount);
-                pTxt = pCon.slice(pCount + 3);
-                $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
-                $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
-            });
-        }
+
+    // private method 
+    function comparePriority(a, b) {
+        return a === "高" ? true : b === "高" ? false : a === "中" ? true : b === "中" ? false : true;
+    }
+
+    // private method
+    function getNowDate() {
+        return new Date().toISOString().slice(0, 10);
     }
 
     return {
@@ -105,6 +83,50 @@ var tableOperation = (function () {
             tableEle.append(tr);
         },
 
+        projectAttriSet: (lineEle, attri, value) => {
+            let ele = null;
+            switch (attri) {
+                case "projectName":
+                    ele = $(lineEle).children("td").eq(1);
+                    ele.children(".project-watch-mode").text(value);
+                    ele.children(".project-edit-mode").val(value);
+                    break;
+            
+                case "projectTarget":
+                    ele = $(lineEle).children("td").eq(2);
+                    ele.children(".project-watch-mode").text(value);
+                    ele.children(".project-edit-mode").val(value);
+                    break;
+            
+                case "projectManager":
+                    ele = $(lineEle).children("td").eq(3);
+                    ele.children(".project-watch-mode").text(value);
+                    ele.children(".project-edit-mode").val(value);
+                    break;
+            
+                case "deadline":
+                    ele = $(lineEle).children("td").eq(4);
+                    ele.children(".project-watch-mode").text(value);
+                    ele.children(".project-edit-mode").val(value);
+                    // change projectStatus at the same time
+                    lineEle.querySelector("td").dataset.store = value >= getNowDate() ? 0 : 1;
+                    break;
+            
+                case "projectProgress":
+                    ele = $(lineEle).children("td").eq(5);
+                    ele.attr("data-progress", value);
+                    break;
+            
+                case "priority":
+                    ele = $(lineEle).children("td").eq(6);
+                    ele.attr("data-store", value);
+                    break;
+            
+                default:
+                    break;
+            }
+        },
+
         statusSet: (tableId) => {
             $(`#${tableId} tr td:nth-child(1)`).each((index, ele) => {
                 if (index === 0) {
@@ -122,13 +144,14 @@ var tableOperation = (function () {
         progressSet: (tableId) => {
             $(`#${tableId} tr td:nth-child(6) div.project-watch-mode`).each((index, ele) => {
                 let p = ele.parentNode.dataset.progress.split(progressSep);
+                $(ele).empty();
                 for (let i = 0; i < p.length; i++) {
                     $(ele).append($("<p></p>").text(p[i]).hide());
                 }
                 $(ele).children("p").last().show();
             });
-            $(`#${tableId} tr td:nth-child(6) button`).click(event => {
-                let ele = $(event.target.parentNode).children(".project-watch-mode").children("p")
+            $(`#${tableId} tr td:nth-child(6) button.project-progressShow`).click(event => {
+                let ele = $(event.target.parentNode).children(".project-watch-mode").children("p");
                 if (ele.first().is(":hidden")) {
                     ele.show();
                     $(event.target).css("background-image", 'url("/assets/minus.svg")');
@@ -161,7 +184,7 @@ var tableOperation = (function () {
                 if (index < 7) {
                     return;
                 }
-                giveEditModeElementVal(val);
+                tableOperation.giveEditModeElementVal(val);
             });
         },
 
@@ -170,12 +193,80 @@ var tableOperation = (function () {
             $(".project-edit-mode").hide();
         },
 
+        giveEditModeElementVal: (td) => {
+            let p = $(td).children(".project-watch-mode").text();
+            let pTo = $(td).children(".project-edit-mode");
+            if (pTo[0] === undefined) {
+                return;
+            }
+            if (pTo[0].tagName === "TEXTAREA") {
+                // edit projectName, projectManager, projectTarget
+                pTo.text(p);
+            } else if (pTo[0].tagName === "SELECT") {
+                // edit projectStatus, projectPriority
+                pTo.val(td.dataset.store);
+            } else if (pTo[0].tagName === "INPUT") {
+                // edit deadline
+                pTo.val(p);
+            } else if (pTo[0].tagName === "DIV") {
+                // edit progress
+                var pCon = "";
+                var pDate = "";
+                var pCount = 0;
+                var pTxt = "";
+                progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
+                $(td).children(".project-watch-mode").children("p").each((index, val) => {
+                    pCon = $(val).text();
+                    pCount = pCon.search(" - ");
+                    pDate = pCon.slice(0, pCount);
+                    pTxt = pCon.slice(pCount + 3);
+                    $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
+                    $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
+                });
+            }
+        },
+
         chooseAllDelete: () => {
             $(".delete-part input[name='project-delete']").attr("checked", true);
         },
 
         chooseZeroDelete: () => {
             $(".delete-part input[name='project-delete']").attr("checked", false);
+        },
+
+        /**
+         * @param lineOffset 0~6 represent projectStatus ~ priority
+         * @param order true represent sort from large to small, and false sort the opposite
+         */
+        sortLineAccordingVal: (lineOffset, order = true) => {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("manager_mission");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.getElementsByTagName("TR");
+                for (i = 2; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
+                    y = rows[i + 1].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
+                    if (lineOffset === 6) {
+                        if ((order && comparePriority(x, y)) || (!order && comparePriority(y, x))) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                    if (lineOffset === 4) {
+                        if ((order && x > y) || (!order && x < y)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
         }
     }
 })();
@@ -241,7 +332,7 @@ var progressElement = (function () {
                 d = $(val).children("input[name='deadline']").val() || getNowDate();;
                 p.push(d + " - " + $(val).children("textarea[name='progressText']").val());
             });
-            return p;
+            return p.join(progressSep);
         },
 
         getProgressEditText: function (wrap) {

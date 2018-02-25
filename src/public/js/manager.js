@@ -1,6 +1,8 @@
 $(document).ready(() => {
     /** value and useful function define */
 
+    var socket = io();
+    const DELAY_TIME = 2;
     const confirmDialog = {
         getOp: (dialog) => {
             return dialog.slice(2, 4);
@@ -17,6 +19,11 @@ $(document).ready(() => {
         deleteProject: {
             txt: "确认删除这些项目吗？",
             op: "删除"
+        },
+
+        updateProject: {
+            txt: "有人更新了界面,点击确定将刷新当前界面,取消将把更新载入当前界面",
+            op: "更新"
         }
     };
     // record project attribute changes, it should be asigned after query projects
@@ -101,52 +108,105 @@ $(document).ready(() => {
         let nowDate = getNowDateFixed(10);
         var deadline = "";
         var pName = "";
+        var mName = "";
         var pId = -1;
         var container = $("#alarmShow_area ul");
         var willDelay = 0;
+        var isDelay = 0;
+        var btnEvent = event => {
+            let id = event.target.dataset.id;
+            let focusEle = null;
+            document.querySelector("#manager_mission").querySelectorAll("tr").forEach(element => {
+                if (element.dataset.id === id) {
+                    focusEle = $(element);
+                }
+            });
+            let firstEle = $("#manager_mission tr:nth-child(3)");
+            if (id == firstEle[0].dataset.id) {
+                return;
+            }
+            firstEle.before(focusEle);
+            // also ok, can be exchange
+            // $("#manager_mission").append(firstEle.clone());
+            // firstEle.replaceWith(focusEle);
+        }
 
         container.empty();
         $("#manager_mission tr").each((index, val) => {
             if (index > 1) {
                 deadline = $(val).children("td").eq(4).children(".project-watch-mode").text();
+                pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
+                mName = $(val).children("td").eq(3).children(".project-watch-mode").text();
+                pId = val.dataset.id;
                 if (deadline < nowDate) {
                     // project delay
+                    isDelay += 1;
+                    container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="delay-project">${pName}/${mName}</button>`).click(btnEvent)));
                 } else {
                     if (deadline < wellDate) {
                         // maybe delayed
                         willDelay += 1;
-                        pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
-                        pId = val.dataset.id;
-                        container.append($("<li></li>")
-                            .append($(`<button data-id="${pId}" title="${pName}">${pName}</button>`)
-                                .click(function (event) {
-                                    let id = event.target.dataset.id;
-                                    let focusEle = null;
-                                    document.querySelector("#manager_mission").querySelectorAll("tr").forEach(element => {
-                                        if (element.dataset.id === id) {
-                                            focusEle = $(element);
-                                        }
-                                    });
-                                    let firstEle = $("#manager_mission tr:nth-child(3)");
-                                    if (id == firstEle[0].dataset.id) {
-                                        return;
-                                    }
-                                    firstEle.before(focusEle);
-                                    // also ok, can be exchange
-                                    // $("#manager_mission").append(firstEle.clone());
-                                    // firstEle.replaceWith(focusEle);
-                                })
-                            ));
+                        container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="mayDelay-project">${pName}/${mName}</button>`).click(btnEvent)));
                     }
+                    // else: normal
                 }
             }
         });
-        if (willDelay === 0) {
+        if (willDelay + isDelay === 0) {
             container.append("<li><p>未有将到期项目</p></li>");
             $("#alarmShow_btn").removeClass("alarmShow-tip");
         } else {
             $("#alarmShow_btn").addClass("alarmShow-tip");
-            document.querySelector("#alarmShow_btn").dataset.inform = willDelay;
+            document.querySelector("#alarmShow_btn").dataset.maydelay = willDelay;
+            document.querySelector("#alarmShow_btn").dataset.delay = isDelay;
+        }
+    }
+
+    function initManagerSide(type) {
+        if (type === "projectName") {                    
+            serverIO.queryAllProjectName(nameList => {
+                $("#manager_sidebar_content ul").empty();
+                nameList.ret_con.unshift("全部");
+                for (let i = 0; i < nameList.ret_con.length; i++) {
+                    $("#manager_sidebar_content ul").append($('<li></li>')
+                        .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
+                            .click(function (event) {
+                                var projectName = $(event.target).text();
+                                $("#manager_mission tr").each((index, val) => {
+                                    if (index > 1) {
+                                        if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
+                                            $(val).hide();
+                                        } else {
+                                            $(val).show();
+                                        }
+                                    }
+                                });
+                            })
+                        ));
+                }
+            });
+        } else if (type === "projectManager") {
+            serverIO.queryAllManagerName(nameList => {
+                $("#manager_sidebar_content ul").empty();
+                nameList.ret_con.unshift("全部");
+                for (let i = 0; i < nameList.ret_con.length; i++) {
+                    $("#manager_sidebar_content ul").append($('<li></li>')
+                        .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
+                            .click(function (event) {
+                                var managerName = $(event.target).text();
+                                $("#manager_mission tr").each((index, val) => {
+                                    if (index > 1) {
+                                        if ($(val).children("td").eq(3).children(".project-watch-mode").text() !== managerName && managerName !== "全部") {
+                                            $(val).hide();
+                                        } else {
+                                            $(val).show();
+                                        }
+                                    }
+                                });
+                            })
+                        ));
+                }
+            });            
         }
     }
 
@@ -159,6 +219,14 @@ $(document).ready(() => {
         var nextDay = new Date(day);
         nextDay.setDate(day.getDate() + offset);
         return nextDay.toISOString().slice(0, bit);
+    }
+
+    function tableEleSet() {
+        tableOperation.statusSet("manager_mission");
+        tableOperation.progressSet("manager_mission");
+        tableOperation.prioritySet("manager_mission");
+        loadAlarm(DELAY_TIME);
+        valueChangeRecordObj = valueChangeRecord();
     }
 
     function resetStatus() {
@@ -191,12 +259,8 @@ $(document).ready(() => {
         }
 
         tableOperation.addProjects(data.ret_con, $("#manager_mission"));
-        tableOperation.statusSet("manager_mission");
-        tableOperation.progressSet("manager_mission");
-        tableOperation.prioritySet("manager_mission");
+        tableEleSet();
 
-        valueChangeRecordObj = valueChangeRecord();
-        loadAlarm(2);
         setTimeout(() => {
             $("#alarmShow_area").animate({
                 opacity: 0,
@@ -207,37 +271,25 @@ $(document).ready(() => {
     });
 
     progressElement.createProgressInput(document.querySelector("#new_projectProgress"));
+    initManagerSide("projectName");
 
-    serverIO.queryAllProjectName(nameList => {
-        $("#manager_sidebar_content ul").empty();
-        nameList.ret_con.unshift("全部");
-        for (let i = 0; i < nameList.ret_con.length; i++) {
-            $("#manager_sidebar_content ul").append($('<li></li>')
-                .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
-                    .click(function (event) {
-                        var projectName = $(event.target).text();
-                        $("#manager_mission tr").each((index, val) => {
-                            if (index > 1) {
-                                if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
-                                    $(val).hide();
-                                } else {
-                                    $(val).show();
-                                }
-                            }
-                        });
-                    })
-                ));
+    socket.on('broadcast', function(comm) {
+        if (comm.type === 0) {
+            $("#confirm_alert").show().children("p").text(confirmDialog.updateProject.txt);
+            $("#mask_layer").show();
+            $("#confirm_cancel").data("data", comm);
         }
     });
-    
 
 
 
     /** event bind when page load */
+    
+    // about sidebar
 
     $("#manager_sidebar_shrink").click(event => {
         var sidebarWid = parseFloat($("#manager_sidebar").css("width")) + 40 + "px";
-                
+
         if ($(event.target).css("left") === "0px") {
             // show
             $(event.target).css("left", sidebarWid);
@@ -263,27 +315,7 @@ $(document).ready(() => {
         $("#manager_projectView").css("fontSize", "24px");
         $("#manager_managerList").css("fontSize", "14px");
 
-        serverIO.queryAllProjectName(nameList => {
-            $("#manager_sidebar_content ul").empty();
-            nameList.ret_con.unshift("全部");
-            for (let i = 0; i < nameList.ret_con.length; i++) {
-                $("#manager_sidebar_content ul").append($('<li></li>')
-                    .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
-                        .click(function (event) {
-                            var projectName = $(event.target).text();
-                            $("#manager_mission tr").each((index, val) => {
-                                if (index > 1) {
-                                    if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
-                                        $(val).hide();
-                                    } else {
-                                        $(val).show();
-                                    }
-                                }
-                            });
-                        })
-                    ));
-            }
-        });
+        initManagerSide("projectName");
     });
 
     $("#manager_managerList").click(event => {
@@ -295,27 +327,33 @@ $(document).ready(() => {
         $("#manager_projectView").css("fontSize", "14px");
         $("#manager_managerList").css("fontSize", "24px");
 
-        serverIO.queryAllManagerName(nameList => {
-            $("#manager_sidebar_content ul").empty();
-            nameList.ret_con.unshift("全部");
-            for (let i = 0; i < nameList.ret_con.length; i++) {
-                $("#manager_sidebar_content ul").append($('<li></li>')
-                    .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
-                        .click(function (event) {
-                            var managerName = $(event.target).text();
-                            $("#manager_mission tr").each((index, val) => {
-                                if (index > 1) {
-                                    if ($(val).children("td").eq(3).children(".project-watch-mode").text() !== managerName && managerName !== "全部") {
-                                        $(val).hide();
-                                    } else {
-                                        $(val).show();
-                                    }
-                                }
-                            });
-                        })
-                    ));
-            }
-        });
+        initManagerSide("projectManager");
+    });
+
+    // about table
+
+    $("#deadline_sort").click(event => {
+        if (event.target.classList.contains("top-arrow")) {
+            tableOperation.sortLineAccordingVal(4, false);
+            event.target.classList.remove("top-arrow");
+            event.target.classList.add("bottom-arrow");
+        } else {
+            tableOperation.sortLineAccordingVal(4, true);
+            event.target.classList.remove("bottom-arrow");
+            event.target.classList.add("top-arrow");
+        }
+    });
+
+    $("#priority_sort").click(event => {
+        if (event.target.classList.contains("top-arrow")) {
+            tableOperation.sortLineAccordingVal(6, false);
+            event.target.classList.remove("top-arrow");
+            event.target.classList.add("bottom-arrow");
+        } else {
+            tableOperation.sortLineAccordingVal(6, true);
+            event.target.classList.remove("bottom-arrow");
+            event.target.classList.add("top-arrow");
+        }
     });
 
     $("#delete_all button").click(event => {
@@ -504,10 +542,15 @@ $(document).ready(() => {
                 console.log("Successfully delete projects");
                 location.reload();
             });
+        } else if (op === confirmDialog.updateProject) {
+            location.reload();
         }
     });
 
     $("#confirm_cancel").click(event => {
+        var changeInfo = null;
+        var projectInfo = null;
+        
         $("body").css({
             // allow scroll
             overflow: "auto",
@@ -515,5 +558,76 @@ $(document).ready(() => {
         });
         $("#mask_layer").hide();
         $("#confirm_alert").slideUp();
+
+        if (confirmDialog.getOp($("#confirm_alert p").text()) === confirmDialog.updateProject.op) {
+            projectInfo = $(event.target).data("data");
+            console.dir(projectInfo)
+            if (!$("#manager_mission_edit").is(":hidden")) {
+                // in add project status
+                if (projectInfo.op === "add") {
+                    tableOperation.addProject(projectInfo.data, $("#manager_mission"));
+                } else if (projectInfo.op === "delete") {
+                    $("#manager_mission tr").each((index, val) => {
+                        if (index > 1) {
+                            if (projectInfo.data[val.dataset.id] !== undefined) {
+                                $(val).remove();
+                            }
+                        }
+                    });
+                } else if (projectInfo.op === "change") {
+                    $("#manager_mission tr").each((index, val) => {
+                        if (projectInfo.data[val.dataset.id] !== undefined) {
+                            changeInfo = projectInfo.data[val.dataset.id];
+                            for (const changeAttri in changeInfo) {
+                                if (changeInfo.hasOwnProperty(changeAttri)) {
+                                    tableOperation.projectAttriSet(val, changeAttri, changeInfo[changeAttri]);
+                                }
+                            }
+                        }
+                    });
+                }
+                tableEleSet();
+                initManagerSide("projectName");
+                initManagerSide("projectManager");
+            } else if (!$(".project-edit-mode").is(":hidden")) {
+                // in edit project status
+                projectInfo = $(event.target).data("data");
+                if (projectInfo.op === "add") {
+                    tableOperation.addProject(projectInfo.data, $("#manager_mission"));
+                    $("#manager_mission tr:last-child").children("td").each((index, val) => {
+                        tableOperation.giveEditModeElementVal(val);
+                    });
+                    $(".project-watch-mode").hide();
+                    $(".project-edit-mode").show();
+                } else if (projectInfo.op === "delete") {
+                    $("#manager_mission tr").each((index, val) => {
+                        if (projectInfo.data.indexOf(val.dataset.id)) {
+                            if (index > 1) {
+                                if (projectInfo.data[val.dataset.id] !== undefined) {
+                                    $(val).remove();
+                                }
+                            }
+                        }
+                    });
+                } else if (projectInfo.op === "change") {
+                    $("#manager_mission tr").each((index, val) => {
+                        if (projectInfo.data[val.dataset.id] !== undefined) {
+                            changeInfo = projectInfo.data[val.dataset.id];
+                            for (const changeAttri in changeInfo) {
+                                if (changeInfo.hasOwnProperty(changeAttri)) {
+                                    tableOperation.projectAttriSet(val, changeAttri, changeInfo[changeAttri]);
+                                }
+                            }
+                        }
+                    });
+                }
+                tableEleSet();
+                initManagerSide("projectName");
+                initManagerSide("projectManager");
+            } else {
+                // in normal status
+                location.reload();
+            }
+        }
     });
 });

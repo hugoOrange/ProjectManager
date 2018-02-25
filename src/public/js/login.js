@@ -1,4 +1,10 @@
 $(document).ready(() => {
+    const MIN_USERNAME_LENGTH = 3;
+    const MAX_USERNAME_LENGTH = 10;
+    const MIN_PASSWORD_LENGTH = 6;
+    const MAX_PASSWORD_LENGTH = 30;
+
+
     $("#signup").hide();
 
     $("#login_loginIn").click(event => {
@@ -22,8 +28,8 @@ $(document).ready(() => {
         let username = $("#signup_username").val();
         let firstPassword = $("#signup_password").val();
         let secondPassword = $("#signup_passwordAgain").val();
-        if (username.search(/[^\w]/) === -1) {
-            if (firstPassword === secondPassword) {
+        if (username.search(/[^\w]/) === -1 && username.length >= MIN_USERNAME_LENGTH && username.length <= MAX_USERNAME_LENGTH) {
+            if (firstPassword === secondPassword && firstPassword.length >= MIN_PASSWORD_LENGTH && firstPassword.length <= MAX_PASSWORD_LENGTH) {
                 serverIO.signUp({
                     username: username,
                     password: firstPassword
@@ -39,6 +45,7 @@ $(document).ready(() => {
                     $("#login_username").val(username);
                     $("#login_password").val(firstPassword);
                 }, () => {
+                    alert("注册失败");
                     $("#signup_username").val("");
                     $("#signup_password").val("");
                     $("#signup_passwordAgain").val("");

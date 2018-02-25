@@ -10,6 +10,6 @@ module.exports = {
     // database js
     dbHost: "localhost",
     dbUser: "root",
-    dbPassword: "i&melove643",
+    dbPassword: "scutb8303",
     dbDatabase: "ProjectManager"
 }
