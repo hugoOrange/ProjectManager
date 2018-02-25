@@ -14,7 +14,7 @@ var db = require('./DB.js');
 db.connect();
 
 // command parameters
-const cn_args = process.argv;
+var cn_args = process.argv;
 if (cn_args.indexOf('-h') !== -1) {
     console.log("--HELP: Maybe configurable arguments: \n-H: host name\n-P: port number");
     process.exit();
@@ -184,7 +184,7 @@ app.post('/projectName', (req, res) => {
 
     if (isLogined) {
         db.queryAllProjectName(loginUser, (nameList) => {
-            let l = nameList.map((val, index) => {
+            var l = nameList.map((val, index) => {
                 return val.projectName;
             });
             res.send({
@@ -209,7 +209,7 @@ app.post('/managerName', (req, res) => {
 
     if (isLogined) {
         db.queryAllManagerName(loginUser, (nameList) => {
-            let l = nameList.map((val, index) => {
+            var l = nameList.map((val, index) => {
                 return val.projectManager;
             });
             res.send({
@@ -235,7 +235,7 @@ app.post('/addProject', (req, res) => {
     console.log(" * Request: add new project");
 
     if (isLogined) {
-        let info = req.body;
+        var info = req.body;
         db.addProject(loginUser, info.projectStatus, info.projectName, info.projectTarget, info.projectManager, info.deadline,
             info.projectProgress, info.priority, (results) => {
                 res.json({
@@ -257,15 +257,15 @@ app.post('/addProject', (req, res) => {
     }
 });
 
-app.post('/deleteProjects', (req, res) => {
+app.post('/devareProjects', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: delete projects");
+    console.log(" * Request: devare projects");
 
     if (isLogined) {
-        let deleteList = req.body;
-        db.deleteProjects(loginUser, deleteList, (deleteRowsNum) => {
+        var devareList = req.body;
+        db.devareProjects(loginUser, devareList, (devareRowsNum) => {
             res.json({
                 ret_code: 0,
                 ret_msg: '成功删除新项目',
@@ -273,8 +273,8 @@ app.post('/deleteProjects', (req, res) => {
             // broadcast
             io.sockets.emit('broadcast', {
                 type: 0,
-                op: "delete",
-                data: deleteList
+                op: "devare",
+                data: devareList
             });
         }, () => {
             res.json({
@@ -292,7 +292,7 @@ app.post('/changeProjects', (req, res) => {
     console.log(" * Request: change projects");
 
     if (isLogined) {
-        let changeList = req.body;
+        var changeList = req.body;
         db.changeProjects(loginUser, changeList, (changeRows, failRows) => {
             if (changeRows.length === Object.keys(changeList).length) {
                 res.json({

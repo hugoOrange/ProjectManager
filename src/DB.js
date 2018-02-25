@@ -1,9 +1,9 @@
 module.exports = (function() {
-    const mysql = require('mysql');
-    const config = require('./config');
+    var  mysql = require('mysql');
+    var  config = require('./config');
     var connection = null;
-    const userTable = 'User';
-    const projectTable = 'Project';
+    var  userTable = 'User';
+    var  projectTable = 'Project';
 
     function getNowDate() {
         return new Date().toISOString().slice(0, 10);
@@ -29,7 +29,7 @@ module.exports = (function() {
         },
 
         queryUser: (username, password, succ, fail = () => {}) => {
-            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
+            var  ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -44,7 +44,7 @@ module.exports = (function() {
         },
 
         addUser: (username, password, succ, fail = () => {}) => {
-            const ql = `insert into ${userTable} (username, password) value ("${username}", "${password}");`;
+            var  ql = `insert into ${userTable} (username, password) value ("${username}", "${password}");`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -59,7 +59,7 @@ module.exports = (function() {
         },
 
         isUserExisted: (username, succ, fail = () => {}) => {
-            const ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
+            var  ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -77,7 +77,7 @@ module.exports = (function() {
         },
 
         queryAllProject: (succ, fail = () => {}) => {
-            const ql = `select * from ${projectTable}`;
+            var  ql = `select * from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -87,7 +87,7 @@ module.exports = (function() {
                 }
 
                 console.log(" # Successfully query all projects from database");
-                for (let i = 0; i < results.length; i++) {
+                for (var  i = 0; i < results.length; i++) {
                     results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
                 }
                 succ(mapProjectStatus(results));
@@ -95,7 +95,7 @@ module.exports = (function() {
         },
 
         queryProjectsName: (userId, succ, fail = () => {})=> {
-            const ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
+            var  ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -110,7 +110,7 @@ module.exports = (function() {
         },
 
         queryAllProjectName: (userId, succ, fail = () => {})=> {
-            const ql = `select projectName from ${projectTable}`;
+            var  ql = `select projectName from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -125,7 +125,7 @@ module.exports = (function() {
         },
 
         queryAllManagerName: (userId, succ, fail = () => {})=> {
-            const ql = `select projectManager from ${projectTable}`;
+            var  ql = `select projectManager from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -140,7 +140,7 @@ module.exports = (function() {
         },
 
         addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
-            const ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority)
+            var  ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority)
                 VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority})`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -161,8 +161,8 @@ module.exports = (function() {
                 return;
             }
 
-            var ql = `DELETE FROM ${projectTable} WHERE`;
-            for (let i = 0; i < projectList.length - 1; i++) {
+            var ql = `DEvar E FROM ${projectTable} WHERE`;
+            for (var  i = 0; i < projectList.length - 1; i++) {
                 ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }
             ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]};`;
@@ -174,7 +174,7 @@ module.exports = (function() {
                     return;
                 }
 
-                console.log(" # Successfully delete projects to database");
+                console.log(" # Successfully devar e projects to database");
                 succ(results.changeRows);
             });
         },
@@ -188,12 +188,12 @@ module.exports = (function() {
             var ql = "";
             var succChangeList = [];
             var failChangeList = [];
-            for (const projectId in changeList) {
+            for (var  projectId in changeList) {
                 if (changeList.hasOwnProperty(projectId)) {
-                    const changeItem = changeList[projectId];
+                    var  changeItem = changeList[projectId];
                     ql = `UPDATE ${projectTable} SET `;
                     
-                    for (const ci in changeItem) {
+                    for (var  ci in changeItem) {
                         if (changeItem.hasOwnProperty(ci)) {
                             if (ci === "projectStatus" || ci === "priority") {                                
                                 ql += `${projectTable}.${ci} = ${changeItem[ci]}`;
