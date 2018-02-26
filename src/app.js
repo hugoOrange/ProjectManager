@@ -242,12 +242,12 @@ app.post('/addProject', (req, res) => {
                     ret_code: 0,
                     ret_msg: '成功添加新项目',
                 });
-                // broadcast
-                io.sockets.emit('broadcast', {
-                    type: 0,
-                    op: "add",
-                    data: info
-                });
+                // // broadcast
+                // io.sockets.emit('broadcast', {
+                //     type: 0,
+                //     op: "add",
+                //     data: info
+                // });
             }, () => {
                 res.json({
                     ret_code: 1,
@@ -257,25 +257,53 @@ app.post('/addProject', (req, res) => {
     }
 });
 
-app.post('/devareProjects', (req, res) => {
+app.post('/finishProjects', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: devare projects");
+    console.log(" * Request: finish projects");
 
     if (isLogined) {
-        var devareList = req.body;
-        db.devareProjects(loginUser, devareList, (devareRowsNum) => {
+        var finishList = req.body;
+        db.finishProjects(loginUser, finishList, (deleteRowsNum) => {
+            res.json({
+                ret_code: 0,
+                ret_msg: '有项目完成',
+            });
+            // // broadcast
+            // io.sockets.emit('broadcast', {
+            //     type: 0,
+            //     op: "delete",
+            //     data: finishList
+            // });
+        }, () => {
+            res.json({
+                ret_code: 1,
+                ret_msg: '项目完成失败'
+            });
+        });
+    }
+});
+
+app.post('/deleteProjects', (req, res) => {
+    var sess = req.session;
+    var loginUser = sess.loginUser;
+    var isLogined = !!loginUser;
+    console.log(" * Request: delete projects");
+
+    if (isLogined) {
+        var deleteList = req.body;
+        db.deleteProjects(loginUser, deleteList, (deleteRowsNum) => {
             res.json({
                 ret_code: 0,
                 ret_msg: '成功删除新项目',
             });
-            // broadcast
-            io.sockets.emit('broadcast', {
-                type: 0,
-                op: "devare",
-                data: devareList
-            });
+            // // broadcast
+            // io.sockets.emit('broadcast', {
+            //     type: 0,
+            //     op: "delete",
+            //     data: deleteList
+            // });
         }, () => {
             res.json({
                 ret_code: 1,
@@ -299,12 +327,12 @@ app.post('/changeProjects', (req, res) => {
                     ret_code: 0,
                     ret_msg: '成功修改项目'
                 });
-                // broadcast
-                io.sockets.emit('broadcast', {
-                    type: 0,
-                    op: "change",
-                    data: changeList
-                });
+                // // broadcast
+                // io.sockets.emit('broadcast', {
+                //     type: 0,
+                //     op: "change",
+                //     data: changeList
+                // });
             } else if (failRows.length === Object.keys(changeList).length) {
                 res.json({
                     ret_code: 2,

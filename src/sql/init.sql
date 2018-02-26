@@ -18,6 +18,7 @@ CREATE TABLE Project (
     projectName VARCHAR(30) NOT NULL,
     projectTarget TEXT NOT NULL,
     projectManager VARCHAR(30) NOT NULL,
+    firstTime DATE NOT NULL,
     deadline DATE NOT NULL,
     projectProgress TEXT NOT NULL,
     priority INT(8) unsigned NOT NULL DEFAULT 0,

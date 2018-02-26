@@ -252,10 +252,10 @@ article {
 }
 
 /* button to delete */
-#delete_all, .delete-part {
+#choose_all, .choose-part {
     display: none;
 }
-.delete-part input {
+.choose-part input {
     width: 14px;
     height: 14px;
     border: 1px solid #2568b4;
@@ -263,7 +263,7 @@ article {
     background: #fff;
     cursor: pointer;
 }
-#delete_all button {
+#choose_all button {
     width: 13px;
     height: 13px;
     outline: 1px solid #2568b4;
@@ -273,7 +273,7 @@ article {
     background: #fff;
     cursor: pointer;    
 }
-#delete_all p {
+#choose_all p {
     margin: 0;
     display: inline;
 }
@@ -348,22 +348,29 @@ article {
 /* button style */
 #manager_confirm {
     display: none;
-    top: 48%;
+    top: 38%;
     background: url("/assets/confirm.svg") no-repeat #d5dde6;
     background-size: 28px;
     background-position: 10px;
 }
 
 #manager_add {
-    top: 58%;
+    top: 48%;
     background: url("/assets/plus.svg") no-repeat #d5dde6;
     background-size: 28px;
     background-position: 10px;
 }
 
 #manager_edit {
-    top: 68%;
+    top: 58%;
     background: url("/assets/edit.svg") no-repeat #d5dde6;
+    background-size: 28px;
+    background-position: 10px;
+}
+
+#manager_finish {
+    top: 68%;
+    background: url("/assets/goal.svg") no-repeat #d5dde6;
     background-size: 28px;
     background-position: 10px;
 }

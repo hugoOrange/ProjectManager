@@ -1,10 +1,13 @@
 var tableOperation = (function () {
     const statusMap = [{
-        color: "green",
+        color: "blue",
         text: "正常",
     }, {
         color: "red",
         text: "延期",
+    }, {
+        color: "green",
+        text: "已完成"
     }];
     const progressSep = "^#^";
     const priorityMap = [{
@@ -17,8 +20,6 @@ var tableOperation = (function () {
         color: "blue",
         text: "低"
     }];
-
-    // private method
 
     // private method 
     function comparePriority(a, b) {
@@ -42,9 +43,10 @@ var tableOperation = (function () {
             <tr data-id="${project.projectId}">
                 <td data-store="${project.projectStatus}">
                     <p class="project-watch-mode"></p>
-                    <select class="project-edit-mode">
+                    <select class="project-edit-mode" disabled>
                         <option value="0">正常</option>
                         <option value="1">延期</option>
+                        <option value="2">已完成</option>
                     </select>
                 </td>
                 <td>
@@ -76,8 +78,8 @@ var tableOperation = (function () {
                         <option value="2">低</option>
                     </select>
                 </td>
-                <td class="delete-part">
-                    <input type="checkbox" name="project-delete" value="${project.projectId}">
+                <td class="choose-part">
+                    <input type="checkbox" name="project-choose" value="${project.projectId}">
                 </td>
             </tr>`);
             tableEle.append(tr);
@@ -227,11 +229,11 @@ var tableOperation = (function () {
         },
 
         chooseAllDelete: () => {
-            $(".delete-part input[name='project-delete']").attr("checked", true);
+            $(".choose-part input[name='project-choose']").attr("checked", true);
         },
 
         chooseZeroDelete: () => {
-            $(".delete-part input[name='project-delete']").attr("checked", false);
+            $(".choose-part input[name='project-choose']").attr("checked", false);
         },
 
         /**

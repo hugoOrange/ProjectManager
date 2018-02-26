@@ -11,7 +11,7 @@ module.exports = (function() {
 
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
-            val.projectStatus = val.deadline >= getNowDate() ? 0 : 1;
+            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime >= getNowDate() ? 0 : 1;
             return val;
         });
     }
@@ -140,8 +140,8 @@ module.exports = (function() {
         },
 
         addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
-            var  ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority)
-                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority})`;
+            var  ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, firstTime, deadline, projectProgress, priority)
+                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${deadline}", "${progress}", ${priority})`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -155,13 +155,37 @@ module.exports = (function() {
             });
         },
         
+        finishProjects: (userId, projectList, succ, fail = () => {}) => {
+            if (projectList.length === 0) {
+                succ(0);
+                return;
+            }
+
+            var ql = `UPDATE ${projectTable} SET ${projectTable}.projectStatus = 2 WHERE`;
+            for (let i = 0; i < projectList.length - 1; i++) {
+                ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
+            }
+            ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]}`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
+                    fail();
+                    return;
+                }
+
+                console.log(" # Successfully finish projects to database");
+                succ(results.changeRows);
+            });
+        },
+        
         deleteProjects: (userId, projectList, succ, fail = () => {}) => {
             if (projectList.length === 0) {
                 succ(0);
                 return;
             }
 
-            var ql = `DEvar E FROM ${projectTable} WHERE`;
+            var ql = `DELETE FROM ${projectTable} WHERE`;
             for (var  i = 0; i < projectList.length - 1; i++) {
                 ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }
@@ -174,7 +198,7 @@ module.exports = (function() {
                     return;
                 }
 
-                console.log(" # Successfully devar e projects to database");
+                console.log(" # Successfully delete projects to database");
                 succ(results.changeRows);
             });
         },

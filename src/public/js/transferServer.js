@@ -71,6 +71,10 @@ var serverIO = (function () {
             ajaxSend(projectInfo, 'POST', '/addProject', succ, fail);
         },
 
+        finishProjects: (projectList, succ = () => {}, fail = () => {}) => {
+            ajaxSend(projectList, 'POST', '/finishProjects', succ, fail);
+        },
+
         deleteProjects: (projectList, succ = () => {}, fail = () => {}) => {
             ajaxSend(projectList, 'POST', '/deleteProjects', succ, fail);
         },

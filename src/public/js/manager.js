@@ -16,6 +16,10 @@ $(document).ready(() => {
             txt: "确认保存修改吗？",
             op: "保存"
         },
+        finishProject: {
+            txt: "确认这些项目已完成吗?",
+            op: "这些"
+        },
         deleteProject: {
             txt: "确认删除这些项目吗？",
             op: "删除"
@@ -79,7 +83,7 @@ $(document).ready(() => {
                             if (changeRecord[changeProjectId] === undefined) {
                                 changeRecord[changeProjectId] = {};
                             }
-                            changeRecord[changeProjectId]["deadline"] = $(event.target).val() || getNowDate();
+                            changeRecord[changeProjectId]["deadline"] = $(event.target).val() || getNowDateFixed(10);
                         });
                     } else if (i === 6) {
                         // priority
@@ -210,9 +214,6 @@ $(document).ready(() => {
         }
     }
 
-    function getNowDate() {
-        return `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-    }
 
     function getNowDateFixed (bit = 10, offset = 0) {
         var day = new Date();
@@ -236,8 +237,9 @@ $(document).ready(() => {
         $("#manager_mission_edit").hide();
         $("#manager_confirm").hide();
         tableOperation.changeInWatchMode("manager_mission");
-        $("#delete_all").hide();
-        $(".delete-part").hide();
+        $("#choose_all").hide();
+        $(".choose-part").hide();
+        tableOperation.chooseZeroDelete();
         
         $("#new_projectName").val();
         $("#new_projectTarget").val();
@@ -356,8 +358,8 @@ $(document).ready(() => {
         }
     });
 
-    $("#delete_all button").click(event => {
-        let btn = $("#delete_all p");
+    $("#choose_all button").click(event => {
+        let btn = $("#choose_all p");
         if ($(btn).text() === "全选") {
             $(btn).text("全不选");
             $(event.target).css("background", "#2568b4");
@@ -376,16 +378,9 @@ $(document).ready(() => {
             // ban scroll
             overflow: "hidden",
             height: "100%"
-        });manager_delete
+        });
         $("#mask_layer").show();
         $("#confirm_alert").slideDown();
-        if (!$("#manager_mission_edit").is(":hidden")) {            
-            $("#confirm_alert p").text(confirmDialog.addProject.txt);
-        } else if (!$(".project-edit-mode").is(":hidden")) {
-            $("#confirm_alert p").text(confirmDialog.changeProject.txt);            
-        } else if (!$("#delete_all").is(":hidden")) {
-            $("#confirm_alert p").text(confirmDialog.deleteProject.txt);
-        }
     });
 
     $("#manager_add").click(event => {
@@ -401,6 +396,7 @@ $(document).ready(() => {
             $("#manager_mission_edit").hide();
             $("#manager_confirm").hide();
         }
+        $("#confirm_alert p").text(confirmDialog.addProject.txt);
     });
     
     $("#manager_edit").click(event => {
@@ -422,26 +418,49 @@ $(document).ready(() => {
                 $("#no_project").show();
             }
         }
+        $("#confirm_alert p").text(confirmDialog.changeProject.txt);
     });
 
-    $("#manager_delete").click(event => {
-        if (!$("#delete_all").is(":hidden")) {
+    $("#manager_finish").click(event => {
+        if (!$("#choose_all").is(":hidden")) {
             resetStatus();
-            $("#delete_all").hide();
-            $(".delete-part").hide();
+            $("#choose_all").hide();
+            $(".choose-part").hide();
             $("#manager_confirm").hide();
             if ($(".project-watch-mode").length === 0) {
                 $("#no_project").show();
             }
         } else{
             resetStatus();
-            $("#delete_all").show();
-            $(".delete-part").show();
+            $("#choose_all").show();
+            $(".choose-part").show();
             $("#manager_confirm").show();
             if ($(".project-watch-mode").length === 0) {
                 $("#no_project").show();
             }
         }
+        $("#confirm_alert p").text(confirmDialog.finishProject.txt);
+    });
+
+    $("#manager_delete").click(event => {
+        if (!$("#choose_all").is(":hidden")) {
+            resetStatus();
+            $("#choose_all").hide();
+            $(".choose-part").hide();
+            $("#manager_confirm").hide();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
+        } else{
+            resetStatus();
+            $("#choose_all").show();
+            $(".choose-part").show();
+            $("#manager_confirm").show();
+            if ($(".project-watch-mode").length === 0) {
+                $("#no_project").show();
+            }
+        }
+        $("#confirm_alert p").text(confirmDialog.deleteProject.txt);
     });
 
     $("#manager_signout").click(event => {
@@ -472,15 +491,17 @@ $(document).ready(() => {
 
     $("#confirm_ok").click(event => {
         let op = confirmDialog.getOp($("#confirm_alert p").text());
+        var chooseProject = [];
+
         if(op === confirmDialog.addProject.op){
             // add new project
             let status = $("#new_projectStatus").val();
             let name = $("#new_projectName").val();
             let target = $("#new_projectTarget").val() || ".";
             let manager = $("#new_projectManager").val();
-            let deadline = $("#new_deadline").val() || getNowDate();
+            let deadline = $("#new_deadline").val() || getNowDateFixed(10);
             let progressText = progressElement.getProgressInputText(document.querySelector("#new_projectProgress")) ||
-                (getNowDate() + " - .");
+                (getNowDateFixed(10) + " - .");
             let priority = $("#new_priority").val();
             var checkFunc = (val, alertStr, errStr, canEmpty = false) => {
                 if (val.search(/a/g) !== -1 || !(canEmpty && val !== "")) {
@@ -492,12 +513,12 @@ $(document).ready(() => {
             };
 
             // data check: name, target, manager, deadline, progress
-            if(name.search(/[^\w]/) !== -1 || name === "" || name.length < 7 || name.length > 31) {
+            if(name.search(/\<|\>/) !== -1 || name.length < 5 || name.length > 31) {
                 alert("不规范的项目文件名");
                 console.error("Invalid project name");
                 return;
             }
-            if(manager.search(/[^\w]|\s/) !== -1 || manager === "" || manager.length > 31) {
+            if(manager.search(/\<|\>|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\s/) !== -1 || manager === "" || manager.length > 31) {
                 alert("不规范的项目负责人姓名");
                 console.error("Invalid project manager name");
                 return;
@@ -533,12 +554,19 @@ $(document).ready(() => {
                 console.log("Successfully change the projects");
                 location.reload();
             });
-        } else if (op === confirmDialog.deleteProject.op) {
-            let chooseDelete = [];
-            $(".delete-part input:checked").each((index, val) => {
-                chooseDelete.push($(val).val());
+        } else if (op === confirmDialog.finishProject.op) {
+            $(".choose-part input:checked").each((index, val) => {
+                chooseProject.push($(val).val());
             });
-            serverIO.deleteProjects(chooseDelete, (data) => {
+            serverIO.finishProjects(chooseProject, (data) => {
+                console.log("Successfully finish some projects");
+                location.reload();
+            });
+        } else if (op === confirmDialog.deleteProject.op) {
+            $(".choose-part input:checked").each((index, val) => {
+                chooseProject.push($(val).val());
+            });
+            serverIO.deleteProjects(chooseProject, (data) => {
                 console.log("Successfully delete projects");
                 location.reload();
             });
@@ -561,7 +589,6 @@ $(document).ready(() => {
 
         if (confirmDialog.getOp($("#confirm_alert p").text()) === confirmDialog.updateProject.op) {
             projectInfo = $(event.target).data("data");
-            console.dir(projectInfo)
             if (!$("#manager_mission_edit").is(":hidden")) {
                 // in add project status
                 if (projectInfo.op === "add") {
