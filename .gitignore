@@ -6,3 +6,6 @@
 
 # test
 /ProjectManager.tar
+
+# config
+/src/config.js
