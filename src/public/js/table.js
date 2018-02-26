@@ -14,7 +14,7 @@ var tableOperation = (function () {
         color: "red",
         text: "高"
     }, {
-        color: "yellow",
+        color: "#d3d623",
         text: "中"
     }, {
         color: "blue",
@@ -23,7 +23,17 @@ var tableOperation = (function () {
 
     // private method 
     function comparePriority(a, b) {
-        return a === "高" ? true : b === "高" ? false : a === "中" ? true : b === "中" ? false : true;
+        if (a === "高") {
+            return true;
+        } else if (b === "高") {
+            return false;
+        } else if (a === "中") {
+            return true;
+        } else if (b === "中") {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // private method
@@ -252,9 +262,16 @@ var tableOperation = (function () {
                     x = rows[i].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
                     y = rows[i + 1].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
                     if (lineOffset === 6) {
-                        if ((order && comparePriority(x, y)) || (!order && comparePriority(y, x))) {
-                            shouldSwitch = true;
-                            break;
+                        if (order) {
+                            if (comparePriority(x, y)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else {
+                            if (comparePriority(y, x)) {
+                                shouldSwitch = true;
+                                break;
+                            }
                         }
                     }
                     if (lineOffset === 4) {
@@ -265,7 +282,11 @@ var tableOperation = (function () {
                     }
                 }
                 if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    if (rows[i + 1] === undefined) {
+                        rows[i].parentNode.insertBefore(rows[i], rows[i - 1]);
+                    } else {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    }
                     switching = true;
                 }
             }
