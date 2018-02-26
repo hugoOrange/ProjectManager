@@ -11,7 +11,7 @@ module.exports = (function() {
 
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
-            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime >= getNowDate() ? 0 : 1;
+            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime.toISOString().slice(0, 10) >= getNowDate() ? 0 : 1;
             return val;
         });
     }

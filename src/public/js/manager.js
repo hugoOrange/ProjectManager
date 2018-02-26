@@ -129,10 +129,11 @@ $(document).ready(() => {
             if (id == firstEle[0].dataset.id) {
                 return;
             }
-            firstEle.before(focusEle);
+            window.scrollTo(0, 0);
+            // firstEle.before(focusEle);
             // also ok, can be exchange
-            // $("#manager_mission").append(firstEle.clone());
-            // firstEle.replaceWith(focusEle);
+            $("#manager_mission").append(firstEle.clone());
+            firstEle.replaceWith(focusEle);
         }
 
         container.empty();
@@ -167,7 +168,7 @@ $(document).ready(() => {
     }
 
     function initManagerSide(type) {
-        if (type === "projectName") {                    
+        if (type === "projectName") {
             serverIO.queryAllProjectName(nameList => {
                 $("#manager_sidebar_content ul").empty();
                 nameList.ret_con.unshift("全部");

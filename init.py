@@ -28,7 +28,7 @@ os.system("mysql -u{} -p{} < src/sql/init.sql".format(dbUser, dbPassword))
 # 创建配置文件
 indexUrlHost = "indexUrlHost: \"{}\",\n".format(indexUrlHost)
 indexUrlPort = "indexUrlPort: \"{}\",\n".format(indexUrlPort)
-sessionTime = "sessionTime: \"{}\",\n".format(sessionTime)
+sessionTime = "sessionTime: {},\n".format(sessionTime)
 dbHost = "dbHost: \"{}\",\n".format(dbHost)
 dbUser = "dbUser: \"{}\",\n".format(dbUser)
 dbPassword = "dbPassword: \"{}\",\n".format(dbPassword)

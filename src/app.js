@@ -54,7 +54,7 @@ app.get('/', function (req, res) {
         } else {
             res.sendfile(__dirname + '/public/login.html');            
         }
-    } else {        
+    } else {
         res.sendfile(__dirname + '/public/login.html');
     }
 });
