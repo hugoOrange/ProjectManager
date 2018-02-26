@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import sys
+import os
 
 # 接收配置参数
 print("进行数据库配置: ")
@@ -22,7 +23,7 @@ if sessionTime == "":
 configFp = open("src/config.js", "w+")
 
 # 初始化数据库
-exec("mysql -u {} -p {} src/sql/init.sql".format(dbUser, dbPassword))
+os.system("mysql -u{} -p{} < src/sql/init.sql".format(dbUser, dbPassword))
 
 # 创建配置文件
 indexUrlHost = "indexUrlHost: \"{}\",\n".format(indexUrlHost)
