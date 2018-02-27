@@ -262,16 +262,12 @@ var tableOperation = (function () {
                     x = rows[i].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
                     y = rows[i + 1].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
                     if (lineOffset === 6) {
-                        if (order) {
-                            if (comparePriority(x, y)) {
-                                shouldSwitch = true;
-                                break;
-                            }
-                        } else {
-                            if (comparePriority(y, x)) {
-                                shouldSwitch = true;
-                                break;
-                            }
+                        if (x === y) {
+                            continue;
+                        }
+                        if ((order && comparePriority(x, y)) || (!order && comparePriority(y, x))) {
+                            shouldSwitch = true;
+                            break;
                         }
                     }
                     if (lineOffset === 4) {
@@ -282,11 +278,7 @@ var tableOperation = (function () {
                     }
                 }
                 if (shouldSwitch) {
-                    if (rows[i + 1] === undefined) {
-                        rows[i].parentNode.insertBefore(rows[i], rows[i - 1]);
-                    } else {
-                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    }
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
                 }
             }
