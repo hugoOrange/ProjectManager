@@ -37,8 +37,8 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | b
 # check if install nvm
 command -v nvm
 
-nvm install 5.0
-nvm use 5.0
+nvm install 8.0
+nvm use 8.0
 nvm alias default node
 ```
 

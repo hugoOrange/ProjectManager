@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 import sys
 import os
 
@@ -16,7 +16,9 @@ if indexUrlHost[0:6] == "http://":
     indexUrlHost = indexUrlHost[7:]
 if indexUrlHost == "":
     indexUrlHost = "localhost"
-indexUrlPort = raw_input("输入端口号(port): ")
+indexUrlPort = raw_input("输入端口号(port)(默认为4200): ")
+if indexUrlPort == "":
+    indexUrlPort = "4200"
 sessionTime = raw_input("输入会话保留时间/ms(session)(默认为15 * 60 * 1000): ")
 if sessionTime == "":
     sessionTime = "15 * 60 * 1000"
