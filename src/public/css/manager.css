@@ -1,7 +1,7 @@
 /* container */
 article {
     margin: 0 auto;
-    padding: 20px 8%;
+    padding: 20px 3%;
 }
 
 /* sidebar */
@@ -96,12 +96,17 @@ article {
 }
 
 #manager_header h1 {
-    margin: 0 8%;
+    margin: 0 3%;
     padding: 1em 1em;
     color: rgba(10,21,90,1);
     background-color: #d5dde6;
     border: 1px solid rgba(27,31,35,0.15);
     border-radius: 0 0 5px 5px;
+}
+
+#manager_header h1 span {
+    font-family: 'Lato';
+    margin-left: 1em;
 }
 
 
@@ -162,7 +167,7 @@ article {
 }
 
 #manager_mission tr td:nth-child(1) {
-    width: 5%;
+    width: 6%;
 }
 #manager_mission tr td:nth-child(2) {
     width: 10%;
@@ -200,7 +205,7 @@ article {
 }
 
 /* sort button */
-#deadline_sort, #priority_sort {
+#status_sort, #deadline_sort, #priority_sort {
     height: 15px;
     width: 0;
     margin: 0;
@@ -227,13 +232,41 @@ article {
     margin: 0 0 0 1px;
     transform: rotate(52deg);    
 }
+.all-arrow {
+    height: 0!important;
+    border: 5px solid #8d9092!important;
+    border-radius: 50%;
+    position: relative;
+    top: -5px;
+}
+.finish-arrow {
+    height: 0!important;
+    border: 5px solid green!important;
+    border-radius: 50%;
+    position: relative;
+    top: -5px;
+}
+.normal-arrow {
+    height: 0!important;
+    border: 5px solid blue!important;
+    border-radius: 50%;
+    position: relative;
+    top: -5px;
+}
+.delay-arrow {
+    height: 0!important;
+    border: 5px solid red!important;
+    border-radius: 50%;
+    position: relative;
+    top: -5px;
+}
 
 /* progress show and hide button */
 .project-progressShow {
     position: absolute;
     width: 16px;
     height: 16px;
-    left: 7%;
+    left: 1%;
     opacity: 0.3;
     border-radius: 5px;
     border: 1px solid;
@@ -394,7 +427,7 @@ article {
     position: fixed;
     min-width: 300px;
     max-width: 400px;
-    right: 6%;
+    right: 7%;
     top: 6%;
     background: #fff;
     padding: 22px 40px 15px 40px;
@@ -434,7 +467,7 @@ article {
 .mayDelay-project:hover, .delay-project:hover {
     opacity: 1;
 }
-.mayDelay-project { color: #ea7d20; }
+.mayDelay-project { color: #939c0b; }
 .delay-project    { color: #ea3c20; }
 .delay-slash      { color: #ff8d36; }
 .delay-manager    { color: #ff2011; }
@@ -448,7 +481,6 @@ article {
     margin: 3px 0;
     padding: 0;
     font-size: 17px;
-    color: #ea7d20;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -457,7 +489,7 @@ article {
     position: fixed;
     width: 52px;
     height: 52px;
-    left: 93%;
+    left: 91%;
     top: 3%;
     border: 2px solid #4349c3;
     border-radius: 50%;
@@ -476,9 +508,9 @@ article {
     height: 17px;
     margin-top: -26px;
     margin-left: 12px;
-    border: 1px solid #f3b713;
+    border: 1px solid #939c0b;
     border-radius: 50%;
-    background: #f3b713;
+    background: #939c0b;
     font-size: 14px;
     color: #fff;
 }

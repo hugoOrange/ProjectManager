@@ -5,9 +5,10 @@ USE ProjectManager;
 
 -- table level
 CREATE TABLE User (
-    userId INT(10) unsigned NOT NULL auto_increment,
-    username VARCHAR(10) NOT NULL,
+    userId INT(16) unsigned NOT NULL auto_increment,
+    username VARCHAR(30) NOT NULL,
     password VARCHAR(30) NOT NULL,
+    department INT(2) NOT NULL,
 
     PRIMARY KEY (userId)
 );

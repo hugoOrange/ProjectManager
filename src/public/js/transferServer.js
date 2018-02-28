@@ -9,6 +9,9 @@ var serverIO = (function () {
                 success: function(data) {
                     if (data.ret_code === 0) {
                         succ(data);
+                    } else if (data.ret_code === 9) {
+                        alert("已经离开登录状态");
+                        location.reload();
                     } else {
                         alert(data.ret_msg);
                         console.error(data.ret_msg);
@@ -26,6 +29,9 @@ var serverIO = (function () {
                 success: function(data) {
                     if (data.ret_code === 0) {
                         succ(data);
+                    } else if (data.ret_code === 9) {
+                        alert("已经离开登录状态");
+                        location.reload();                        
                     } else {
                         alert(data.ret_msg);
                         console.error(data.ret_msg);

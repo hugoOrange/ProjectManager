@@ -11,7 +11,7 @@ module.exports = (function() {
 
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
-            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime.toISOString().slice(0, 10) >= getNowDate() ? 0 : 1;
+            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime.toISOString().slice(0, 10) >= val.deadline ? 0 : 1;
             return val;
         });
     }
@@ -43,8 +43,8 @@ module.exports = (function() {
             });
         },
 
-        addUser: (username, password, succ, fail = () => {}) => {
-            var ql = `insert into ${userTable} (username, password) value ("${username}", "${password}");`;
+        addUser: (username, password, department, succ, fail = () => {}) => {
+            var ql = `insert into ${userTable} (username, password, department) value ("${username}", "${password}", ${department});`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -110,7 +110,7 @@ module.exports = (function() {
         },
 
         queryAllProjectName: (userId, succ, fail = () => {})=> {
-            var ql = `select projectName from ${projectTable}`;
+            var ql = `select distinct projectName from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -125,7 +125,7 @@ module.exports = (function() {
         },
 
         queryAllManagerName: (userId, succ, fail = () => {})=> {
-            var ql = `select projectManager from ${projectTable}`;
+            var ql = `select distinct projectManager from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");

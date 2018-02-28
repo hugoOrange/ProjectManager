@@ -1,9 +1,11 @@
 $(document).ready(() => {
     const MIN_USERNAME_LENGTH = 3;
-    const MAX_USERNAME_LENGTH = 10;
+    const MAX_USERNAME_LENGTH = 30;
     const MIN_PASSWORD_LENGTH = 6;
     const MAX_PASSWORD_LENGTH = 30;
 
+
+    selectElement.makeSelect("signup_department", ["NQA", "COPS"], [0, 1]);
 
     $("#signup").hide();
 
@@ -32,7 +34,8 @@ $(document).ready(() => {
             if (firstPassword === secondPassword && firstPassword.length >= MIN_PASSWORD_LENGTH && firstPassword.length <= MAX_PASSWORD_LENGTH) {
                 serverIO.signUp({
                     username: username,
-                    password: firstPassword
+                    password: firstPassword,
+                    department: $(".signup-department-chooseNow").eq(0).attr("data-value")
                 }, (data) => {
                     alert("注册成功");
                     $("#signup_username").val("");

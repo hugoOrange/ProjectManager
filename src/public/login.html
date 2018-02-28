@@ -28,11 +28,17 @@
     </div>
 
     <div id="signup">
-        <h3 id="signup_header">登录</h3>
+        <h3 id="signup_header">注册</h3>
 
         <form action="">
             <img class="username-img" src="/assets/user.svg">
-            <input type="text" name="username" class="user-info" id="signup_username" placeholder="请输入3～10位字符" maxlength="20" required>
+            <input type="text" name="username" class="user-info" id="signup_username" placeholder="请输入3~30位个人英文名，如Sally Chen" maxlength="20" required>
+
+            <br>
+
+            <img class="department-img" src="/assets/department.svg">
+            <div class="user-info" id="signup_department">
+            </div>
 
             <br>
 
@@ -54,6 +60,7 @@
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/transferServer.js"></script>
+    <script src="js/select.js"></script>
     <script src="js/login.js"></script>
     <link rel="stylesheet" href="css/login.css">
 </body>

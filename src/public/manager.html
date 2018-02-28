@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>项目组长</title>
+    <title>Project Visualization System</title>
 </head>
 <body>
     
     <article>
         <header id="manager_header">
-            <h1>管理员界面</h1>
+            <h1>项目管理
+                <span>In Search of Excellence</span>
+            </h1>
         </header>
 
         <aside id="manager_sidebar">
@@ -30,7 +32,7 @@
 
         <table id="manager_mission">
             <tr>
-                <th>项目状态</th>
+                <th>项目状态<button id="status_sort" class="all-arrow" title="查看全部项目"></button></th>
                 <th>项目名称</th>
                 <th>项目目的</th>
                 <th>项目负责人</th>
@@ -45,7 +47,7 @@
 
             <tr id="manager_mission_edit">
                 <td>
-                    <select name="staus" id="new_projectStatus" value="0">
+                    <select name="staus" id="new_projectStatus" value="0" disabled>
                         <option value="0">正常</option>
                         <option value="1">延期</option>
                     </select>

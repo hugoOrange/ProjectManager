@@ -15,6 +15,11 @@ textarea:focus { outline: 0; }
     src: url('/css/fonts/Inconsolata/Inconsolata-Bold.ttf');
 }
 
+@font-face {
+    font-family: "Lato";
+    src: url('/css/fonts/Lato/Lato-Black.ttf');
+}
+
 /* class style */
 /* clear float */
 .clearfix:before,

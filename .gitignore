@@ -6,6 +6,9 @@
 
 # test
 /ProjectManager.tar
+/fabfile.py
+/fabfile.pyc
 
 # config
 /src/config.js
+

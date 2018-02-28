@@ -2,6 +2,8 @@ body {
     background: #f0f0f0;
 }
 
+/* header information */
+
 #login, #signup {
     background: #ffffff;
     border-radius: 5px;
@@ -21,7 +23,10 @@ body {
     letter-spacing: 11px;
 }
 
+/* user information */
+
 .user-info {
+    width: 355px;
     line-height: 40px;
     font-size: 17px;
     border: 1px solid #292929;
@@ -35,11 +40,13 @@ body {
     box-shadow: 0 0 8px #8c8c8c;
 }
 
+#login .user-info { width: auto; }
+
 #login_password, #signup_passwordAgain {
     margin-bottom: 1.3em;
 }
 
-.username-img, .password-img {
+.username-img, .department-img, .password-img {
     position: absolute;
     width: 26px;
     background: #9ea6ef;
@@ -48,6 +55,43 @@ body {
     border-radius: 5px 0 0 5px;
     padding: 7px;
 }
+
+/* select */
+
+#signup_department {
+    width: 370px;
+    padding: 0 0 0 41px;
+    margin: 0;
+}
+
+.signup-department-chooseNow {
+    padding-left: 8px;
+}
+
+.signup-department-chooseArea {
+    position: absolute;
+    width: 370px;
+    margin-top: -39px;
+    z-index: 10;
+    box-shadow: 0 0 13px #a4a6d4;
+    cursor: pointer;
+}
+
+.signup-department-choose {
+    width: 100%;
+    line-height: 40px;
+    font-size: 17px;
+    background: #fff;
+    border: 0;
+    cursor: pointer;
+}
+
+.signup-department-choose:focus {
+    background: #d6d5d5;
+    outline: 0;
+}
+
+/* button */
 
 #login_button, #signup_button {
     display: flex;

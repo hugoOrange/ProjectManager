@@ -66,7 +66,7 @@ app.post('/login', (req, res) => {
     var sess = req.session;
     console.log(" * Request: Login verifing");
 
-    db.queryUser(req.body.username, req.body.password, (userId) => {
+    db.queryUser(req.body.username, req.body.password, req.body.department, (userId) => {
         if (userId.length < 1) {
             console.warn(" - Nonexistent user.");
             res.json({
@@ -112,6 +112,11 @@ app.get('/signout', (req, res) => {
                 ret_msg: '成功注销'
             });
         });
+    } else {
+        res.send({
+            ret_code: 0,
+            ret_msg: '成功注销'
+        })
     }
 });
 
@@ -170,7 +175,7 @@ app.post('/project', (req, res) => {
         }
     } else {
         res.json({
-            ret_code: 2,
+            ret_code: 9,
             ret_msg: '未登录'
         });
     }
@@ -198,6 +203,11 @@ app.post('/projectName', (req, res) => {
                 ret_msg: '获取项目名字失败'
             });
         });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
+        });
     }
 });
 
@@ -224,6 +234,11 @@ app.post('/managerName', (req, res) => {
                 ret_code: 1,
                 ret_msg: '获取负责人姓名失败'
             });
+        });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
         });
     }
 });
@@ -254,6 +269,11 @@ app.post('/addProject', (req, res) => {
                     ret_msg: '添加项目失败'
                 })
             });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
+        });
     }
 });
 
@@ -282,6 +302,11 @@ app.post('/finishProjects', (req, res) => {
                 ret_msg: '项目完成失败'
             });
         });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
+        });
     }
 });
 
@@ -309,6 +334,11 @@ app.post('/deleteProjects', (req, res) => {
                 ret_code: 1,
                 ret_msg: '删除项目失败'
             });
+        });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
         });
     }
 });
@@ -346,6 +376,11 @@ app.post('/changeProjects', (req, res) => {
                     failRows: failRows
                 });
             }
+        });
+    } else {
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
         });
     }
 });

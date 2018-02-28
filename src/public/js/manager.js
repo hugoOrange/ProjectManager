@@ -143,17 +143,19 @@ $(document).ready(() => {
                 pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
                 mName = $(val).children("td").eq(3).children(".project-watch-mode").text();
                 pId = val.dataset.id;
-                if (deadline < nowDate) {
-                    // project delay
-                    isDelay += 1;
-                    container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="delay-project">${pName}/${mName}</button>`).click(btnEvent)));
-                } else {
-                    if (deadline < wellDate) {
-                        // maybe delayed
-                        willDelay += 1;
-                        container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="mayDelay-project">${pName}/${mName}</button>`).click(btnEvent)));
+                if ($(val).children("td").eq(0)[0].dataset.store !== "2") {
+                    if (deadline < nowDate) {
+                        // project delay
+                        isDelay += 1;
+                        container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="delay-project">${pName}/${mName}</button>`).click(btnEvent)));
+                    } else {
+                        if (deadline < wellDate) {
+                            // maybe delayed
+                            willDelay += 1;
+                            container.append($("<li></li>").append($(`<button data-id="${pId}" title="${pName}/${mName}" class="mayDelay-project">${pName}/${mName}</button>`).click(btnEvent)));
+                        }
+                        // else: normal
                     }
-                    // else: normal
                 }
             }
         });
@@ -177,15 +179,7 @@ $(document).ready(() => {
                         .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
                             .click(function (event) {
                                 var projectName = $(event.target).text();
-                                $("#manager_mission tr").each((index, val) => {
-                                    if (index > 1) {
-                                        if ($(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部") {
-                                            $(val).hide();
-                                        } else {
-                                            $(val).show();
-                                        }
-                                    }
-                                });
+                                tableOperation.filtLine(val => $(val).children("td").eq(1).children(".project-watch-mode").text() !== projectName && projectName !== "全部")
                             })
                         ));
                 }
@@ -199,15 +193,7 @@ $(document).ready(() => {
                         .append($(`<button title="${nameList.ret_con[i]}">${nameList.ret_con[i]}</button>`)
                             .click(function (event) {
                                 var managerName = $(event.target).text();
-                                $("#manager_mission tr").each((index, val) => {
-                                    if (index > 1) {
-                                        if ($(val).children("td").eq(3).children(".project-watch-mode").text() !== managerName && managerName !== "全部") {
-                                            $(val).hide();
-                                        } else {
-                                            $(val).show();
-                                        }
-                                    }
-                                });
+                                tableOperation.filtLine(val => $(val).children("td").eq(3).children(".project-watch-mode").text() !== managerName && managerName !== "全部");
                             })
                         ));
                 }
@@ -311,9 +297,6 @@ $(document).ready(() => {
             // has been focus
             return;
         }
-        
-        var btnEvent = function (event) {
-        }
 
         $("#manager_projectView").css("fontSize", "24px");
         $("#manager_managerList").css("fontSize", "14px");
@@ -334,6 +317,30 @@ $(document).ready(() => {
     });
 
     // about table
+
+    $("#status_sort").click(event => {
+        if (event.target.classList.contains("all-arrow")) {
+            event.target.classList.remove("all-arrow");
+            event.target.classList.add("finish-arrow");
+            $(event.target).attr("title", "查看已完成项目");
+            tableOperation.filtLine(val => false);
+        } else if (event.target.classList.contains("finish-arrow")) {
+            event.target.classList.remove("finish-arrow");
+            event.target.classList.add("normal-arrow");
+            $(event.target).attr("title", "查看正常进度项目");
+            tableOperation.filtLine(val => $(val).children("td").eq(0).children(".project-watch-mode").text() !== "已完成");
+        } else if (event.target.classList.contains("normal-arrow")) {
+            event.target.classList.remove("normal-arrow");
+            event.target.classList.add("delay-arrow");
+            $(event.target).attr("title", "查看延期项目");
+            tableOperation.filtLine(val => $(val).children("td").eq(0).children(".project-watch-mode").text() !== "正常");
+        } else if (event.target.classList.contains("delay-arrow")) {
+            event.target.classList.remove("delay-arrow");
+            event.target.classList.add("all-arrow");
+            $(event.target).attr("title", "查看全部项目");
+            tableOperation.filtLine(val => $(val).children("td").eq(0).children(".project-watch-mode").text() !== "延期");
+        }
+    });
 
     $("#deadline_sort").click(event => {
         if (event.target.classList.contains("top-arrow")) {
@@ -551,10 +558,15 @@ $(document).ready(() => {
                     attributesChangeRecord[progressChangeId]["projectProgress"] = progressElement.getProgressEditText($(val).children("td").eq(5).children(".project-edit-mode"));
                 }
             });
-            serverIO.changeProjects(attributesChangeRecord, (result) => {
-                console.log("Successfully change the projects");
-                location.reload();
-            });
+            if (Object.keys(attributesChangeRecord).length === 0) {
+                $("#mask_layer").hide();
+                $("#confirm_alert").slideUp();
+            } else {
+                serverIO.changeProjects(attributesChangeRecord, (result) => {
+                    console.log("Successfully change the projects");
+                    location.reload();
+                });
+            }
         } else if (op === confirmDialog.finishProject.op) {
             $(".choose-part input:checked").each((index, val) => {
                 chooseProject.push($(val).val());

@@ -246,6 +246,18 @@ var tableOperation = (function () {
             $(".choose-part input[name='project-choose']").attr("checked", false);
         },
 
+        filtLine: (filtFunc) => {
+            $("#manager_mission tr").each((index, val) => {
+                if (index > 1) {
+                    if(filtFunc(val)) {
+                        $(val).hide();
+                    } else {
+                        $(val).show();
+                    }
+                }
+            });
+        },
+
         /**
          * @param lineOffset 0~6 represent projectStatus ~ priority
          * @param order true represent sort from large to small, and false sort the opposite
