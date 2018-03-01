@@ -238,9 +238,15 @@ $(document).ready(() => {
 
 
 
-    /** run when page load */
+    /** run when page load 
+     * load order:
+     * department overview -> manager and their projects
+     * when click sidebar manager load manager's project list
+     */
 
-    serverIO.queryProject((data) => {
+
+
+    serverIO.queryAllProject((data) => {
         if (data.ret_con.length === 0) {
             $("#no_project").show();
         } else {

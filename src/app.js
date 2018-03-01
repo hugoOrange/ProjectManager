@@ -10,8 +10,9 @@ var session = require('express-session');
 
 // project dependencies
 var config = require('./config.js');
-var db = require('./DB.js');
-db.connect();
+var dateCal = require('./dateCal.js');
+var action = require('./action.js');
+var logMethod = require('./log.js');
 
 // command parameters
 var cn_args = process.argv;
@@ -20,10 +21,9 @@ if (cn_args.indexOf('-h') !== -1) {
     process.exit();
 }
 var hostName = cn_args[cn_args.indexOf('-H') < 0 ? -1 : cn_args.indexOf('-H') + 1] || config.indexUrlHost;
-// var hostName = config.indexUrlHost;
 var port = cn_args[cn_args.indexOf('-P') < 0 ? -1 : cn_args.indexOf('-P') + 1] || config.indexUrlPort;
 if (port.search(/[^\d]/) !== -1 || port.length > 8) {
-    console.error("Arguments Error: Port number has unexpected character or it is too long");
+    logMethod.log("Arguments", "Port number has unexpected character or it is too long", "error");
     process.exit();
 }
 
@@ -45,6 +45,7 @@ app.get('/', function (req, res) {
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
 
+    console.log(loginUser);
     if (isLogined) {
         if (loginUser > 0) {
         // if (loginUser === 1) {
@@ -63,40 +64,36 @@ app.use(express.static('./resources'));
 
 
 app.post('/login', (req, res) => {
-    var sess = req.session;
-    console.log(" * Request: Login verifing");
+    console.log(" * Request: " + req.body.op);
 
-    db.queryUser(req.body.username, req.body.password, req.body.department, (userId) => {
-        if (userId.length < 1) {
-            console.warn(" - Nonexistent user.");
-            res.json({
-                ret_code: 1,
-                ret_msg: '不存在的用户'
-            });
-        } else if (userId[0]["userId"] > 0) {
-            req.session.regenerate(function(err) {
-                if(err){
-                    return res.json({
-                        ret_code: 2,
-                        ret_msg: '登录失败'
+    switch (req.body.op) {
+        case 'login':
+            action.loginVerif(req.body.opList, res, userId => {
+                req.session.regenerate(function(err) {
+                    if(err){
+                        return res.json({
+                            ret_code: 1,
+                            ret_msg: '登录失败'
+                        });
+                    }
+                    
+                    console.log(" * User login successfully");
+                    req.session.loginUser = userId;
+                    res.json({
+                        ret_code: 0,
+                        ret_msg: '登录成功'
                     });
-                }
-                
-                console.log(" * User login successfully");
-                req.session.loginUser = userId[0]["userId"];
-                res.json({
-                    ret_code: 0,
-                    ret_msg: '登录成功'
                 });
             });
-        } else {
-            console.warn(" - User failed to login");
-            res.json({
-                ret_code: 1,
-                ret_msg: '不明错误'
-            });
-        }
-    });
+            break;
+    
+        case 'signup':
+            action.loginSignup(req.body.opList, res);
+            break;
+
+        default:
+            break;
+    }
 });
 
 app.get('/signout', (req, res) => {
@@ -120,58 +117,49 @@ app.get('/signout', (req, res) => {
     }
 });
 
-app.post('/signup', (req, res) => {
-    db.isUserExisted(req.body.username, (isExisted) => {
-        if (isExisted) {
-            res.send({
-                ret_code: 2,
-                ret_msg: '用户名已存在'
-            });
-        } else {
-            db.addUser(req.body.username, req.body.password, (results) => {
-                res.send({
-                    ret_code: 0,
-                    ret_msg: '成功添加新用户'
-                });
-            });
-        }
-    }, () => {
-        res.send({
-            ret_code: 1,
-            ret_msg: '注册失败'
-        });
-    });
-});
-
 app.post('/project', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: query all projects");
+    console.log(" * Request: " + req.body.scale);
+    var judgeInWeek = jTime => {
+        // jTime: "yyyy-mm-dd"
+        var seventBefore = dateCal.getDateOffset(-7);
+        var nowDate = dateCal.getNowDate();
+        if (jTime > seventBefore && jTime < nowDate) {
+            return true;
+        }
+    };
 
     if (isLogined) {
         if (loginUser > 0) {
-        // if (loginUser === 1) {
-            db.queryAllProject((projectInfo) => {
-                res.json({
-                    ret_code: 0,
-                    ret_msg: '成功获取信息',
-                    ret_con: projectInfo
-                });
-            });
-        // } else if (loginUser > 1) {
-        //     db.queryProject(loginUser, (projectInfo) => {
-        //         res.json({
-        //             ret_code: 0,
-        //             ret_msg: '成功获取信息',
-        //             ret_con: projectInfo
-        //         });
-        //     });
-        } else {
-            res.json({
-                ret_code: 1,
-                ret_msg: '不明错误'
-            })
+            switch(req.body.scale) {
+                case 'overview':
+                    action.queryOverview(loginUser, req, res);
+                    break;
+        
+                case 'all':
+                    action.queryAll(loginUser, req, res);
+                    break;
+        
+                case 'projectAndManager':
+                    // action.queryProjectManager(loginUser, req, res);
+                    break;
+        
+                case 'projectName':
+                    action.qureyProjectName(loginUser, req, res);
+                    break;
+        
+                case 'projectManager':
+                    action.queryProjectManager(loginUser, req, res);
+                    break;
+                
+                default:
+                    res.json({
+                        ret_code: 1,
+                        ret_msg: '未识别的操作'
+                    });
+            }
         }
     } else {
         res.json({
@@ -181,202 +169,38 @@ app.post('/project', (req, res) => {
     }
 });
 
-app.post('/projectName', (req, res) => {
+app.post('/edit', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: query all projects' name");
+    console.log(" * Request: " + req.scale);
 
     if (isLogined) {
-        db.queryAllProjectName(loginUser, (nameList) => {
-            var l = nameList.map((val, index) => {
-                return val.projectName;
-            });
-            res.send({
-                ret_code: 0,
-                ret_msg: '成功获取所有项目名字',
-                ret_con: l
-            });
-        }, () => {
-            res.send({
-                ret_code: 1,
-                ret_msg: '获取项目名字失败'
-            });
-        });
-    } else {
-        res.json({
-            ret_code: 9,
-            ret_msg: '未登录'
-        });
-    }
-});
+        if (loginUser > 0) {
+            switch(req.body.op) {
+                case 'add':
+                    action.editAdd(loginUser, req.body.opList, res);
+                    break;
 
-app.post('/managerName', (req, res) => {
-    var sess = req.session;
-    var loginUser = sess.loginUser;
-    var isLogined = !!loginUser;
-    console.log(" * Request: query all managers' name");
+                case 'finish':
+                    action.editFinish(loginUser, req.body.opList, res);
+                    break;
 
-    if (isLogined) {
-        db.queryAllManagerName(loginUser, (nameList) => {
-            var l = nameList.map((val, index) => {
-                return val.projectManager;
-            });
-            res.send({
-                ret_code: 0,
-                ret_msg: '成功获取所有负责人姓名',
-                ret_con: l.filter((val, index) => {
-                        return l.indexOf(val) === index;
-                    })
-            });
-        }, () => {
-            res.send({
-                ret_code: 1,
-                ret_msg: '获取负责人姓名失败'
-            });
-        });
-    } else {
-        res.json({
-            ret_code: 9,
-            ret_msg: '未登录'
-        });
-    }
-});
+                case 'delete':
+                    action.editDelete(loginUser, req.body.opList, res);
+                    break;
 
-app.post('/addProject', (req, res) => {
-    var sess = req.session;
-    var loginUser = sess.loginUser;
-    var isLogined = !!loginUser;
-    console.log(" * Request: add new project");
-
-    if (isLogined) {
-        var info = req.body;
-        db.addProject(loginUser, info.projectStatus, info.projectName, info.projectTarget, info.projectManager, info.deadline,
-            info.projectProgress, info.priority, (results) => {
-                res.json({
-                    ret_code: 0,
-                    ret_msg: '成功添加新项目',
-                });
-                // // broadcast
-                // io.sockets.emit('broadcast', {
-                //     type: 0,
-                //     op: "add",
-                //     data: info
-                // });
-            }, () => {
-                res.json({
-                    ret_code: 1,
-                    ret_msg: '添加项目失败'
-                })
-            });
-    } else {
-        res.json({
-            ret_code: 9,
-            ret_msg: '未登录'
-        });
-    }
-});
-
-app.post('/finishProjects', (req, res) => {
-    var sess = req.session;
-    var loginUser = sess.loginUser;
-    var isLogined = !!loginUser;
-    console.log(" * Request: finish projects");
-
-    if (isLogined) {
-        var finishList = req.body;
-        db.finishProjects(loginUser, finishList, (deleteRowsNum) => {
-            res.json({
-                ret_code: 0,
-                ret_msg: '有项目完成',
-            });
-            // // broadcast
-            // io.sockets.emit('broadcast', {
-            //     type: 0,
-            //     op: "delete",
-            //     data: finishList
-            // });
-        }, () => {
-            res.json({
-                ret_code: 1,
-                ret_msg: '项目完成失败'
-            });
-        });
-    } else {
-        res.json({
-            ret_code: 9,
-            ret_msg: '未登录'
-        });
-    }
-});
-
-app.post('/deleteProjects', (req, res) => {
-    var sess = req.session;
-    var loginUser = sess.loginUser;
-    var isLogined = !!loginUser;
-    console.log(" * Request: delete projects");
-
-    if (isLogined) {
-        var deleteList = req.body;
-        db.deleteProjects(loginUser, deleteList, (deleteRowsNum) => {
-            res.json({
-                ret_code: 0,
-                ret_msg: '成功删除新项目',
-            });
-            // // broadcast
-            // io.sockets.emit('broadcast', {
-            //     type: 0,
-            //     op: "delete",
-            //     data: deleteList
-            // });
-        }, () => {
-            res.json({
-                ret_code: 1,
-                ret_msg: '删除项目失败'
-            });
-        });
-    } else {
-        res.json({
-            ret_code: 9,
-            ret_msg: '未登录'
-        });
-    }
-});
-
-app.post('/changeProjects', (req, res) => {
-    var sess = req.session;
-    var loginUser = sess.loginUser;
-    var isLogined = !!loginUser;
-    console.log(" * Request: change projects");
-
-    if (isLogined) {
-        var changeList = req.body;
-        db.changeProjects(loginUser, changeList, (changeRows, failRows) => {
-            if (changeRows.length === Object.keys(changeList).length) {
-                res.json({
-                    ret_code: 0,
-                    ret_msg: '成功修改项目'
-                });
-                // // broadcast
-                // io.sockets.emit('broadcast', {
-                //     type: 0,
-                //     op: "change",
-                //     data: changeList
-                // });
-            } else if (failRows.length === Object.keys(changeList).length) {
-                res.json({
-                    ret_code: 2,
-                    ret_msg: '本次修改失败'
-                });
-            } else {
-                res.json({
-                    ret_code: 1,
-                    ret_msg: '成功修改部分',
-                    succRows: changeRows,
-                    failRows: failRows
-                });
+                case 'change':
+                    action.editChange(loginUser, req.body.opList, res);
+                    break;
+                
+                default:
+                    res.json({
+                        ret_code: 1,
+                        ret_msg: '未识别的操作'
+                    });
             }
-        });
+        }
     } else {
         res.json({
             ret_code: 9,

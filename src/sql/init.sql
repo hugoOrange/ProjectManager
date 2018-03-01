@@ -19,10 +19,12 @@ CREATE TABLE Project (
     projectName VARCHAR(30) NOT NULL,
     projectTarget TEXT NOT NULL,
     projectManager VARCHAR(30) NOT NULL,
-    firstTime DATE NOT NULL,
     deadline DATE NOT NULL,
     projectProgress TEXT NOT NULL,
     priority INT(8) unsigned NOT NULL DEFAULT 0,
+    firstTime DATE NOT NULL,
+    createtime timestamp not null default current_timestamp,
+    finishTime Date NOT NULL,
     userId INT(10) unsigned NOT NULL,
 
     PRIMARY KEY (projectId)

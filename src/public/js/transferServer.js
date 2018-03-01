@@ -46,10 +46,15 @@ var serverIO = (function () {
 
     return {
         
+        /** login */
+
         verifyLogin: (username, password, succ = () => {}, fail = () => {}) => {
             ajaxSend({
-                username: username,
-                password: password
+                op: 'login',
+                opList: {
+                    username: username,
+                    password: password
+                }
             }, 'POST', '/login', succ, fail);
         },
 
@@ -58,35 +63,68 @@ var serverIO = (function () {
         },
 
         signUp: (data, succ = () => {}, fail = () => {}) => {
-            ajaxSend(data, 'POST', '/signup', succ, fail);
+            ajaxSend({
+                op: 'signup',
+                opList: data
+            }, 'POST', '/login', succ, fail);
         },
 
-        queryProject: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({}, 'POST', '/project', succ, fail);
+
+        /** query */
+
+        queryAllOverView: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ scale: 'overview' }, 'POST', '/project', succ, fail);
+        },
+
+        queryAllProject: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ scale: 'all'}, 'POST', '/project', succ, fail);
+        },
+
+        queryProjectAndManager: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ scale: 'projectAndManager' }, 'POST', '/project', succ, fail);
         },
 
         queryAllProjectName: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({}, 'POST', '/projectName', succ, fail);
+            ajaxSend({ scale: 'projectName' }, 'POST', '/project', succ, fail);
         },
 
         queryAllManagerName: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({}, 'POST', '/managerName', succ, fail)
+            ajaxSend({ scale: 'projectManager' }, 'POST', '/project', succ, fail)
         },
 
+
+        /** edit */
+
         addProject: (projectInfo, succ = () => {}, fail = () => {}) => {
-            ajaxSend(projectInfo, 'POST', '/addProject', succ, fail);
+            var editData = {
+                op: 'add',
+                opList: projectInfo
+            }
+            ajaxSend(editData, 'POST', '/edit', succ, fail);
         },
 
         finishProjects: (projectList, succ = () => {}, fail = () => {}) => {
-            ajaxSend(projectList, 'POST', '/finishProjects', succ, fail);
+            var editData = {
+                op: 'finish',
+                opList: projectList
+            }
+            ajaxSend(editData, 'POST', '/edit', succ, fail);
         },
 
         deleteProjects: (projectList, succ = () => {}, fail = () => {}) => {
-            ajaxSend(projectList, 'POST', '/deleteProjects', succ, fail);
+            var editData = {
+                op: 'delete',
+                opList: projectList
+            }
+            ajaxSend(editData, 'POST', '/edit', succ, fail);
         },
 
         changeProjects: (changeList, succ = () => {}, fail = () => {}) => {
-            ajaxSend(changeList, 'POST', '/changeProjects', succ, fail);
+            var editData = {
+                op: 'change',
+                opList: changeList
+            }
+            ajaxSend(editData, 'POST', '/edit', succ, fail);
         }
     }
 })();

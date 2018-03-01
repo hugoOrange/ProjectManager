@@ -109,9 +109,13 @@ article {
     margin-left: 1em;
 }
 
+/* overview part */
+
+
 
 /* mission table */
 #manager_mission {
+    display: none;
     width: 100%;
     margin-top: 83px;
     margin-bottom: 1em;

@@ -94,6 +94,21 @@ module.exports = (function() {
             });
         },
 
+        queryProjectTimeAbout: (succ, fail = () => {}) => {
+            var ql = `select projectStatus, department, finishTime, createTime from ${projectTable}`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    console.error("Error: WRONG_SQL:");
+                    console.error("    " + ql);
+                    fail();
+                    return;
+                }
+
+                console.log(" # Successfully projects' overview from database");
+                succ(results);
+            });
+        },
+
         queryProjectsName: (userId, succ, fail = () => {})=> {
             var ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
@@ -140,8 +155,8 @@ module.exports = (function() {
         },
 
         addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
-            var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, firstTime, deadline, projectProgress, priority)
-                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${deadline}", "${progress}", ${priority})`;
+            var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, finishTime)
+                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "0")`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     console.error("Error: WRONG_SQL:");
@@ -161,7 +176,7 @@ module.exports = (function() {
                 return;
             }
 
-            var ql = `UPDATE ${projectTable} SET ${projectTable}.projectStatus = 2 WHERE`;
+            var ql = `UPDATE ${projectTable} SET ${projectTable}.projectStatus = 2, ${projectTable}.finishTime = ${getNowDate()} WHERE`;
             for (let i = 0; i < projectList.length - 1; i++) {
                 ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }
