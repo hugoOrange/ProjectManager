@@ -1,6 +1,7 @@
 module.exports = (function() {
     var mysql = require('mysql');
     var config = require('./config');
+    var logMethod = require("./log.js");
     var connection = null;
     var userTable = 'User';
     var projectTable = 'Project';
@@ -32,13 +33,11 @@ module.exports = (function() {
             var ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryUser: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully query user from database");
                 succ(results);
             });
         },
@@ -47,13 +46,11 @@ module.exports = (function() {
             var ql = `insert into ${userTable} (username, password, department) value ("${username}", "${password}", ${department});`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In addUser: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully add new user to database");
                 succ(results);
             });
         },
@@ -62,8 +59,7 @@ module.exports = (function() {
             var ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In isUserExisted: " + ql, "db");
                     fail();
                     return;
                 }
@@ -80,13 +76,11 @@ module.exports = (function() {
             var ql = `select * from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryAllProject: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully query all projects from database");
                 for (var i = 0; i < results.length; i++) {
                     results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
                 }
@@ -98,13 +92,11 @@ module.exports = (function() {
             var ql = `select projectStatus, department, finishTime, createTime from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryProjectTimeAbout: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully projects' overview from database");
                 succ(results);
             });
         },
@@ -113,13 +105,11 @@ module.exports = (function() {
             var ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryProjectsName: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully query project from database");
                 succ(results);
             });
         },
@@ -128,13 +118,11 @@ module.exports = (function() {
             var ql = `select distinct projectName from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryAllProjectName: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully query all projects' name from database");
                 succ(results);
             });
         },
@@ -143,13 +131,11 @@ module.exports = (function() {
             var ql = `select distinct projectManager from ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In queryAllManagerName: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully query all managers' name from database");
                 succ(results);
             });
         },
@@ -159,13 +145,11 @@ module.exports = (function() {
                 VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "0")`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In addProject: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully add project to database");
                 succ(results);
             });
         },
@@ -183,13 +167,11 @@ module.exports = (function() {
             ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In finishProjects: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully finish projects to database");
                 succ(results.changeRows);
             });
         },
@@ -207,13 +189,11 @@ module.exports = (function() {
             ql += ` ${projectTable}.projectId = ${projectList[projectList.length - 1]};`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
-                    console.error("Error: WRONG_SQL:");
-                    console.error("    " + ql);
+                    logMethod.error("QL_run", "In deleteProjects: " + ql, "db");
                     fail();
                     return;
                 }
 
-                console.log(" # Successfully delete projects to database");
                 succ(results.changeRows);
             });
         },
@@ -244,6 +224,7 @@ module.exports = (function() {
                     ql += ` WHERE ${projectTable}.projectId = ${projectId};`
                     connection.query(ql, function (error, results, fields) {
                         if (error) {
+                            logMethod.error("QL_run", "In changeProjects: " + ql, "db");
                             failChangeList.push(projectId);
                         }
                         succChangeList.push(projectId);

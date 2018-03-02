@@ -11,17 +11,19 @@ module.exports = (function () {
 
 
     return {
-        end: () => {
-            fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " Start: start running", function(e){
-                if (e) {
-                    console.error(typeMap["log"] + "Fail to write in log file");
-                }
+        start: () => {
+            fs.open('log', 'a+', (e, fd) => {
+                fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " Start: start running", function(e){
+                    if (e) {
+                        console.error(typeMap["log"] + "Fail to write in log file");
+                    }
+                });
             });
-            fs.open('log', 'a+');
         },
 
         log: (str, type) => {
             var inStr = typeMap[type] + dateCal.getNowTime() + " Log: " + str;
+            console.log(inStr);
             fs.open('log', 'a+', (e, fd) => {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
@@ -36,6 +38,7 @@ module.exports = (function () {
 
         success: (str, type) => {
             var inStr = typeMap[type] + dateCal.getNowTime() + " Success: " + str;
+            console.log(inStr);
             fs.open('log', 'a+', (e, fd) => {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
@@ -50,6 +53,7 @@ module.exports = (function () {
 
         warn: (str, type) => {
             var inStr = typeMap[type] + dateCal.getNowTime() + " Warn: " + str;
+            console.warn(inStr);
             fs.open('log', 'a+', (e, fd) => {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
@@ -64,6 +68,7 @@ module.exports = (function () {
 
         error: (name, str, type) => {
             var inStr = typeMap[type] + dateCal.getNowTime() + " " + name.toUpperCase() + "error: " + str;
+            console.error(inStr);
             fs.open('log', 'a+', (e, fd) => {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");

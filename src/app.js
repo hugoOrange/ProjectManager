@@ -28,7 +28,8 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 }
 
 // about server
-server.listen(port, () => console.log(" * Run on http://" + hostName + ":" + port));
+server.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port), "normal");
+logMethod.start();
 
 app.use(session({
     name: 'skey',
@@ -45,17 +46,19 @@ app.get('/', function (req, res) {
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
 
-    console.log(loginUser);
     if (isLogined) {
         if (loginUser > 0) {
         // if (loginUser === 1) {
+            logMethod.log("Get manager.html", "http");
             res.sendfile(__dirname + '/public/manager.html');
         // } else if (loginUser > 1) {
         //     res.sendfile(__dirname + '/public/member.html');
         } else {
+            logMethod.log("Get login.html", "http");
             res.sendfile(__dirname + '/public/login.html');            
         }
     } else {
+        logMethod.log("Get login.html", "http");
         res.sendfile(__dirname + '/public/login.html');
     }
 });
@@ -64,7 +67,7 @@ app.use(express.static('./resources'));
 
 
 app.post('/login', (req, res) => {
-    console.log(" * Request: " + req.body.op);
+    logMethod.log("Request: " + req.body.op, "http");
 
     switch (req.body.op) {
         case 'login':
@@ -77,7 +80,7 @@ app.post('/login', (req, res) => {
                         });
                     }
                     
-                    console.log(" * User login successfully");
+                    logMethod.success("User login", "db");
                     req.session.loginUser = userId;
                     res.json({
                         ret_code: 0,
@@ -100,10 +103,15 @@ app.get('/signout', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: sign out");
+    logMethod.log("Request: sign out", "http");
 
     if (loginUser) {
         sess.destroy(err => {
+            if (err) {
+                logMethod.error("Session", "Sign out", "normal");
+            }
+
+            logMethod.success("Sign out", "normal");
             res.send({
                 ret_code: 0,
                 ret_msg: '成功注销'
@@ -121,7 +129,6 @@ app.post('/project', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: " + req.body.scale);
     var judgeInWeek = jTime => {
         // jTime: "yyyy-mm-dd"
         var seventBefore = dateCal.getDateOffset(-7);
@@ -130,6 +137,8 @@ app.post('/project', (req, res) => {
             return true;
         }
     };
+
+    logMethod.log("Request: " + req.body.scale, "http");
 
     if (isLogined) {
         if (loginUser > 0) {
@@ -162,6 +171,7 @@ app.post('/project', (req, res) => {
             }
         }
     } else {
+        logMethod.error("Not_login", "Query from client", "http");
         res.json({
             ret_code: 9,
             ret_msg: '未登录'
@@ -202,6 +212,7 @@ app.post('/edit', (req, res) => {
             }
         }
     } else {
+        logMethod.error("Not_login", "Query from client", "http");
         res.json({
             ret_code: 9,
             ret_msg: '未登录'
