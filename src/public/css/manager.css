@@ -19,7 +19,7 @@ article {
     transition: .3s all ease-in-out;
 }
 
-#manager_projectView, #manager_managerList {
+.manager-sidebar-department {
     display: inline-block;
     vertical-align: bottom;
     background: 0;
@@ -32,7 +32,6 @@ article {
     color: #156ca9;
     transition: .2s all linear;
 }
-#manager_managerList { font-size: 14px; }
 
 #manager_sidebar_content ul {
     list-style: none;
@@ -40,7 +39,7 @@ article {
     overflow-x: hidden;
     overflow-y: auto;
 }
-#manager_sidebar_content ul li button {
+#manager_sidebar_content ul button {
     width: 100%;
     height: 2em;
     background: transparent;
@@ -50,10 +49,11 @@ article {
     font-size: 17px;
     color: #207dea;
     cursor: pointer;
+    text-align: left;
     white-space: nowrap;
     overflow-x: hidden;
 }
-#manager_sidebar_content ul li button:hover {
+#manager_sidebar_content ul button:hover {
     color: #207dea;
 }
 
@@ -110,8 +110,87 @@ article {
 }
 
 /* overview part */
+#project_overview {
+    margin-top: 83px;
+}
 
+#project_overview_department {
 
+}
+
+.project-overview-department-cell {
+}
+
+.project-overview-department-cell h2 {
+    font-size: 30px;
+    font-family: monospace;
+    color: #156ca9;
+    padding: 7px 0;
+    margin: 0;
+    border-bottom: 2px solid #3171ad;
+}
+
+.project-overview-department-cell p {
+    display: inline-block;
+    width: 30%;
+    font-size: 18px;
+    color: #185a8a;
+    margin: 10px 0;
+}
+
+#project_overview_manager {
+
+}
+
+#project_overview_manager h2 {
+    font-size: 30px;
+    color: #156ca9;
+    padding: 7px 0;
+    margin: 0;
+    border-bottom: 2px solid #3171ad;
+}
+
+.project-overview-manager-cell {
+    display: inline-block;
+    width: 30%;
+}
+
+.project-overview-manager-cell h3 {
+    font-size: 25px;
+    color: #26638f;
+    padding: 7px 0;
+    margin: 0;
+}
+
+.project-overview-manager-cell table {
+    border-collapse:collapse;
+    color: #156ca9;
+}
+
+.project-overview-manager-cell table tr th {
+    padding: 9px 10px 10px;
+    font-size: 14px;
+    
+    color: rgba(37, 57, 183, 0.8);
+    line-height: 17px;
+    background-color: rgba(72, 92, 220, 0.4);
+    border: 0;
+    border-radius: 5px;
+}
+.project-overview-manager-cell table tr th:nth-child(1) {
+    text-align: left;
+    width: 80%;
+}
+
+.project-overview-manager-cell table tr td {
+    padding: 9px 10px;
+    font-size: 14px;
+    color: rgba(10,21,90,1);
+    line-height: 17px;
+    background-color: rgba(143, 155, 230, 0.2);
+    border: 0;
+    border-radius: 5px;
+}
 
 /* mission table */
 #manager_mission {
@@ -535,6 +614,7 @@ article {
 
 /* tip when no project */
 #no_project {
+    display: none;
     position: fixed;
     left: 50%;
     top: 50%;

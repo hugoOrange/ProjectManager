@@ -30,7 +30,7 @@ module.exports = (function() {
         },
 
         queryUser: (username, password, succ, fail = () => {}) => {
-            var ql = `select userId from ${userTable} where ${userTable}.username = "${username}" and ${userTable}.password = "${password}"`;
+            var ql = `SELECT userId FROM ${userTable} WHERE ${userTable}.username = "${username}" and ${userTable}.password = "${password}";`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryUser: " + ql, "db");
@@ -43,7 +43,7 @@ module.exports = (function() {
         },
 
         addUser: (username, password, department, succ, fail = () => {}) => {
-            var ql = `insert into ${userTable} (username, password, department) value ("${username}", "${password}", ${department});`;
+            var ql = `INSERT INTO ${userTable} (username, password, department) VALUE ("${username}", "${password}", ${department});`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In addUser: " + ql, "db");
@@ -56,7 +56,7 @@ module.exports = (function() {
         },
 
         isUserExisted: (username, succ, fail = () => {}) => {
-            var ql = `select userId from ${userTable} where ${userTable}.username = "${username}";`;
+            var ql = `SELECT userId FROM ${userTable} WHERE ${userTable}.username = "${username}";`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In isUserExisted: " + ql, "db");
@@ -73,7 +73,7 @@ module.exports = (function() {
         },
 
         queryAllProject: (succ, fail = () => {}) => {
-            var ql = `select * from ${projectTable}`;
+            var ql = `SELECT * FROM ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryAllProject: " + ql, "db");
@@ -88,8 +88,25 @@ module.exports = (function() {
             });
         },
 
+        queryDepartmentProject: (department, succ, fail = () => {}) => {
+            var ql = `SELECT projectId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, createtime, finishTime FROM
+                ${projectTable} LEFT JOIN ${userTable} ON ${projectTable}.userId = ${userTable}.userId WHERE ${userTable}.department = ${department};`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    logMethod.error("QL_run", "In queryDepartmentProject: " + ql, "db");
+                    fail();
+                    return;
+                }
+
+                for (var i = 0; i < results.length; i++) {
+                    results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
+                }
+                succ(mapProjectStatus(results));
+            });
+        },
+
         queryProjectTimeAbout: (succ, fail = () => {}) => {
-            var ql = `select projectStatus, department, finishTime, createTime from ${projectTable}`;
+            var ql = `SELECT ${userTable}.userId, projectId, projectStatus, projectName, projectManager, finishTime, createTime, department FROM ${projectTable} LEFT JOIN ${userTable} ON ${projectTable}.userId = ${userTable}.userId;`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryProjectTimeAbout: " + ql, "db");
@@ -102,7 +119,7 @@ module.exports = (function() {
         },
 
         queryProjectsName: (userId, succ, fail = () => {})=> {
-            var ql = `select * from ${projectTable} where ${projectTable}.userId = ${userId}`;
+            var ql = `SELECT * FROM ${projectTable} WHERE ${projectTable}.userId = ${userId}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryProjectsName: " + ql, "db");
@@ -115,7 +132,7 @@ module.exports = (function() {
         },
 
         queryAllProjectName: (userId, succ, fail = () => {})=> {
-            var ql = `select distinct projectName from ${projectTable}`;
+            var ql = `SELECT DISTINCT projectName FROM ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryAllProjectName: " + ql, "db");
@@ -128,7 +145,7 @@ module.exports = (function() {
         },
 
         queryAllManagerName: (userId, succ, fail = () => {})=> {
-            var ql = `select distinct projectManager from ${projectTable}`;
+            var ql = `SELECT DISTINCT projectManager FROM ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryAllManagerName: " + ql, "db");
@@ -142,7 +159,7 @@ module.exports = (function() {
 
         addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
             var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, finishTime)
-                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "0")`;
+                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "1-1-1");`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In addProject: " + ql, "db");
@@ -160,7 +177,7 @@ module.exports = (function() {
                 return;
             }
 
-            var ql = `UPDATE ${projectTable} SET ${projectTable}.projectStatus = 2, ${projectTable}.finishTime = ${getNowDate()} WHERE`;
+            var ql = `UPDATE ${projectTable} SET ${projectTable}.projectStatus = 2, ${projectTable}.finishTime = "${getNowDate()}" WHERE`;
             for (let i = 0; i < projectList.length - 1; i++) {
                 ql += ` ${projectTable}.projectId = ${projectList[i]} or`;
             }

@@ -1,14 +1,7 @@
 module.exports = (function () {
     var db = require('./DB.js');
     var logMethod = require("./log.js");
-    var judgeInWeek = jTime => {
-        // jTime: "yyyy-mm-dd"
-        var seventBefore = dateCal.getDateOffset(-7);
-        var nowDate = dateCal.getNowDate();
-        if (jTime > seventBefore && jTime < nowDate) {
-            return true;
-        }
-    };
+    var dateCal = require('./dateCal.js');
 
     db.connect();
 
@@ -63,7 +56,9 @@ module.exports = (function () {
         queryOverview: (loginUser, req, res) => {
             db.queryProjectTimeAbout(data => {
                 var overviewData = {};
+                var managerList = {};
                 for (let i = 0; i < data.length; i++) {
+                    // overview data
                     if (overviewData[data[i].department] === undefined) {
                         overviewData[data[i].department] = {
                             finished: 0,
@@ -71,21 +66,35 @@ module.exports = (function () {
                             new: 0
                         }
                     }
-                    if (data[i].projectStatus === 2 && judgeInWeek(data[i].finishTime.slice(0, 10))) {
+                    if (data[i].projectStatus === 2 && dateCal.judgeInWeek(data[i].finishTime, -1)) {
                         overviewData[data[i].department].finished += 1;
                     }
                     if (data[i].projectStatus !== 2) {
                         overviewData[data[i].department].working += 1;                        
                     }
-                    if (judgeInWeek(data[i].createTime().slice(0, 10))) {
+                    if (dateCal.judgeInWeek(data[i].createTime)) {
                         overviewData[data[i].department].new += 1;
                     }
+
+                    // managerList
+                    if (managerList[data[i].department] === undefined) {
+                        managerList[data[i].department] = {};
+                    }
+                    if (managerList[data[i].department][data[i].projectManager] === undefined) {
+                        managerList[data[i].department][data[i].projectManager] = [];
+                    }
+                    managerList[data[i].department][data[i].projectManager].push({
+                        projectName: data[i].projectName,
+                        projectId: data[i].projectId,
+                        userId: data[i].userId
+                    });
                 }
 
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库查询成功',
-                    ret_data: overviewData
+                    ret_overview: overviewData,
+                    ret_manager: managerList
                 });
             }, () => {
                 res.json({
@@ -98,6 +107,23 @@ module.exports = (function () {
         queryAll: (loginUser, req, res) => {
             db.queryAllProject((projectInfo) => {
                 logMethod.success("Query all project", "db");
+                res.json({
+                    ret_code: 0,
+                    ret_msg: '数据库查询成功',
+                    ret_con: projectInfo
+                });
+            }, () => {
+                logMethod.error("Query_database", "All project", "db");
+                res.json({
+                    ret_code: 5,
+                    ret_msg: '数据库查询出错'
+                });
+            });
+        },
+
+        queryDepartment: (loginUser, department, req, res) => {
+            db.queryDepartmentProject(department, (projectInfo) => {
+                logMethod.success("Query " + department + "'s project", "db");
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库查询成功',

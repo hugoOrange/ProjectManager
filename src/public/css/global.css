@@ -43,6 +43,7 @@ textarea:focus { outline: 0; }
 
 /* special button */
 .floatBtn {
+    display: none;
     position: fixed;
     right: 3%;
     width: 50px;

@@ -12,3 +12,5 @@
 # config
 /src/config.js
 
+# log
+/src/log

@@ -80,6 +80,13 @@ var serverIO = (function () {
             ajaxSend({ scale: 'all'}, 'POST', '/project', succ, fail);
         },
 
+        queryDepartmentProject: (departmentId, succ = () => {}, fail = () => {}) => {
+            ajaxSend({
+                scale: 'department',
+                departmentId: departmentId
+            }, 'POST', '/project', succ, fail);
+        },
+
         queryProjectAndManager: (succ = () => {}, fail = () => {}) => {
             ajaxSend({ scale: 'projectAndManager' }, 'POST', '/project', succ, fail);
         },

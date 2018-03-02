@@ -40,6 +40,13 @@ var tableOperation = (function () {
     function getNowDate() {
         return new Date().toISOString().slice(0, 10);
     }
+    // private method
+    function getNowDateFixed (bit = 10, offset = 0) {
+        var day = new Date();
+        var nextDay = new Date(day);
+        nextDay.setDate(day.getDate() + offset);
+        return nextDay.toISOString().slice(0, bit);
+    }
 
     return {
         addProjects: (projectsInfo, tableEle) => {
@@ -203,6 +210,70 @@ var tableOperation = (function () {
         changeInWatchMode: (tableId) => {
             $(".project-watch-mode").show();
             $(".project-edit-mode").hide();
+        },
+
+        lineStickTop: (tableId, id) => {
+            let focusEle = null;
+            let firstEle = $("#manager_mission tr:nth-child(3)");
+
+            if (id == firstEle[0].dataset.id) {
+                return;
+            }
+            $("#" + tableId).children("tr").each((index, val) => {
+                if (val.dataset.id === id) {
+                    focusEle = $(val);
+                }
+            });
+            window.scrollTo(0, 0);
+            $("#manager_mission").append(firstEle.clone());
+            firstEle.replaceWith(focusEle);
+        },
+
+        getDelay: (tableId, delay) => {
+            let wellDate = getNowDateFixed(10, delay);
+            let nowDate = getNowDateFixed(10);
+            var deadline = "";
+            var pName = "";
+            var mName = "";
+            var pId = -1;
+            var mayDelay = [];
+            var isDelay = [];
+            var btnEvent = event => {
+                tableOperation.lineStickTop(tableId, event.target.dataset.id);
+            }
+
+            $("#" + tableId + " tr").each((index, val) => {
+                if (index > 1 && !$(val).is(":hidden")) {
+                    deadline = $(val).children("td").eq(4).children(".project-watch-mode").text();
+                    pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
+                    mName = $(val).children("td").eq(3).children(".project-watch-mode").text();
+                    pId = val.dataset.id;
+                    if ($(val).children("td").eq(0)[0].dataset.store !== "2") {
+                        if (deadline < nowDate) {
+                            // project delay
+                            isDelay .push({
+                                id: pId,
+                                mName: mName,
+                                pName: pName
+                            });
+                        } else {
+                            if (deadline < wellDate) {
+                                // maybe delayed
+                                mayDelay.push({
+                                    id: pId,
+                                    mName: mName,
+                                    pName: pName
+                                });
+                            }
+                            // else: normal
+                        }
+                    }
+                }
+            });
+            return {
+                isDelay: isDelay,
+                mayDelay: mayDelay
+            }
         },
 
         giveEditModeElementVal: (td) => {

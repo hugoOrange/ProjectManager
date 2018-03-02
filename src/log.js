@@ -2,18 +2,19 @@ module.exports = (function () {
     var dateCal = require('./dateCal.js');
     var fs = require('fs');
     var typeMap = {
-        "normal": " - ",
-        "param": " ^ ",
-        "db": " # ",
-        "http": " ~ ",
-        "log": " * "
+        normal: " - ",
+        param: " ^ ",
+        db: " # ",
+        http: " ~ ",
+        log: " * "
     }
 
 
     return {
         start: () => {
             fs.open('log', 'a+', (e, fd) => {
-                fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " Start: start running", function(e){
+                console.log(typeMap["log"] + dateCal.getNowTime() + " Start: start running");
+                fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " Start: start running\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }
@@ -28,7 +29,7 @@ module.exports = (function () {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
                 }
-                fs.write(fd, inStr, function(e){
+                fs.write(fd, inStr + "\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }
@@ -43,7 +44,7 @@ module.exports = (function () {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
                 }
-                fs.write(fd, inStr, function(e){
+                fs.write(fd, inStr + "\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }
@@ -58,7 +59,7 @@ module.exports = (function () {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
                 }
-                fs.write(fd, inStr, function(e){
+                fs.write(fd, inStr + "\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }
@@ -73,7 +74,7 @@ module.exports = (function () {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
                 }
-                fs.write(fd, inStr, function(e){
+                fs.write(fd, inStr + "\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }
@@ -86,7 +87,7 @@ module.exports = (function () {
                 if (e) {
                     console.error(typeMap["log"] + "Fail to open log file");
                 }
-                fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " End: exit", function(e){
+                fs.write(fd, typeMap["log"] + dateCal.getNowTime() + " End: exit\n", function(e){
                     if (e) {
                         console.error(typeMap["log"] + "Fail to write in log file");
                     }

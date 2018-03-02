@@ -27,9 +27,9 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
     process.exit();
 }
 
-// about server
-server.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port), "normal");
 logMethod.start();
+// about server
+server.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
 
 app.use(session({
     name: 'skey',
@@ -129,15 +129,6 @@ app.post('/project', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    var judgeInWeek = jTime => {
-        // jTime: "yyyy-mm-dd"
-        var seventBefore = dateCal.getDateOffset(-7);
-        var nowDate = dateCal.getNowDate();
-        if (jTime > seventBefore && jTime < nowDate) {
-            return true;
-        }
-    };
-
     logMethod.log("Request: " + req.body.scale, "http");
 
     if (isLogined) {
@@ -149,6 +140,10 @@ app.post('/project', (req, res) => {
         
                 case 'all':
                     action.queryAll(loginUser, req, res);
+                    break;
+
+                case 'department':
+                    action.queryDepartment(loginUser, req.body.departmentId, req, res);
                     break;
         
                 case 'projectAndManager':
