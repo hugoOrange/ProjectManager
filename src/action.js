@@ -26,7 +26,6 @@ module.exports = (function () {
             });
         },
 
-
         loginSignup: (userInfo, res) => {
             db.isUserExisted(userInfo.username, (isExisted) => {
                 if (isExisted) {

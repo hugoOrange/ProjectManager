@@ -76,29 +76,12 @@ var serverIO = (function () {
             ajaxSend({ scale: 'overview' }, 'POST', '/project', succ, fail);
         },
 
-        queryAllProject: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({ scale: 'all'}, 'POST', '/project', succ, fail);
-        },
-
         queryDepartmentProject: (departmentId, succ = () => {}, fail = () => {}) => {
             ajaxSend({
                 scale: 'department',
                 departmentId: departmentId
             }, 'POST', '/project', succ, fail);
         },
-
-        queryProjectAndManager: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({ scale: 'projectAndManager' }, 'POST', '/project', succ, fail);
-        },
-
-        queryAllProjectName: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({ scale: 'projectName' }, 'POST', '/project', succ, fail);
-        },
-
-        queryAllManagerName: (succ = () => {}, fail = () => {}) => {
-            ajaxSend({ scale: 'projectManager' }, 'POST', '/project', succ, fail)
-        },
-
 
         /** edit */
 

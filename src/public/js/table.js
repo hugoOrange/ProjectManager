@@ -69,7 +69,7 @@ var tableOperation = (function () {
     }
 
     // private method
-    function valueChangeRecord(tableId, changeRecord) {
+    function valueChangeRecord(tableId) {
         changeRecord = {};
         var changeProjectId = -1;
 
@@ -77,16 +77,7 @@ var tableOperation = (function () {
             if (index > 1) {
                 $(val).children("td").each((i, v) => {
                     // attention: there exists all attribute except projectProgress
-                    if (i === 0) {
-                        // projectStatus
-                        $(v).children(".project-edit-mode").on("change", event => {
-                            changeProjectId = val.dataset.id;
-                            if (changeRecord[changeProjectId] === undefined) {
-                                changeRecord[changeProjectId] = {};
-                            }
-                            changeRecord[changeProjectId]["projectStatus"] = $(event.target).val();
-                        });
-                    } else if (i === 1) {
+                    if (i === 1) {
                         // projectName
                         $(v).children(".project-edit-mode").on("change", event => {
                             changeProjectId = val.dataset.id;
@@ -154,36 +145,22 @@ var tableOperation = (function () {
                 </th>
             </tr>
             <tr id="manager_mission_edit">
-                <td>
-                    <select name="staus" id="new_projectStatus" value="0" disabled>
-                        <option value="0">正常</option>
-                        <option value="1">延期</option>
-                    </select>
-                </td>
+                <td><p id="new_projectStatus">---</p></td>
                 <td>
                     <p style="color:red;">*</p>
                     <input type="text" name="projectName" id="new_projectName" placeholder="请输入6-30位字符">
                 </td>
-                <td>
-                    <input type="text" name="projectTarget" id="new_projectTarget" placeholder="可为空">
-                </td>
+                <td><input type="text" name="projectTarget" id="new_projectTarget" placeholder="可为空"></td>
                 <td>
                     <p style="color:red;">*</p>
                     <input type="text" name="projectManager" id="new_projectManager">
                 </td>
-                <td>
-                    <input type="date" name="deadline" id="new_deadline">
-                </td>
+                <td><input type="date" name="deadline" id="new_deadline"></td>
                 <td><div id="new_projectProgress"></div></td>
-                <td>
-                    <select name="priority" id="new_priority" value="0">
-                        <option value="0">高</option>
-                        <option value="1">中</option>
-                        <option value="2">低</option>
-                    </select>
-                </td>
+                <td><div id="new_priority"></div></td>
             </tr>
             `);
+            selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
             progressElement.createProgressInput(document.querySelector("#new_projectProgress"));
             tableOperation.bindEvent(tableId);
         },
@@ -199,11 +176,7 @@ var tableOperation = (function () {
             <tr data-id="${project.projectId}">
                 <td data-store="${project.projectStatus}">
                     <p class="project-watch-mode"></p>
-                    <select class="project-edit-mode" disabled>
-                        <option value="0">正常</option>
-                        <option value="1">延期</option>
-                        <option value="2">已完成</option>
-                    </select>
+                    <p class="project-edit-mode"></p>
                 </td>
                 <td>
                     <p class="project-watch-mode">${project.projectName}</p>
@@ -226,63 +199,16 @@ var tableOperation = (function () {
                     <div class="project-watch-mode"></div>
                     <div class="project-edit-mode"></div>
                 </td>
-                <td data-store="${project.priority}">
+                <td class="project-priority" data-store="${project.priority}">
                     <p class="project-priority project-watch-mode"></p>
-                    <select class="project-edit-mode">
-                        <option value="0">高</option>
-                        <option value="1">中</option>
-                        <option value="2">低</option>
-                    </select>
+                    <div class="project-edit-mode"></div>
                 </td>
                 <td class="choose-part">
                     <input type="checkbox" name="project-choose" value="${project.projectId}">
                 </td>
             </tr>`);
+            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], project.projectId);
             tableEle.append(tr);
-        },
-
-        projectAttriSet: (lineEle, attri, value) => {
-            let ele = null;
-            switch (attri) {
-                case "projectName":
-                    ele = $(lineEle).children("td").eq(1);
-                    ele.children(".project-watch-mode").text(value);
-                    ele.children(".project-edit-mode").val(value);
-                    break;
-            
-                case "projectTarget":
-                    ele = $(lineEle).children("td").eq(2);
-                    ele.children(".project-watch-mode").text(value);
-                    ele.children(".project-edit-mode").val(value);
-                    break;
-            
-                case "projectManager":
-                    ele = $(lineEle).children("td").eq(3);
-                    ele.children(".project-watch-mode").text(value);
-                    ele.children(".project-edit-mode").val(value);
-                    break;
-            
-                case "deadline":
-                    ele = $(lineEle).children("td").eq(4);
-                    ele.children(".project-watch-mode").text(value);
-                    ele.children(".project-edit-mode").val(value);
-                    // change projectStatus at the same time
-                    lineEle.querySelector("td").dataset.store = value >= getNowDate() ? 0 : 1;
-                    break;
-            
-                case "projectProgress":
-                    ele = $(lineEle).children("td").eq(5);
-                    ele.attr("data-progress", value);
-                    break;
-            
-                case "priority":
-                    ele = $(lineEle).children("td").eq(6);
-                    ele.attr("data-store", value);
-                    break;
-            
-                default:
-                    break;
-            }
         },
 
         statusSet: (tableId) => {
@@ -344,25 +270,25 @@ var tableOperation = (function () {
                 }
                 tableOperation.giveEditModeElementVal(val);
             });
-            valueChangeRecord();
+            valueChangeRecord(tableId);
         },
 
         changeInWatchMode: (tableId) => {
             $(".project-watch-mode").show();
             $(".project-edit-mode").hide();
             changeRecord = {};
+            progressElement.resetChangeRecord();
         },
 
         getValueAdd: (tableId) => {
             var addEle = $("#" + tableId).children("tr").eq(1).children("td");
-            console.log(addEle)
             let name = addEle.eq(1).children("input").val();
             let target = addEle.eq(2).children("input").val() || ".";
             let manager = addEle.eq(3).children("input").val();
             let deadline = addEle.eq(4).children("input").val() || getNowDateFixed(10);
             let progressText = progressElement.getProgressInputText(document.querySelector("#new_projectProgress")) ||
                 (getNowDateFixed(10) + " - .");
-            let priority = addEle.eq(6).children("select").val();
+            let priority = selectElement.selectValByEle(addEle.eq(6).children("div"));
 
             if(name.search(/\<|\>/) !== -1 || name.length < 5 || name.length > 31) {
                 alert("不规范的项目文件名");
@@ -386,16 +312,25 @@ var tableOperation = (function () {
         },
 
         getValueChange: (tableId) => {
-            let cr = progressElement.getChangeRecord();
-            let progressChangeId = -1;
+            let crP = progressElement.getChangeRecord();
+            let crS = selectElement.getChangeRecord();
+            let changeId = -1;
             var pStr = "";
-            $("#manager_mission tr").each((index, val) => {
-                progressChangeId = val.dataset.id;
-                if (index > 1 && cr[progressChangeId] !== undefined) {
-                    if (changeRecord[progressChangeId] === undefined) {
-                        changeRecord[progressChangeId] = {};
+            $("#" + tableId + " tr").each((index, val) => {
+                changeId = val.dataset.id;
+                if (index > 1) {
+                    if (crP[changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["projectProgress"] = progressElement.getProgressEditText($(val).children("td").eq(5).children(".project-edit-mode"));
                     }
-                    changeRecord[progressChangeId]["projectProgress"] = progressElement.getProgressEditText($(val).children("td").eq(5).children(".project-edit-mode"));
+                    if (crS[changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["priority"] = crS[changeId];
+                    }
                 }
             });
 
@@ -404,7 +339,7 @@ var tableOperation = (function () {
 
         lineStickTop: (tableId, id) => {
             let focusEle = null;
-            let firstEle = $("#manager_mission tr:nth-child(3)");
+            let firstEle = $("#" + tableId + " tr:nth-child(3)");
 
             if (id == firstEle[0].dataset.id) {
                 return;
@@ -415,7 +350,7 @@ var tableOperation = (function () {
                 }
             });
             window.scrollTo(0, 0);
-            $("#manager_mission").append(firstEle.clone());
+            $("#" + tableId).append(firstEle.clone());
             firstEle.replaceWith(focusEle);
         },
 
@@ -475,27 +410,34 @@ var tableOperation = (function () {
             if (pTo[0].tagName === "TEXTAREA") {
                 // edit projectName, projectManager, projectTarget
                 pTo.text(p);
-            } else if (pTo[0].tagName === "SELECT") {
-                // edit projectStatus, projectPriority
-                pTo.val(td.dataset.store);
             } else if (pTo[0].tagName === "INPUT") {
                 // edit deadline
                 pTo.val(p);
+            } else if (pTo[0].tagName === "P") {
+                // can't edit status
+                pTo.text(p);
             } else if (pTo[0].tagName === "DIV") {
-                // edit progress
-                var pCon = "";
-                var pDate = "";
-                var pCount = 0;
-                var pTxt = "";
-                progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
-                $(td).children(".project-watch-mode").children("p").each((index, val) => {
-                    pCon = $(val).text();
-                    pCount = pCon.search(" - ");
-                    pDate = pCon.slice(0, pCount);
-                    pTxt = pCon.slice(pCount + 3);
-                    $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
-                    $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
-                });
+                if (td.classList.contains("project-progress")) {
+                    // edit progress
+                    var pCon = "";
+                    var pDate = "";
+                    var pCount = 0;
+                    var pTxt = "";
+                    progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
+                    $(td).children(".project-watch-mode").children("p").each((index, val) => {
+                        pCon = $(val).text();
+                        pCount = pCon.search(" - ");
+                        pDate = pCon.slice(0, pCount);
+                        pTxt = pCon.slice(pCount + 3);
+                        $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
+                        $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
+                    });
+                }
+                if (td.classList.contains("project-priority")) {
+                    // edit priority
+                    console.log(pTo)
+                    selectElement.selectValByEle(pTo, p);
+                }
             }
         },
 

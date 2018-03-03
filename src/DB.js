@@ -72,21 +72,7 @@ module.exports = (function() {
             });
         },
 
-        queryAllProject: (succ, fail = () => {}) => {
-            var ql = `SELECT * FROM ${projectTable}`;
-            connection.query(ql, function (error, results, fields) {
-                if (error) {
-                    logMethod.error("QL_run", "In queryAllProject: " + ql, "db");
-                    fail();
-                    return;
-                }
-
-                for (var i = 0; i < results.length; i++) {
-                    results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
-                }
-                succ(mapProjectStatus(results));
-            });
-        },
+        /** about query */
 
         queryDepartmentProject: (department, succ, fail = () => {}) => {
             var ql = `SELECT ${userTable}.userId, projectId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, createtime, finishTime FROM
@@ -118,44 +104,7 @@ module.exports = (function() {
             });
         },
 
-        queryProjectsName: (userId, succ, fail = () => {})=> {
-            var ql = `SELECT * FROM ${projectTable} WHERE ${projectTable}.userId = ${userId}`;
-            connection.query(ql, function (error, results, fields) {
-                if (error) {
-                    logMethod.error("QL_run", "In queryProjectsName: " + ql, "db");
-                    fail();
-                    return;
-                }
-
-                succ(results);
-            });
-        },
-
-        queryAllProjectName: (userId, succ, fail = () => {})=> {
-            var ql = `SELECT DISTINCT projectName FROM ${projectTable}`;
-            connection.query(ql, function (error, results, fields) {
-                if (error) {
-                    logMethod.error("QL_run", "In queryAllProjectName: " + ql, "db");
-                    fail();
-                    return;
-                }
-
-                succ(results);
-            });
-        },
-
-        queryAllManagerName: (userId, succ, fail = () => {})=> {
-            var ql = `SELECT DISTINCT projectManager FROM ${projectTable}`;
-            connection.query(ql, function (error, results, fields) {
-                if (error) {
-                    logMethod.error("QL_run", "In queryAllManagerName: " + ql, "db");
-                    fail();
-                    return;
-                }
-
-                succ(results);
-            });
-        },
+        /** about edit */
 
         addProject: (userId, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
             var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, finishTime)

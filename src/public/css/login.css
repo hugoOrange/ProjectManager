@@ -60,35 +60,9 @@ body {
 
 #signup_department {
     width: 370px;
-    padding: 0 0 0 41px;
-    margin: 0;
-}
-
-.signup-department-chooseNow {
-    padding-left: 8px;
-}
-
-.signup-department-chooseArea {
-    position: absolute;
-    width: 370px;
-    margin-top: -39px;
-    z-index: 10;
-    box-shadow: 0 0 13px #a4a6d4;
-    cursor: pointer;
-}
-
-.signup-department-choose {
-    width: 100%;
-    line-height: 40px;
-    font-size: 17px;
-    background: #fff;
-    border: 0;
-    cursor: pointer;
-}
-
-.signup-department-choose:focus {
-    background: #d6d5d5;
-    outline: 0;
+    margin: 0 0 0 41px;
+    padding: 0;
+    border-radius: 0 5px 5px 0;
 }
 
 /* button */

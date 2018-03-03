@@ -133,25 +133,9 @@ app.post('/project', (req, res) => {
                 case 'overview':
                     action.queryOverview(loginUser, req, res);
                     break;
-        
-                case 'all':
-                    action.queryAll(loginUser, req, res);
-                    break;
 
                 case 'department':
                     action.queryDepartment(loginUser, req.body.departmentId, req, res);
-                    break;
-        
-                case 'projectAndManager':
-                    // action.queryProjectManager(loginUser, req, res);
-                    break;
-        
-                case 'projectName':
-                    action.qureyProjectName(loginUser, req, res);
-                    break;
-        
-                case 'projectManager':
-                    action.queryProjectManager(loginUser, req, res);
                     break;
                 
                 default:

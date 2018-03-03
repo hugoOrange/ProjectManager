@@ -5,7 +5,7 @@ $(document).ready(() => {
     const MAX_PASSWORD_LENGTH = 30;
 
 
-    selectElement.makeSelect("signup_department", ["NQA", "COPS"], [0, 1]);
+    selectElement.makeSelectById("signup_department", ["NQA", "COPS"], [0, 1]);
 
     $("#signup").hide();
 
@@ -35,7 +35,7 @@ $(document).ready(() => {
                 serverIO.signUp({
                     username: username,
                     password: firstPassword,
-                    department: $(".signup-department-chooseNow").eq(0).attr("data-value")
+                    department: selectElement.selectValById("signup_department")
                 }, (data) => {
                     alert("注册成功");
                     $("#signup_username").val("");

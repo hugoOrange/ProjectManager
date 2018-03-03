@@ -131,10 +131,12 @@ article {
 #manager_header h1 {
     margin: 0 3%;
     padding: 1em 1em;
-    color: rgba(10,21,90,1);
     background-color: #d5dde6;
     border: 1px solid rgba(27,31,35,0.15);
     border-radius: 0 0 5px 5px;
+}
+#manager_header h1 a {
+    color: rgba(10,21,90,1);
 }
 
 #manager_header h1 span {
@@ -145,13 +147,6 @@ article {
 /* overview part */
 #project_overview {
     margin-top: 83px;
-}
-
-#project_overview_department {
-
-}
-
-.project-overview-department-cell {
 }
 
 .project-overview-department-cell h2 {
@@ -169,10 +164,6 @@ article {
     font-size: 18px;
     color: #185a8a;
     margin: 10px 0;
-}
-
-#project_overview_manager {
-
 }
 
 #project_overview_manager h2 {
@@ -236,7 +227,7 @@ article {
 }
 
 #manager_mission tr th {
-    padding: 9px 10px 10px;
+    padding: 12px 10px;
     font-size: 14px;
     color: rgba(10,21,90,1);
     line-height: 17px;
@@ -282,33 +273,46 @@ article {
     resize: none;
 }
 
-#manager_mission tr td:nth-child(1) {
+#manager_mission tr th:nth-child(1), #manager_mission tr td:nth-child(1) {
     width: 6%;
 }
-#manager_mission tr td:nth-child(2) {
-    width: 10%;
-}
-#manager_mission tr td:nth-child(3) {
+#manager_mission tr th:nth-child(2), #manager_mission tr td:nth-child(2) {
     width: 15%;
 }
-#manager_mission tr td:nth-child(4) {
-    width: 5%;
+#manager_mission tr th:nth-child(3), #manager_mission tr td:nth-child(3) {
+    width: 20%;
 }
-#manager_mission tr td:nth-child(5) {
+#manager_mission tr th:nth-child(4), #manager_mission tr td:nth-child(4) {
+    width: 6%;
+}
+#manager_mission tr th:nth-child(5), #manager_mission tr td:nth-child(5) {
     font-family: "Inconsolata", monospace;
     text-align: center;
     width: 10%;
 }
-#manager_mission tr td:nth-child(6) {
-    width: 25%;
+#manager_mission tr th:nth-child(6), #manager_mission tr td:nth-child(6) {
+    width: 31%;
 }
-#manager_mission tr td:nth-child(7) {
-    width: 5%;
+#manager_mission tr th:nth-child(7), #manager_mission tr td:nth-child(7) {
+    width: 6%;
     text-align: center;
 }
-#manager_mission tr td:nth-child(8) {
-    width: 5%;
+#manager_mission tr th:nth-child(8), #manager_mission tr td:nth-child(8) {
+    width: 6%;
     text-align: center;
+}
+
+#new_priority, #manager_mission tr td:nth-child(7) .project-edit-mode {
+    width: 30px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #2568b4;
+    border-radius: 3px;
+    margin: 0 auto;
+    padding: 3px 0;
+}
+.select-chooseNow {
+    padding: 0;
 }
 
 /* progress paragraph */

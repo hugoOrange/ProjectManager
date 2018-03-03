@@ -60,7 +60,7 @@ $(document).ready(() => {
      */
 
     serverIO.queryAllOverView((data) => {
-        overviewElement.initContainer("project_overview")
+        overviewElement.initContainer("project_overview");
         overviewElement.addDepartment("project_overview", "0");
         overviewElement.addDepartment("project_overview", "1");
 
@@ -106,9 +106,6 @@ $(document).ready(() => {
     });
     
     $("#manager_edit").click(event => {
-        progressElement.resetChangeRecord();
-        attributesChangeRecord = {};
-
         if (table_current_state === "edit") {
             resetStatus();
             table_current_state = "normal";
@@ -220,6 +217,11 @@ $(document).ready(() => {
                 location.reload();
             });
         }
+        $("body").css({
+            // allow scroll
+            overflow: "auto",
+            height: ""
+        });
     });
 
     $("#confirm_cancel").click(event => {
