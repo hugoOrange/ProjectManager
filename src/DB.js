@@ -89,7 +89,7 @@ module.exports = (function() {
         },
 
         queryDepartmentProject: (department, succ, fail = () => {}) => {
-            var ql = `SELECT projectId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, createtime, finishTime FROM
+            var ql = `SELECT ${userTable}.userId, projectId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, createtime, finishTime FROM
                 ${projectTable} LEFT JOIN ${userTable} ON ${projectTable}.userId = ${userTable}.userId WHERE ${userTable}.department = ${department};`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -157,9 +157,9 @@ module.exports = (function() {
             });
         },
 
-        addProject: (userId, status, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
+        addProject: (userId, name, target, manager, deadline, progress, priority, succ, fail = () => {}) => {
             var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, projectManager, deadline, projectProgress, priority, firstTime, finishTime)
-                VALUE (${userId}, ${status}, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "1-1-1");`;
+                VALUE (${userId}, 0, "${name}", "${target}", "${manager}", "${deadline}", "${progress}", ${priority}, "${deadline}", "1-1-1");`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In addProject: " + ql, "db");

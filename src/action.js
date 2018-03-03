@@ -181,7 +181,7 @@ module.exports = (function () {
         },
 
         editAdd: (loginUser, info, res) => {
-            db.addProject(loginUser, info.projectStatus, info.projectName, info.projectTarget, info.projectManager, info.deadline,
+            db.addProject(loginUser, info.projectName, info.projectTarget, info.projectManager, info.deadline,
                 info.projectProgress, info.priority, (results) => {
                     logMethod.success("Add new project", "db");
                     res.json({

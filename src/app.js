@@ -2,7 +2,6 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -48,11 +47,8 @@ app.get('/', function (req, res) {
 
     if (isLogined) {
         if (loginUser > 0) {
-        // if (loginUser === 1) {
             logMethod.log("Get manager.html", "http");
             res.sendfile(__dirname + '/public/manager.html');
-        // } else if (loginUser > 1) {
-        //     res.sendfile(__dirname + '/public/member.html');
         } else {
             logMethod.log("Get login.html", "http");
             res.sendfile(__dirname + '/public/login.html');            
@@ -178,7 +174,7 @@ app.post('/edit', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: " + req.scale);
+    console.log(" * Request: " + req.op);
 
     if (isLogined) {
         if (loginUser > 0) {

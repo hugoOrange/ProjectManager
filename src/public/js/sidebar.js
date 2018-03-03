@@ -24,8 +24,9 @@ var sidebarElement = (function () {
     };
 
     var clickDepartment = event => {
+        event.stopPropagation();
         var departmentId = event.target.dataset.id;
-        $("#" + tableId).show();
+        tableOperation.initTable(tableId);
         $("#project_overview").hide();
 
         serverIO.queryDepartmentProject(departmentId, (data) => {
@@ -36,7 +37,7 @@ var sidebarElement = (function () {
             } else {
                 $("#no_project").hide();
             }
-
+            
             for (let i = 0; i < con.length; i++) {
                 if (managerList[con[i].projectManager] === undefined) {
                     managerList[con[i].projectManager] = [];
@@ -47,16 +48,20 @@ var sidebarElement = (function () {
                     userId: con[i].userId
                 });
             }
-            sidebarElement.initDepartment(departmentId, managerList);
+
+            sidebarElement.initDepartment(managerList);
             tableOperation.addProjects(con, $("#manager_mission"));
             tableOperation.statusSet(tableId);
             tableOperation.progressSet(tableId);
             tableOperation.prioritySet(tableId);
             sidebarElement.loadAlarm(DELAY_TIME);
+            $(".floatBtn").show();
+            $("#manager_confirm").hide();
+            $("#alarmShow_btn").show();
+            $("#alarmShow_area").show();
 
             setTimeout(() => {
                 $("#alarmShow_area").animate({
-                    opacity: 0,
                     transfrom: "scale(0)"
                 }, 300);
                 $("#alarmShow_area").hide();
@@ -65,15 +70,29 @@ var sidebarElement = (function () {
     };
 
     var clickManager = event => {
-
+        if (event.target.classList.contains("down-triangle")) {
+            event.target.classList.remove("down-triangle");
+            event.target.nextSibling.style.height = "0";
+        } else {
+            event.target.classList.add("down-triangle");
+            event.target.nextSibling.style.height = "auto";
+        }
     };
 
     var clickProject = event => {
-
+        var projectId = event.target.dataset.id;
+        tableOperation.filtLine("manager_mission", val => val.dataset.id !== projectId);
     };
 
     var clickAlarm = event => {
-
+        let area = $("#alarmShow_area");
+        if (area.is(":hidden")) {
+            // need show
+            area.show();
+        } else {
+            // need hide
+            area.hide();
+        }
     };
 
     return {
@@ -81,7 +100,7 @@ var sidebarElement = (function () {
             var container = $("#" + containerId);
             tableId = tId;
 
-            container.empty().append("<div id='manager_sidebar_navbar'></div>").append($("<div id='manager_sidebar_content'></div>").append("<ul class='manager-sidebar-content-manager'></ul>"))
+            container.empty().append("<div id='manager_sidebar_navbar'></div>").append($("<div id='manager_sidebar_content'></div>").append("<ul id='manager_sidebar_content_manager'></ul>"))
                 .append("<div id='manager_sidebar_shrink_mask'></div>").append($("<button id='manager_sidebar_shrink'></button>").click(shrinkEvent));
             
             if (firstInit) {
@@ -94,9 +113,8 @@ var sidebarElement = (function () {
             $("#manager_sidebar_navbar").append($(`<button class='manager-sidebar-department' data-id='${departmentId}'>${departmentNameMap[departmentId]}</button>`).click(clickDepartment));
         },
 
-        initDepartment: (containerId, managerList) => {
-            var container = $("#" + containerId);
-            var departmentContainer = $("#manager_sidebar_content ul");
+        initDepartment: (managerList) => {
+            var departmentContainer = $("#manager_sidebar_content_manager");
             var managerPart = null;
 
             departmentContainer.empty();
@@ -106,11 +124,13 @@ var sidebarElement = (function () {
             }
             for (const projectManager in managerList) {
                 if (managerList.hasOwnProperty(projectManager)) {
-                    managerPart = $("<ul class='manager-sidebar-content-project'></ul>");
+                    managerPart = null;
+                    managerPart = $("<ul class='manager-sidebar-content-project'></ul>").css("height", "0");
                     for (let i = 0; i < managerList[projectManager].length; i++) {
-                        managerPart.append($("<li><li>").append($(`<button class='manager-sidebar-content-projectCell' data-id='${managerList[projectManager][i].projectId}'>${managerList[projectManager][i].projectName}</button>`).click(clickProject)));;
+                        managerPart.append($("<li></li>").append($(`<button>${managerList[projectManager][i].projectName}</button>`).addClass("manager-sidebar-content-projectCell").attr("data-id", managerList[projectManager][i].projectId).click(clickProject)));
                     }
-                    departmentContainer.append($("<li></li>").append($(`<button class='manager-sidebar-content-managerCell' data-id='${managerList[projectManager].userId}'>${projectManager}</button>`).click(clickManager).append("<span></span>")).append(managerPart));
+                    departmentContainer.append($("<li></li>").append($(`<button>${projectManager}</button>`)
+                        .attr("data-id", managerList[projectManager].userId).addClass("manager-sidebar-content-managerCell").addClass("left-triangle").click(clickManager)).append(managerPart));
                 }
             }
         },
