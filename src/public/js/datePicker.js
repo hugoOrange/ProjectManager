@@ -3,6 +3,7 @@ var datePickerElement = (function () {
     const monthMap = new Array(12).fill(1).map((val, i) => ((i + 1 < 10 ? "0" : "") + (i + 1)));
     const dayMap = new Array(31).fill(1).map((val, i) => ((i + 1 < 10 ? "0" : "") + (i + 1)));
     var dayInMonth = [31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    var changeRecord = {};
 
     var getDayInMonth = (year) => {
         year = parseInt(year);
@@ -30,10 +31,10 @@ var datePickerElement = (function () {
         container.children(".datePicker-list").children("ul").each((index, val) => {
             val.dataset.value = $(event.target).parent().children("span").eq(index).text();
             $(val).children("li").each((i, v) => {
+                $(v).children("button").removeClass("datePicker-list-choose");
                 if ($(v).children("button").text() === val.dataset.value) {
                     $(v).children("button").addClass("datePicker-list-choose");
                     scrollTarget.push(i);
-                    return;
                 }
             });
         });
@@ -59,20 +60,32 @@ var datePickerElement = (function () {
     var okBtnEvent = event => {
         var container = $(event.target).parent().parent();
         datePickerElement.valueByEle(container, getChooseNow(container));
-        $(".datePicker-list-choose").removeClass("datePicker-list-choose");
         container.children("div").hide();
         container.children("button").show();
     };
 
+    var okBtnBindEvent = (event, id) => {
+        var container = $(event.target).parent().parent();
+        var lastValue = datePickerElement.valueByEle(container);
+        var nowValue = getChooseNow(container);
+        datePickerElement.valueByEle(container, nowValue);
+        container.children("div").hide();
+        container.children("button").show();
+
+        if (lastValue !== nowValue) {
+            // value changed
+            changeRecord[id] = nowValue;
+        }
+    };
+
     var cancelBtnEvent = event => {
         var container = $(event.target).parent().parent();
-        $(".datePicker-list-choose").removeClass("datePicker-list-choose");
         container.children("div").hide();
         container.children("button").show();
     };
 
     return {
-        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10) => {
+        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, isBind = false, id = "") => {
             var nowYear = new Date().getFullYear();
             var defaultV = getDateList(defaultValue);
             var yearMap = new Array(offsetYear * 2).fill(1).map((val, index) => nowYear + index - offsetYear);
@@ -89,11 +102,15 @@ var datePickerElement = (function () {
             monthMap.forEach(val => monthList.append($("<li></li>").append("<button>" + val + "</button>").click(chooseBtnEvent)));;
             dayMap.forEach(val => dayList.append($("<li></li>").append("<button>" + val + "</button>").click(chooseBtnEvent)));
 
-            container.append($("<div></div>").addClass("datePicker-list").append(yearList).append(monthList).append(dayList).hide()).append($("<div></div>").addClass("datePicker-button")
-                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(okBtnEvent))
+            container.addClass("datePicker")
+                .append($("<div></div>").addClass("datePicker-list").append(yearList).append(monthList).append(dayList).hide()).append($("<div></div>").addClass("datePicker-button")
+                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(isBind ? event => okBtnBindEvent(event. id) : okBtnEvent))
                 .append($("<button class='datePicker-button-cancel'>&Chi;</button>").click(cancelBtnEvent)).hide());
+
+            return container;
         },
 
+        // get && set
         valueByEle: (container, value) => { // value format: "yyyy-mm-dd"
             var btn = container.children("button");
             if (value === undefined) {
@@ -105,5 +122,9 @@ var datePickerElement = (function () {
                 return value;
             }
         },
+        
+        resetChangeRecord: () => changeRecord = {},
+
+        getChangeRecord: () => changeRecord,
     }
 })();

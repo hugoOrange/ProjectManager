@@ -125,7 +125,7 @@ textarea:focus { outline: 0; }
 .datePicker-list {
     position: relative;
     width: 100%;
-    top: -60px;
+    float: left;
 }
 .datePicker-list ul {
     display: inline-block;
@@ -175,7 +175,7 @@ textarea:focus { outline: 0; }
 .datePicker-button {
     position: relative;
     height: 20px;
-    top: -65px;
+    top: -4px;
 }
 .datePicker-button button {
     display: inline-block;

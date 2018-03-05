@@ -1,7 +1,7 @@
 // package dependencies
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
+// var server = require('http').Server(app);
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,7 +28,7 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 
 logMethod.start();
 // about server
-server.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
+app.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
 
 app.use(session({
     name: 'skey',
