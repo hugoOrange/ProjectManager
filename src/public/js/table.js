@@ -38,6 +38,7 @@ var tableOperation = (function () {
         filt: "延期"
     }];
 
+    var userList = [];
     var changeRecord = {};
 
     // private method 
@@ -76,7 +77,6 @@ var tableOperation = (function () {
         $("#" + tableId + " tr").each((index, val) => {
             if (index > 1) {
                 $(val).children("td").each((i, v) => {
-                    // attention: there exists all attribute except projectProgress
                     if (i === 1) {
                         // projectName
                         $(v).children(".project-edit-mode").on("change", event => {
@@ -95,33 +95,6 @@ var tableOperation = (function () {
                             }
                             changeRecord[changeProjectId]["projectTarget"] = $(event.target).val() || ".";
                         });
-                    } else if (i === 3) {
-                        // projectManager
-                        $(v).children(".project-edit-mode").on("change", event => {
-                            changeProjectId = val.dataset.id;
-                            if (changeRecord[changeProjectId] === undefined) {
-                                changeRecord[changeProjectId] = {};
-                            }
-                            changeRecord[changeProjectId]["projectManager"] = $(event.target).val();
-                        });
-                    // } else if (i === 4) {
-                    //     // deadline
-                    //     $(v).children(".project-edit-mode").on("change", event => {
-                    //         changeProjectId = val.dataset.id;
-                    //         if (changeRecord[changeProjectId] === undefined) {
-                    //             changeRecord[changeProjectId] = {};
-                    //         }
-                    //         changeRecord[changeProjectId]["deadline"] = $(event.target).val() || getNowDateFixed(10);
-                    //     });
-                    // } else if (i === 6) {
-                    //     // priority
-                    //     $(v).children(".project-edit-mode").on("change", event => {
-                    //         changeProjectId = val.dataset.id;
-                    //         if (changeRecord[changeProjectId] === undefined) {
-                    //             changeRecord[changeProjectId] = {};
-                    //         }
-                    //         changeRecord[changeProjectId]["priority"] = $(event.target).val();
-                    //     });
                     }
                 });
             }
@@ -153,7 +126,7 @@ var tableOperation = (function () {
                 <td><input type="text" name="projectTarget" id="new_projectTarget" placeholder="可为空"></td>
                 <td>
                     <p style="color:red;">*</p>
-                    <input type="text" name="projectManager" id="new_projectManager">
+                    <div id="new_projectManager"></div>
                 </td>
                 <td><div id="new_deadline"></div></td>
                 <td><div id="new_projectProgress"></div></td>
@@ -164,11 +137,17 @@ var tableOperation = (function () {
             selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
             progressElement.createProgressInput($("#new_projectProgress"));
             tableOperation.bindEvent(tableId);
+            serverIO.queryUser((userL) => {
+                userList = userL.ret_con;
+                selectElement.makeSelectByEle($("#new_projectManager").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId));
+            });
         },
 
         addProjects: (projectsInfo, tableEle) => {
             for (let i = 0; i < projectsInfo.length; i++) {
-                tableOperation.addProject(projectsInfo[i], tableEle);
+                if (projectsInfo[i].projectId) {                    
+                    tableOperation.addProject(projectsInfo[i], tableEle);
+                }
             }
         },
 
@@ -188,8 +167,8 @@ var tableOperation = (function () {
                     <textarea class="project-edit-mode" rows="4"></textarea>
                 </td>
                 <td>
-                    <p class="project-watch-mode">${project.projectManager}</p>
-                    <textarea class="project-edit-mode" rows="2"></textarea>
+                    <p class="project-watch-mode">${project.username}</p>
+                    <div class="project-edit-mode"></div>
                 </td>
                 <td class="project-deadline">
                     <p class="project-watch-mode">${project.deadline}</p>
@@ -209,8 +188,9 @@ var tableOperation = (function () {
                 </td>
             </tr>`);
             datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode").css("min-width", "100px"), undefined, undefined, "d" + project.projectId);
-            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], project.projectId);
+            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
             tableEle.append(tr);
+            selectElement.makeSelectByEle(tr.children("td").eq(3).children(".project-edit-mode").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId), "m" + project.projectId);
         },
 
         statusSet: (tableId) => {
@@ -287,29 +267,24 @@ var tableOperation = (function () {
             var addEle = $("#" + tableId).children("tr").eq(1).children("td");
             let name = addEle.eq(1).children("input").val();
             let target = addEle.eq(2).children("input").val() || ".";
-            let manager = addEle.eq(3).children("input").val();
+            let manager = selectElement.selectValByEle(addEle.eq(3).children(".selectJS"));
             let deadline = addEle.eq(4).children("input").val() || getNowDateFixed(10);
             let progressText = progressElement.getProgressInputText($("#new_projectProgress"));
-            let priority = selectElement.selectValByEle(addEle.eq(6).children("div"));
+            let priority = selectElement.selectValByEle(addEle.eq(6).children(".selectJS"));
 
             if(name.search(/\<|\>/) !== -1 || name.length < 5 || name.length > 31) {
                 alert("不规范的项目文件名");
                 console.error("Invalid project name");
                 return {};
             }
-            if(manager.search(/\<|\>|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\s/) !== -1 || manager === "" || manager.length > 31) {
-                alert("不规范的项目负责人姓名");
-                console.error("Invalid project manager name");
-                return {};
-            }
 
             return {
                 projectName: name,
                 projectTarget: target,
-                projectManager: manager,
                 deadline: deadline,
                 projectProgress: progressText,
-                priority: priority
+                priority: priority,
+                userId: manager
             };
         },
 
@@ -328,11 +303,17 @@ var tableOperation = (function () {
                         }
                         changeRecord[changeId]["projectProgress"] = progressElement.getProgressInputText($(val).children("td").eq(5).children(".project-edit-mode"));
                     }
-                    if (crS[changeId] !== undefined) {
+                    if (crS["p" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
-                        changeRecord[changeId]["priority"] = crS[changeId];
+                        changeRecord[changeId]["priority"] = crS["p" + changeId];
+                    }
+                    if (crS["m" + changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["projectManager"] = crS["m" + changeId];                        
                     }
                     if (crD["d" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
@@ -423,8 +404,11 @@ var tableOperation = (function () {
             tr.children("td").each((i, val) => {
                 eleW = $(val).children(".project-watch-mode");
                 eleE = $(val).children(".project-edit-mode");
-                if (i === 1 || i === 2 || i === 3) {
+                if (i === 1 || i === 2) {
                     eleE.val(eleW.text());
+                }
+                if (i === 3) {
+                    selectElement.selectValByEle(eleE, eleW.text());
                 }
                 if (i === 4) {
                     datePickerElement.valueByEle(eleE, eleW.text());

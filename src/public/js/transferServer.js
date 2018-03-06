@@ -76,6 +76,10 @@ var serverIO = (function () {
             ajaxSend({ scale: 'overview' }, 'POST', '/project', succ, fail);
         },
 
+        queryUser: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ scale: 'user' }, 'POST', '/project', succ, fail);
+        },
+
         queryDepartmentProject: (departmentId, succ = () => {}, fail = () => {}) => {
             ajaxSend({
                 scale: 'department',

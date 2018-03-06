@@ -79,13 +79,13 @@ module.exports = (function () {
                     if (managerList[data[i].department] === undefined) {
                         managerList[data[i].department] = {};
                     }
-                    if (managerList[data[i].department][data[i].projectManager] === undefined) {
-                        managerList[data[i].department][data[i].projectManager] = [];
+                    if (managerList[data[i].department][data[i].userId] === undefined) {
+                        managerList[data[i].department][data[i].userId] = [];
                     }
-                    managerList[data[i].department][data[i].projectManager].push({
+                    managerList[data[i].department][data[i].userId].push({
                         projectName: data[i].projectName,
                         projectId: data[i].projectId,
-                        userId: data[i].userId
+                        username: data[i].username
                     });
                 }
 
@@ -103,16 +103,16 @@ module.exports = (function () {
             });
         },
 
-        queryAll: (loginUser, req, res) => {
-            db.queryAllProject((projectInfo) => {
-                logMethod.success("Query all project", "db");
+        queryUser: (req, res) => {
+            db.queryUserInfo((userInfo) => {
+                logMethod.success("Query all users ", "db");
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库查询成功',
-                    ret_con: projectInfo
+                    ret_con: userInfo
                 });
             }, () => {
-                logMethod.error("Query_database", "All project", "db");
+                logMethod.error("Query_database", "All user", "db");
                 res.json({
                     ret_code: 5,
                     ret_msg: '数据库查询出错'
@@ -137,50 +137,8 @@ module.exports = (function () {
             });
         },
 
-        qureyProjectName: (loginUser, req, res) => {
-            db.queryAllProjectName(loginUser, (nameList) => {
-                var l = nameList.map((val, index) => {
-                    return val.projectName;
-                });
-                logMethod.success("Query projects' name", "db");
-                res.send({
-                    ret_code: 0,
-                    ret_msg: '数据库查询成功',
-                    ret_con: l
-                });
-            }, () => {
-                logMethod.error("Query_database", "Project name", "db");
-                res.json({
-                    ret_code: 5,
-                    ret_msg: '数据库查询出错'
-                });
-            });
-        },
-
-        queryProjectManager: (loginUser, req, res) => {
-            db.queryAllManagerName(loginUser, (nameList) => {
-                var l = nameList.map((val, index) => {
-                    return val.projectManager;
-                });
-                logMethod.success("Query projects' manager", "db");
-                res.send({
-                    ret_code: 0,
-                    ret_msg: '数据库查询成功',
-                    ret_con: l.filter((val, index) => {
-                            return l.indexOf(val) === index;
-                        })
-                });
-            }, () => {
-                logMethod.error("Query_database", "Project manager", "db");
-                res.send({
-                    ret_code: 5,
-                    ret_msg: '数据库查询出错'
-                });
-            });
-        },
-
         editAdd: (loginUser, info, res) => {
-            db.addProject(loginUser, info.projectName, info.projectTarget, info.projectManager, info.deadline,
+            db.addProject(loginUser, info.projectName, info.projectTarget, info.deadline,
                 info.projectProgress, info.priority, (results) => {
                     logMethod.success("Add new project", "db");
                     res.json({

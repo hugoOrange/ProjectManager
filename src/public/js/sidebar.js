@@ -24,7 +24,6 @@ var sidebarElement = (function () {
     };
 
     var clickDepartment = event => {
-        event.stopPropagation();
         var departmentId = event.target.dataset.id;
         tableOperation.initTable(tableId);
         $("#project_overview").hide();
@@ -39,13 +38,13 @@ var sidebarElement = (function () {
             }
             
             for (let i = 0; i < con.length; i++) {
-                if (managerList[con[i].projectManager] === undefined) {
-                    managerList[con[i].projectManager] = [];
+                if (managerList[con[i].userId] === undefined) {
+                    managerList[con[i].userId] = [];
                 }
-                managerList[con[i].projectManager].push({
+                managerList[con[i].userId].push({
                     projectName: con[i].projectName,
                     projectId: con[i].projectId,
-                    userId: con[i].userId
+                    username: con[i].username
                 });
             }
 
@@ -67,9 +66,13 @@ var sidebarElement = (function () {
                 $("#alarmShow_area").hide();
             }, 1000);
         });
+
+        event.stopPropagation();
     };
 
     var clickManager = event => {
+        var mList = [];
+        $("#project_overview").hide();
         if (event.target.classList.contains("down-triangle")) {
             event.target.classList.remove("down-triangle");
             event.target.nextSibling.style.height = "0";
@@ -77,6 +80,15 @@ var sidebarElement = (function () {
             event.target.classList.add("down-triangle");
             event.target.nextSibling.style.height = "auto";
         }
+        
+        // TODO: need to show table on first click
+        // if ($("#" + tableId).is(":hidden")) {
+        //     sidebarElement.triggerDepartment();
+        // }
+        $(event.target).next().children("li").each((i, v) => {
+            mList.push(v.childNodes[0].dataset.id);
+        });
+        tableOperation.filtLine("manager_mission", val => mList.indexOf(val.dataset.id) === -1);
     };
 
     var clickProject = event => {
@@ -110,7 +122,8 @@ var sidebarElement = (function () {
         },
 
         addDepartment: (departmentId) => {
-            $("#manager_sidebar_navbar").append($(`<button class='manager-sidebar-department' data-id='${departmentId}'>${departmentNameMap[departmentId]}</button>`).click(clickDepartment));
+            $("#manager_sidebar_navbar").append($(`<button>${departmentNameMap[departmentId]}</button>`)
+                .addClass("manager-sidebar-department").attr("data-id", departmentId).click(clickDepartment));
         },
 
         initDepartment: (managerList) => {
@@ -122,15 +135,17 @@ var sidebarElement = (function () {
                 console.warn("Empty manager list");
                 return;
             }
-            for (const projectManager in managerList) {
-                if (managerList.hasOwnProperty(projectManager)) {
+            for (const userId in managerList) {
+                if (managerList.hasOwnProperty(userId)) {
                     managerPart = null;
                     managerPart = $("<ul class='manager-sidebar-content-project'></ul>").css("height", "0");
-                    for (let i = 0; i < managerList[projectManager].length; i++) {
-                        managerPart.append($("<li></li>").append($(`<button>${managerList[projectManager][i].projectName}</button>`).addClass("manager-sidebar-content-projectCell").attr("data-id", managerList[projectManager][i].projectId).click(clickProject)));
+                    for (let i = 0; i < managerList[userId].length; i++) {
+                        if (managerList[userId][i].projectId) {                            
+                            managerPart.append($("<li></li>").append($(`<button>${managerList[userId][i].projectName}</button>`).addClass("manager-sidebar-content-projectCell").attr("data-id", managerList[userId][i].projectId).click(clickProject)));
+                        }
                     }
-                    departmentContainer.append($("<li></li>").append($(`<button>${projectManager}</button>`)
-                        .attr("data-id", managerList[projectManager].userId).addClass("manager-sidebar-content-managerCell").addClass("left-triangle").click(clickManager)).append(managerPart));
+                    departmentContainer.append($("<li></li>").append($(`<button>${managerList[userId][0].username}</button>`)
+                        .attr("data-id", userId).addClass("manager-sidebar-content-managerCell").addClass("left-triangle").click(clickManager)).append(managerPart));
                 }
             }
         },
@@ -164,6 +179,10 @@ var sidebarElement = (function () {
                 document.querySelector("#alarmShow_btn").dataset.maydelay = delaySet.mayDelay.length;
                 document.querySelector("#alarmShow_btn").dataset.delay = delaySet.isDelay.length;
             }
-        }
+        },
+
+        triggerDepartment: (departmentId) => {
+            $(".manager-sidebar-department").filter((i, v) => v.dataset.id === departmentId).click()
+        },
     }
 })();

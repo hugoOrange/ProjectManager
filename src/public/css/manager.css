@@ -302,7 +302,9 @@ article {
     text-align: center;
 }
 
-#new_priority, #manager_mission tr td:nth-child(7) .project-edit-mode {
+#new_priority, #new_projectManager,
+#manager_mission tr td:nth-child(4) .project-edit-mode,
+#manager_mission tr td:nth-child(7) .project-edit-mode {
     width: 30px;
     text-align: center;
     background: #fff;

@@ -134,6 +134,10 @@ app.post('/project', (req, res) => {
                     action.queryOverview(loginUser, req, res);
                     break;
 
+                case 'user':
+                    action.queryUser(req, res);
+                    break;
+
                 case 'department':
                     action.queryDepartment(loginUser, req.body.departmentId, req, res);
                     break;
@@ -158,7 +162,7 @@ app.post('/edit', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: " + req.body.op);
+    logMethod.log(" * Request: " + req.body.op, "http");
 
     if (isLogined) {
         if (loginUser > 0) {
