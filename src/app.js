@@ -158,7 +158,7 @@ app.post('/edit', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    console.log(" * Request: " + req.op);
+    console.log(" * Request: " + req.body.op);
 
     if (isLogined) {
         if (loginUser > 0) {

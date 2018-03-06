@@ -46,7 +46,7 @@ $(document).ready(() => {
         $("#new_projectName").val();
         $("#new_projectTarget").val();
         $("#new_projectManager").val();
-        progressElement.createProgressInput(document.querySelector("#new_projectProgress"));
+        progressElement.createProgressInput($("#new_projectProgress"));
 
         $("#no_project").hide();
     }
@@ -181,24 +181,25 @@ $(document).ready(() => {
     $("#confirm_ok").click(event => {
         let op = confirmDialog.getOp($("#confirm_alert p").text());
         var chooseProject = []; // for finish and delete
+        var sendData = null;
 
         if(op === confirmDialog.addProject.op){
             // add new project
-            var addProjectValue = tableOperation.getValueAdd("manager_mission");
-            if (Object.keys(addProjectValue).length === 0) {
+            sendData = tableOperation.getValueAdd("manager_mission");
+            if (Object.keys(sendData).length === 0) {
                 return;
             } else {
-                serverIO.addProject(addProjectValue, () => {
+                serverIO.addProject(sendData, () => {
                     location.reload();
                 });
             }
         } else if (op === confirmDialog.changeProject.op) {
-            var attributesChangeRecord = tableOperation.getValueChange("manager_mission");
-            if (Object.keys(attributesChangeRecord).length === 0) {
+            sendData = tableOperation.getValueChange("manager_mission");
+            if (Object.keys(sendData).length === 0) {
                 $("#mask_layer").hide();
                 $("#confirm_alert").slideUp();
             } else {
-                serverIO.changeProjects(attributesChangeRecord, (result) => {
+                serverIO.changeProjects(sendData, (result) => {
                     location.reload();
                 });
             }

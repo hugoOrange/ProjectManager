@@ -1,3 +1,13 @@
+/**
+ * select html structure
+ * <container class="selectJS">
+ *  <div class="select-chooseNow" data-value="">
+ *  </div>
+ *  <div class="select-chooseArea">
+ *   <div class="select-choose" data-value=""></div>
+ *  </div>
+ * <container>
+ */
 var selectElement = (function () {
     var changeRecord = {};
 
@@ -25,18 +35,12 @@ var selectElement = (function () {
         $(event.target).parent().children(".select-chooseArea").show();
         event.preventDefault();
     };
-    var chooseBtnEvent = event => {
-        var target = $(event.target);
-        target.parent().parent().children(".select-chooseNow").text(target.text()).attr("data-value", target.attr("data-value"));
-        target.parent().parent().children(".select-chooseArea").hide();
-        event.preventDefault();
-    };
-    var chooseAndListenBtnEvent = (event, id) => {
+    
+    var chooseBtnEvent = (event, id) => {
         var target = $(event.target);
         var preVal = target.parent().parent().children(".select-chooseNow").attr("data-value");
         var nowVal = target.attr("data-value");
-        if (nowVal !== preVal) {
-            // listen the change
+        if (id !== undefined && nowVal !== preVal) {
             changeRecord[id] = nowVal;
         }
         target.parent().parent().children(".select-chooseNow").text(target.text()).attr("data-value", nowVal);
@@ -61,9 +65,10 @@ var selectElement = (function () {
 
             for (let i = 0; i < option.length; i++) {
                 chooseArea.append($("<button class='select-choose' data-value='" + optionValue[i] + "'></button>")
-                    .text(option[i]).click(bindId === undefined ? chooseBtnEvent : event => { chooseAndListenBtnEvent(event, bindId)}));
+                    .text(option[i]).click(event => chooseBtnEvent(event, bindId)));
             }
-            container.append($(`<div class='select-chooseNow' data-value="${optionValue[0]}">${option[0]}</div>`).click(triggerBtnEvent)).append(chooseArea);
+            container.append($(`<div class='select-chooseNow' data-value="${optionValue[0]}">${option[0]}</div>`).click(triggerBtnEvent))
+                .append(chooseArea).addClass("selectJS");
             return true;
         },
 
@@ -85,6 +90,8 @@ var selectElement = (function () {
             }
         },
 
-        getChangeRecord: () => { return changeRecord; }
+        resetChangeRecord: () => changeRecord = {},
+
+        getChangeRecord: () => changeRecord,
     }
 })();

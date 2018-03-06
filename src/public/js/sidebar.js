@@ -141,16 +141,19 @@ var sidebarElement = (function () {
             var delaySet = tableOperation.getDelay(tableId, delay);
             var btnEvent = event => {
                 tableOperation.lineStickTop(tableId, event.target.dataset.id);
+                event.stopPropagation();
             }
 
             container.empty();
             for (let i = 0; i < delaySet.isDelay.length; i++) {
                 container.append($("<li></li>")
-                    .append($(`<button data-id="${delaySet.isDelay[i].pId}" title="${delaySet.isDelay[i].pName}/${delaySet.isDelay[i].mName}" class="delay-project">${delaySet.isDelay[i].pName}/${delaySet.isDelay[i].mName}</button>`).click(btnEvent)));
+                    .append($(`<button>${delaySet.isDelay[i].pName}/${delaySet.isDelay[i].mName}</button>`)
+                    .attr("data-id", delaySet.isDelay[i].id).attr("title", delaySet.isDelay[i].pName + "/" + delaySet.isDelay[i].mName).addClass("delay-project").click(btnEvent)));
             }
             for (let i = 0; i < delaySet.mayDelay.length; i++) {
                 container.append($("<li></li>")
-                    .append($(`<button data-id="${delaySet.mayDelay[i].pId}" title="${delaySet.mayDelay[i].pName}/${delaySet.mayDelay[i].mName}" class="mayDelay-project">${delaySet.mayDelay[i].pName}/${delaySet.mayDelay[i].mName}</button>`).click(btnEvent)));
+                    .append($(`<button>${delaySet.mayDelay[i].pName}/${delaySet.mayDelay[i].mName}</button>`)
+                    .attr("data-id", delaySet.mayDelay[i].id).attr("title", delaySet.mayDelay[i].pName + delaySet.mayDelay[i].mName).addClass("mayDelay-project").click(btnEvent)));
             }
 
             if (delaySet.mayDelay.length + delaySet.isDelay.length === 0) {

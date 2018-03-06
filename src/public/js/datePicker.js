@@ -1,3 +1,28 @@
+/**
+ * datePicker html structure
+ * <containe class="datePickerJS"r>
+ *  <button class="datePicker-show">
+ *   <span class="datePicker-show-year"></span>
+ *   <span class="datePicker-show-month"></span>
+ *   <span class="datePicker-show-day"></span>
+ *  </button>
+ *  <div class="datePicker-list">
+ *   <ul class="datePicker-list-year">
+ *    <li><button></button></li>
+ *   </ul>
+ *   <ul class="datePicker-list-month">
+ *    <li><button></button></li>
+ *   </ul>
+ *   <ul class="datePicker-list-day">
+ *    <li><button></button></li>
+ *   </ul>
+ *  </div>
+ *  <div class="datePicker-button">
+ *   <button class="datePicker-button-ok"></button>
+ *   <button class="datePicker-button-cancel"></button>
+ *  </div>
+ * </container>
+ */
 var datePickerElement = (function () {
     // const monthMap = ["Jan", "Fab", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthMap = new Array(12).fill(1).map((val, i) => ((i + 1 < 10 ? "0" : "") + (i + 1)));
@@ -57,14 +82,8 @@ var datePickerElement = (function () {
         $(event.target).parent().parent().attr("data-value", $(event.target).text());
     };
 
-    var okBtnEvent = event => {
-        var container = $(event.target).parent().parent();
-        datePickerElement.valueByEle(container, getChooseNow(container));
-        container.children("div").hide();
-        container.children("button").show();
-    };
 
-    var okBtnBindEvent = (event, id) => {
+    var okBtnEvent = (event, id) => {
         var container = $(event.target).parent().parent();
         var lastValue = datePickerElement.valueByEle(container);
         var nowValue = getChooseNow(container);
@@ -72,7 +91,7 @@ var datePickerElement = (function () {
         container.children("div").hide();
         container.children("button").show();
 
-        if (lastValue !== nowValue) {
+        if (id !== undefined && lastValue !== nowValue) {
             // value changed
             changeRecord[id] = nowValue;
         }
@@ -85,7 +104,7 @@ var datePickerElement = (function () {
     };
 
     return {
-        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, isBind = false, id = "") => {
+        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, id) => {
             var nowYear = new Date().getFullYear();
             var defaultV = getDateList(defaultValue);
             var yearMap = new Array(offsetYear * 2).fill(1).map((val, index) => nowYear + index - offsetYear);
@@ -93,7 +112,8 @@ var datePickerElement = (function () {
             var monthList = $("<ul></ul>").addClass("datePicker-list-month").attr("data-value", defaultV[1]);
             var dayList = $("<ul></ul>").addClass("datePicker-list-day").attr("data-value", defaultV[2]);
 
-            container.append($("<button></button>").addClass("datePicker-show")
+            container.empty()
+                .append($("<button></button>").addClass("datePicker-show")
                 .append($("<span>" + defaultV[0] + "</span>").addClass("datePicker-show-year").click(triggerBtnEvent))
                 .append($("<span>" + defaultV[1] + "</span>").addClass("datePicker-show-month").click(triggerBtnEvent))
                 .append($("<span>" + defaultV[2] + "</span>").addClass("datePicker-show-day").click(triggerBtnEvent)));
@@ -102,9 +122,9 @@ var datePickerElement = (function () {
             monthMap.forEach(val => monthList.append($("<li></li>").append("<button>" + val + "</button>").click(chooseBtnEvent)));;
             dayMap.forEach(val => dayList.append($("<li></li>").append("<button>" + val + "</button>").click(chooseBtnEvent)));
 
-            container.addClass("datePicker")
+            container.addClass("datePickerJS")
                 .append($("<div></div>").addClass("datePicker-list").append(yearList).append(monthList).append(dayList).hide()).append($("<div></div>").addClass("datePicker-button")
-                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(isBind ? event => okBtnBindEvent(event. id) : okBtnEvent))
+                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(event => okBtnEvent(event, id)))
                 .append($("<button class='datePicker-button-cancel'>&Chi;</button>").click(cancelBtnEvent)).hide());
 
             return container;
@@ -114,7 +134,7 @@ var datePickerElement = (function () {
         valueByEle: (container, value) => { // value format: "yyyy-mm-dd"
             var btn = container.children("button");
             if (value === undefined) {
-                return `${btn.children(".datePicker-show-year")}-${btn.children(".datePicker-show-month")}-${btn.children(".datePicker-show-day")}`;
+                return `${btn.children(".datePicker-show-year").text()}-${btn.children(".datePicker-show-month").text()}-${btn.children(".datePicker-show-day").text()}`;
             } else {
                 btn.children(".datePicker-show-year").text(value.slice(0, 4));
                 btn.children(".datePicker-show-month").text(value.slice(5, 7));
@@ -123,6 +143,16 @@ var datePickerElement = (function () {
             }
         },
         
+        clearChangeRecordByFunc: filtFunc => {
+            for (const changeId in changeRecord) {
+                if (changeRecord.hasOwnProperty(changeId)) {
+                    if (filtFunc(changeId)) {
+                        changeRecord[changeId] = undefined;
+                    }
+                }
+            }
+        },
+
         resetChangeRecord: () => changeRecord = {},
 
         getChangeRecord: () => changeRecord,

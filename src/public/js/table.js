@@ -104,24 +104,24 @@ var tableOperation = (function () {
                             }
                             changeRecord[changeProjectId]["projectManager"] = $(event.target).val();
                         });
-                    } else if (i === 4) {
-                        // deadline
-                        $(v).children(".project-edit-mode").on("change", event => {
-                            changeProjectId = val.dataset.id;
-                            if (changeRecord[changeProjectId] === undefined) {
-                                changeRecord[changeProjectId] = {};
-                            }
-                            changeRecord[changeProjectId]["deadline"] = $(event.target).val() || getNowDateFixed(10);
-                        });
-                    } else if (i === 6) {
-                        // priority
-                        $(v).children(".project-edit-mode").on("change", event => {
-                            changeProjectId = val.dataset.id;
-                            if (changeRecord[changeProjectId] === undefined) {
-                                changeRecord[changeProjectId] = {};
-                            }
-                            changeRecord[changeProjectId]["priority"] = $(event.target).val();
-                        });
+                    // } else if (i === 4) {
+                    //     // deadline
+                    //     $(v).children(".project-edit-mode").on("change", event => {
+                    //         changeProjectId = val.dataset.id;
+                    //         if (changeRecord[changeProjectId] === undefined) {
+                    //             changeRecord[changeProjectId] = {};
+                    //         }
+                    //         changeRecord[changeProjectId]["deadline"] = $(event.target).val() || getNowDateFixed(10);
+                    //     });
+                    // } else if (i === 6) {
+                    //     // priority
+                    //     $(v).children(".project-edit-mode").on("change", event => {
+                    //         changeProjectId = val.dataset.id;
+                    //         if (changeRecord[changeProjectId] === undefined) {
+                    //             changeRecord[changeProjectId] = {};
+                    //         }
+                    //         changeRecord[changeProjectId]["priority"] = $(event.target).val();
+                    //     });
                     }
                 });
             }
@@ -162,7 +162,7 @@ var tableOperation = (function () {
             `);
             datePickerElement.makeElementByEle($("#new_deadline").css("min-width", "100px"));
             selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
-            progressElement.createProgressInput(document.querySelector("#new_projectProgress"));
+            progressElement.createProgressInput($("#new_projectProgress"));
             tableOperation.bindEvent(tableId);
         },
 
@@ -208,7 +208,7 @@ var tableOperation = (function () {
                     <input type="checkbox" name="project-choose" value="${project.projectId}">
                 </td>
             </tr>`);
-            datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode").css("min-width", "100px"), undefined, undefined, true, "d" + project.projectId);
+            datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode").css("min-width", "100px"), undefined, undefined, "d" + project.projectId);
             selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], project.projectId);
             tableEle.append(tr);
         },
@@ -266,11 +266,10 @@ var tableOperation = (function () {
         changeInEditMode: (tableId) => {
             $(".project-watch-mode").hide();
             $(".project-edit-mode").show();
-            $(`#${tableId} tr td`).each((index, val) => {
-                if (index < 7) {
-                    return;
+            $("#" + tableId).children("tr").each((index, val) => {
+                if (index > 1) {
+                    tableOperation.giveEditModeElementVal($(val), val.dataset.id);
                 }
-                tableOperation.giveEditModeElementVal(val);
             });
             valueChangeRecord(tableId);
         },
@@ -280,6 +279,8 @@ var tableOperation = (function () {
             $(".project-edit-mode").hide();
             changeRecord = {};
             progressElement.resetChangeRecord();
+            selectElement.resetChangeRecord();
+            datePickerElement.clearChangeRecordByFunc(id => id[0] === "d");
         },
 
         getValueAdd: (tableId) => {
@@ -288,8 +289,7 @@ var tableOperation = (function () {
             let target = addEle.eq(2).children("input").val() || ".";
             let manager = addEle.eq(3).children("input").val();
             let deadline = addEle.eq(4).children("input").val() || getNowDateFixed(10);
-            let progressText = progressElement.getProgressInputText(document.querySelector("#new_projectProgress")) ||
-                (getNowDateFixed(10) + " - .");
+            let progressText = progressElement.getProgressInputText($("#new_projectProgress"));
             let priority = selectElement.selectValByEle(addEle.eq(6).children("div"));
 
             if(name.search(/\<|\>/) !== -1 || name.length < 5 || name.length > 31) {
@@ -316,6 +316,7 @@ var tableOperation = (function () {
         getValueChange: (tableId) => {
             let crP = progressElement.getChangeRecord();
             let crS = selectElement.getChangeRecord();
+            let crD = datePickerElement.getChangeRecord();
             let changeId = -1;
             var pStr = "";
             $("#" + tableId + " tr").each((index, val) => {
@@ -333,9 +334,20 @@ var tableOperation = (function () {
                         }
                         changeRecord[changeId]["priority"] = crS[changeId];
                     }
+                    if (crD["d" + changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["deadline"] = crD["d" + changeId];
+                    }
+                    if (crD["p" + changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["projectProgress"] = progressElement.getProgressInputText($(val).children("td").eq(5).children(".project-edit-mode"));;                        
+                    }
                 }
             });
-
             return changeRecord;
         },
 
@@ -347,8 +359,8 @@ var tableOperation = (function () {
                 return;
             }
             $("#" + tableId).children("tr").each((index, val) => {
-                if (val.dataset.id === id) {
-                    focusEle = $(val);
+                if (val.dataset.id === id || id === "all") {
+                    focusEle = $(val).show();
                 }
             });
             window.scrollTo(0, 0);
@@ -403,44 +415,28 @@ var tableOperation = (function () {
             }
         },
 
-        giveEditModeElementVal: (td) => {
-            let p = $(td).children(".project-watch-mode").text();
-            let pTo = $(td).children(".project-edit-mode");
-            if (pTo[0] === undefined) {
-                return;
-            }
-            if (pTo[0].tagName === "TEXTAREA") {
-                // edit projectName, projectManager, projectTarget
-                pTo.text(p);
-            } else if (pTo[0].tagName === "INPUT") {
-                // edit deadline
-                pTo.val(p);
-            } else if (pTo[0].tagName === "P") {
-                // can't edit status
-                pTo.text(p);
-            } else if (pTo[0].tagName === "DIV") {
-                if (td.classList.contains("project-progress")) {
-                    // edit progress
-                    var pCon = "";
-                    var pDate = "";
-                    var pCount = 0;
-                    var pTxt = "";
-                    progressElement.setProgressEditNum(pTo, $(td).children(".project-watch-mode").children("p").length);
-                    $(td).children(".project-watch-mode").children("p").each((index, val) => {
-                        pCon = $(val).text();
-                        pCount = pCon.search(" - ");
-                        pDate = pCon.slice(0, pCount);
-                        pTxt = pCon.slice(pCount + 3);
-                        $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("input").val(pDate);
-                        $($(td).children(".project-edit-mode").children(".progress-line")[index]).children("textarea").text(pTxt);
-                    });
+        giveEditModeElementVal: (tr, id) => {
+            var eleW = null;
+            var eleE = null;
+            var t = [];
+
+            tr.children("td").each((i, val) => {
+                eleW = $(val).children(".project-watch-mode");
+                eleE = $(val).children(".project-edit-mode");
+                if (i === 1 || i === 2 || i === 3) {
+                    eleE.val(eleW.text());
                 }
-                if (td.classList.contains("project-priority")) {
-                    // edit priority
-                    console.log(pTo)
-                    selectElement.selectValByEle(pTo, p);
+                if (i === 4) {
+                    datePickerElement.valueByEle(eleE, eleW.text());
                 }
-            }
+                if (i === 5) {
+                    eleW.children("p").each((j, v) => t.push($(v).text()));
+                    progressElement.setProgressEditContent(eleE, t.join(progressSep), id);
+                }
+                if (i === 6) {
+                    selectElement.selectValByEle(eleE, eleW.text());
+                }
+            });
         },
 
         chooseAllDelete: () => {
@@ -556,7 +552,16 @@ var tableOperation = (function () {
 })();
 
 
-
+/**
+ * progress html structure:
+ * <container class="progressJS">
+ *  <button class="progress-delete"></button>
+ *  <div class="progress-line">
+ *   <datePicker class="datePickerJS"></datePicker>
+ *   <textarea name="progress-text"></textarea>
+ *  </div>
+ * </container>
+ */
 var progressElement = (function () {
     const progressSep = "^#^";
     var progressChangeRecord = {};
@@ -567,46 +572,50 @@ var progressElement = (function () {
 
     // add button event
     function addEvent(event, id) {
-        let ele = event.target.parentNode.parentNode;
-        progressChangeRecord[id] = id;
-
+        if (id !== undefined) {
+            progressChangeRecord[id] = id;
+        }
         progressElement.createProgressInput($(event.target.parentNode), false, id);
     }
 
     // delete button event
     function deleteEvent(event, id) {
         if ($(event.target.parentNode.parentNode).children(".progress-line").length > 0) {
-            let line = event.target.parentNode;
-            progressChangeRecord[id] = id;
-
-            $(line).remove();
+            if (id !== undefined) {
+                progressChangeRecord[id] = id;
+            }
+            $(event.target.parentNode).remove();
             return;
         }
         alert("最小的项目进度数为1");
     }
 
+    function lineChangeEvent(event, id) {
+        if (id !== undefined) {
+            progressChangeRecord[id] = id;
+        }
+    }
+
     return {
         createProgressInput: function (container, firstCreate = true, id) {
+            var div = null;
+
             if (firstCreate) {
-                $(container).empty();
-                $(container).append($("<button class='progress-add'></button>").click(addEvent));
+                container.empty();
+                container.append($("<button class='progress-add'></button>").click(event => addEvent(event, id)));
             }
-            var d = null;
-            if (id === undefined) {
-                d = datePickerElement.makeElementByEle($("<div></div>"));
-            } else {
-                d = datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, true, "p" + id);
-            }
-            var div = $('<div class="progress-line"></div>').append(d).append("<textarea name='progressText'></textarea>");
-            $(div).append($("<button class='progress-delete'></button>").click(event => deleteEvent(event, id)));
-            $(container).append(div);
+            div = $('<div class="progress-line"></div>')
+                .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, "p" + id))
+                .append("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id))
+                .append($("<button class='progress-delete'></button>").click(event => deleteEvent(event, id)));
+            container.append(div).addClass("progressJS");
         },
 
         getProgressInputText: function (container) {
             let p = [];
             var d = "";
-            $(container).children(".progress-line").each((index, val) => {
-                d = datePickerElement.valueByEle($(val).children(".datePicker"));
+            container.children(".progress-line").each((index, val) => {
+                d = datePickerElement.valueByEle($(val).children(".datePickerJS"));
                 p.push(d + " - " + $(val).children("textarea[name='progressText']").val());
             });
             return p.join(progressSep);
@@ -615,17 +624,27 @@ var progressElement = (function () {
         setProgressEditNum: function (container, num, id) {
             container.empty();
             num = Math.max(num, 1);
-            container.append($("<button class='progress-add'></button>").click(addEvent))
+            container.append($("<button class='progress-add'></button>").click(event => addEvent(event, id)))
             for (let i = 0; i < num; i++) {
                 container.append($(`<div class='progress-line'></div>`)
-                    .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, true, "p" + id))
-                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", lineChangeEvent))
+                    .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, "p" + id))
+                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id)))
                     .append($("<button class='progress-delete'></button>").click(deleteEvent)));
             }
         },
 
+        setProgressEditContent: function (container, str, id) {
+            var lineTxt = str.split(progressSep);
+            progressElement.setProgressEditNum(container, lineTxt.length, id);
+            container.children(".progress-line").each((index, value) => {
+                datePickerElement.valueByEle($(value).children("datePickerJS"), lineTxt[index].slice(0, 10));
+                $(value).children("textarea").val(lineTxt[index].slice(13));
+            });
+        },
+
         resetChangeRecord: function () {
             progressChangeRecord = {};
+            datePickerElement.clearChangeRecordByFunc(id => id[0] === "p");
         },
 
         getChangeRecord: function () {
