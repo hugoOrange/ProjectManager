@@ -69,6 +69,18 @@ var serverIO = (function () {
             }, 'POST', '/login', succ, fail);
         },
 
+        /* storage */
+        
+        addWorkPath: (workPath, succ = () => {}, fail = () => {}) => {
+            ajaxSend({
+                type: 'workPath',
+                data: workPath
+            }, 'GET', '/storage', succ, fail);
+        },
+
+        queryWorkPath: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ type: 'queryWorkPath'}, 'GET', 'storage', succ, fail)
+        },
 
         /** query */
 

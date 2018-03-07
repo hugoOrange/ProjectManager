@@ -26,6 +26,7 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
     process.exit();
 }
 
+
 logMethod.start();
 // about server
 app.listen(port, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
@@ -51,7 +52,7 @@ app.get('/', function (req, res) {
             res.sendfile(__dirname + '/public/manager.html');
         } else {
             logMethod.log("Get login.html", "http");
-            res.sendfile(__dirname + '/public/login.html');            
+            res.sendfile(__dirname + '/public/login.html');
         }
     } else {
         logMethod.log("Get login.html", "http");
@@ -60,7 +61,6 @@ app.get('/', function (req, res) {
 });
 app.use(express.static('./public'));
 app.use(express.static('./resources'));
-
 
 app.post('/login', (req, res) => {
     logMethod.log("Request: " + req.body.op, "http");
@@ -117,7 +117,54 @@ app.get('/signout', (req, res) => {
         res.send({
             ret_code: 0,
             ret_msg: '成功注销'
-        })
+        });
+    }
+});
+
+app.get('/storage', (req, res) => {
+    var sess = req.session;
+    var loginUser = sess.loginUser;
+    var isLogined = !!loginUser;
+    logMethod.log("Request: " + req.query.type, "http");
+
+    if (isLogined) {
+        if (loginUser > 0) {
+            switch (req.query.type) {
+                case "workPath":
+                    logMethod.log("Save path: " + req.query.data, "normal");
+                    sess.queryPath = req.query.data;
+                    res.send({
+                        ret_code: 0,
+                        ret_msg: '保存成功',
+                    });
+                    break;
+                
+                case "queryWorkPath":
+                    if (sess.queryPath !== undefined && sess.queryPath !== "") {
+                        res.send({
+                            ret_code: 0,
+                            ret_msg: '查询成功',
+                            ret_path: sess.queryPath
+                        });
+                    } else {
+                        res.send({
+                            ret_code: 0,
+                            ret_msg: '查询成功',
+                            ret_path: ""
+                        });
+                    }
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+    } else {
+        logMethod.error("Not_login", "Query from client", "http");
+        res.json({
+            ret_code: 9,
+            ret_msg: '未登录'
+        });
     }
 });
 
@@ -162,7 +209,7 @@ app.post('/edit', (req, res) => {
     var sess = req.session;
     var loginUser = sess.loginUser;
     var isLogined = !!loginUser;
-    logMethod.log(" * Request: " + req.body.op, "http");
+    logMethod.log(" Request: " + req.body.op, "http");
 
     if (isLogined) {
         if (loginUser > 0) {

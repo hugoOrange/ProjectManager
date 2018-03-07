@@ -29,7 +29,22 @@ module.exports = (function() {
                 database : config.dbDatabase
             });
             
-            connection.connect();
+            connection.connect(function (err) {
+                if (err) {
+                    logMethod.error('QL_CON', 'Connect to database', "db");
+                    setTimeout(module.exports.connect , 2000);
+                }
+            });
+            // disconnect automatically, reconnect
+            connection.on('error', function (err) {
+                logMethod.error('QL_CON', 'Disonnect to database', "db");
+                // connect after disconnect
+                if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+                    module.exports.connect();
+                } else {
+                    throw err;
+                }
+            });
         },
 
         queryUser: (username, password, succ, fail = () => {}) => {

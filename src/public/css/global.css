@@ -21,6 +21,11 @@ textarea:focus { outline: 0; }
     src: url('/css/fonts/Lato/Lato-Black.ttf');
 }
 
+@font-face {
+    font-family: 'Pacifico';
+    src: url('/css/fonts/Pacifico/Pacifico-Regular.ttf');
+}
+
 /* class style */
 /* clear float */
 .clearfix:before,

@@ -51,26 +51,45 @@ $(document).ready(() => {
         $("#no_project").hide();
     }
 
-
-
-    /** run when page load 
-     * load order:
-     * department overview -> manager and their projects
-     * when click sidebar manager load manager's project list
-     */
-
-    serverIO.queryAllOverView((data) => {
+    function beInOverview(o, m) {
         overviewElement.initContainer("project_overview");
         overviewElement.addDepartment("project_overview", "0");
         overviewElement.addDepartment("project_overview", "1");
 
-        overviewElement.initDepartment("project_overview", "0", data.ret_overview["0"], data.ret_manager["0"]);
-        overviewElement.initDepartment("project_overview", "1", data.ret_overview["1"], data.ret_manager["1"]);
+        overviewElement.initDepartment("project_overview", "0", o["0"], m["0"]);
+        overviewElement.initDepartment("project_overview", "1", o["1"], m["1"]);
+    }
 
-        sidebarElement.initContainer("manager_sidebar", "manager_mission");
-        sidebarElement.addDepartment("0");
-        sidebarElement.addDepartment("1");
-        sidebarElement.initDepartment(data.ret_manager["0"]);
+    function beInLoadTable(p) {
+        var dId = p.match(/department\/(\d*)/);
+        var mId = p.match(/manager\/(\d*)/);
+        var pId = p.match(/project\/(\d*)/);
+        sidebarElement.triggerDepartment(dId[1]);
+        if (mId !== null) {
+            sidebarElement.triggerManager(mId[1]);
+        }
+        if (pId !== null) {
+            sidebarElement.triggerProject(pId[1]);
+        }
+    }
+
+
+    /** run when page load */
+
+    serverIO.queryWorkPath((p) => {
+        var path = p.ret_path;
+        serverIO.queryAllOverView((data) => {
+            sidebarElement.initContainer("manager_sidebar", "manager_mission");
+            sidebarElement.addDepartment("0", true);
+            sidebarElement.addDepartment("1");
+            sidebarElement.initDepartment(data.ret_manager["0"]);
+            if (path === "") {
+                beInOverview(data.ret_overview, data.ret_manager);
+            } else {
+                // need jump that url
+                beInLoadTable(path);
+            }
+        });
     });
 
 
@@ -190,7 +209,9 @@ $(document).ready(() => {
                 return;
             } else {
                 serverIO.addProject(sendData, () => {
-                    location.reload();
+                    serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
+                        location.reload();
+                    });
                 });
             }
         } else if (op === confirmDialog.changeProject.op) {
@@ -200,7 +221,9 @@ $(document).ready(() => {
                 $("#confirm_alert").slideUp();
             } else {
                 serverIO.changeProjects(sendData, (result) => {
-                    location.reload();
+                    serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
+                        location.reload();
+                    });
                 });
             }
         } else if (op === confirmDialog.finishProject.op) {
@@ -208,14 +231,18 @@ $(document).ready(() => {
                 chooseProject.push($(val).val());
             });
             serverIO.finishProjects(chooseProject, (data) => {
-                location.reload();
+                serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
+                    location.reload();
+                });
             });
         } else if (op === confirmDialog.deleteProject.op) {
             $(".choose-part input:checked").each((index, val) => {
                 chooseProject.push($(val).val());
             });
             serverIO.deleteProjects(chooseProject, (data) => {
-                location.reload();
+                serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
+                    location.reload();
+                });
             });
         }
         $("body").css({

@@ -140,8 +140,9 @@ article {
 }
 
 #manager_header h1 span {
-    font-family: 'Lato';
-    margin-left: 1em;
+    /* font-family: 'Lato'; */
+    font-family: 'Pacifico';
+    margin-left: 3em;
 }
 
 /* overview part */
