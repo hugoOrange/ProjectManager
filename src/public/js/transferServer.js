@@ -82,6 +82,10 @@ var serverIO = (function () {
             ajaxSend({ type: 'queryWorkPath'}, 'GET', 'storage', succ, fail)
         },
 
+        clearWorkPath: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ type: 'clearWorkPath' }, 'GET', 'storage', succ, fail);
+        },
+
         /** query */
 
         queryAllOverView: (succ = () => {}, fail = () => {}) => {

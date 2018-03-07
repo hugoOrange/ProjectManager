@@ -126,7 +126,7 @@ var sidebarElement = (function () {
                 .append("<div id='manager_sidebar_shrink_mask'></div>").append($("<button id='manager_sidebar_shrink'></button>").click(shrinkEvent));
             
             if (firstInit) {
-                $(document.body).append($("<div id='alarmShow_area'></div>").append("<h2>加急项目</h2>").append("<ul></ul>").hide())
+                $(document.body).append($("<div id='alarmShow_area'></div>").append("<h2>加急项目<br>（土黄色为延期项目，红色为已过期项目）</h2>").append("<ul></ul>").hide())
                     .append($("<button id='alarmShow_btn' class='alarmShow-tip' data-maydelay='0' data-delay='0'></button>").click(clickAlarm).hide());
             }
         },
@@ -201,7 +201,7 @@ var sidebarElement = (function () {
         },
 
         triggerProject: (projectId) => {
-            $(".manager-sidebar-content-projectCell").filter((i, v) => v.dataset.id === managerId).click()
+            $(".manager-sidebar-content-projectCell").filter((i, v) => v.dataset.id === projectId).click()
         },
 
         getCurrentState: () => pagePath

@@ -135,8 +135,13 @@ article {
     border: 1px solid rgba(27,31,35,0.15);
     border-radius: 0 0 5px 5px;
 }
-#manager_header h1 a {
+#jump_overview {
+    background: transparent;
+    border: none;
+    font-size: 24px;
     color: rgba(10,21,90,1);
+    font-weight: bold;
+    cursor: pointer;
 }
 
 #manager_header h1 span {

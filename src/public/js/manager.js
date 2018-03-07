@@ -93,6 +93,12 @@ $(document).ready(() => {
     });
 
 
+    $("#jump_overview").click(event => {
+        serverIO.clearWorkPath(() => {
+            location.reload();
+        });
+        event.preventDefault();
+    });
 
     /** event bind when page load */
 

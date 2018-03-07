@@ -155,6 +155,14 @@ app.get('/storage', (req, res) => {
                     }
                     break;
                 
+                case "clearWorkPath":
+                    sess.queryPath = "";
+                    res.send({
+                        ret_code: 0,
+                        ret_msg: '清除成功',
+                    });
+                    break;
+                
                 default:
                     break;
             }

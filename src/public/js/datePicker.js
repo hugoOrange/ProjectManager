@@ -87,6 +87,10 @@ var datePickerElement = (function () {
         var container = $(event.target).parent().parent();
         var lastValue = datePickerElement.valueByEle(container);
         var nowValue = getChooseNow(container);
+        if (nowValue < new Date().toISOString().slice(0, 10)) {
+            alert("不合理的项目日期");
+            return;
+        }
         datePickerElement.valueByEle(container, nowValue);
         container.children("div").hide();
         container.children("button").show();

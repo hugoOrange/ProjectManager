@@ -13,15 +13,17 @@ var overviewElement = (function () {
         addDepartment: (containerID, departmentId) => {
             var container = $("#" + containerID);
             var departmentName = departmentNameMap[departmentId + ""];
-            var departmentOverview = $(`<div class='project-overview-department-cell' data-id='${departmentId}'><h2>${departmentName} 部门</h2><p>上周已完成：XX</p><p>进行中：XX</p><p>本周新增：XX</p></div>`);
-            var departmentManager = $(`<div class='project-overview-manager-cell' data-id='${departmentId}'><h3>${departmentName} 部门</h3><table></table></div>`);
+            var departmentOverview = $(`<div class='project-overview-department-cell' data-id='${departmentId}'><h2>${departmentName}</h2><p>上周已完成：XX</p><p>进行中：XX</p><p>本周新增：XX</p></div>`);
+            var departmentManager = $(`<div class='project-overview-manager-cell' data-id='${departmentId}'><h3>${departmentName}</h3><table></table></div>`);
 
             $("#project_overview_department").append(departmentOverview);
             $("#project_overview_manager").append(departmentManager);
         },
 
         initDepartment: (containerID, departmentId, overviewData, managerList) => {
+            console.dir(managerList)
             var container = $("#" + containerID);
+            var projectNum = 0;
             var departmentOverview = $(".project-overview-department-cell").filter(function(index) {
                 return this.dataset.id === departmentId;
             });
@@ -37,7 +39,7 @@ var overviewElement = (function () {
             } else {
                 departmentOverview.children("p").eq(0).text("上周已完成： " + overviewData.finished)
                     .end().eq(1).text("进行中： " + overviewData.working)
-                    .end().eq(2).text("本周新增： " + overviewData.new);                
+                    .end().eq(2).text("本周新增： " + overviewData.new);
             }
             
             departmentTable.empty().append("<tr><th>项目负责人</th><th>数量</th></tr>");
@@ -46,7 +48,12 @@ var overviewElement = (function () {
             } else {
                 for (const managerName in managerList) {
                     if (managerList.hasOwnProperty(managerName)) {
-                        departmentTable.append($(`<tr><td>${managerName}</td><td>${managerList[managerName].length}</td></tr>`));
+                        for (let i = 0; i < managerList[managerName].length; i++) {
+                            if (managerList[managerName][i].projectId !== null) {
+                                projectNum += 1;
+                            }
+                        }
+                        departmentTable.append($(`<tr><td>${managerList[managerName][0].username}</td><td>${projectNum}</td></tr>`));
                     }
                 }
             }
