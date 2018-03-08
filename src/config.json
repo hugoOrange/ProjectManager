@@ -1,0 +1,9 @@
+{
+"indexUrlHost": "localhost",
+"indexUrlPort": "4200",
+"sessionTime": "900000",
+"dbHost": "localhost",
+"dbUser": "root",
+"dbPassword": "scutb8303",
+"dbDatabase": "ProjectManager"
+}

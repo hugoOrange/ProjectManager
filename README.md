@@ -59,6 +59,16 @@ npm install express-session --save
 npm install body-parser --save
 ```
 
+### 安装一些其他组件
+
+python连接mysql所用的库，用以运行`changePassword.py`文件，不影响正常服务器运行。
+
+```shell
+# 任意目录
+sudo apt-get install libmysqlclient-dev libmysqld-dev python-dev python-setuptools
+pip install MySQL-python
+```
+
 ### 数据库初始化
 
 ​	初始化文件为`项目目录/src/sql/init.sql`，直接在命令行下运行即可：

@@ -39,7 +39,7 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: config.sessionTime
+        maxAge: +config.sessionTime
     }
 }));
 
@@ -89,7 +89,7 @@ app.post('/login', (req, res) => {
             break;
     
         case 'signup':
-            if (inviteCode === req.body.opList.inviteCode) {                
+            if (inviteCode === req.body.opList.inviteCode) {
                 action.loginSignup(req.body.opList, res);
                 inviteCode = action.gen_inviteCode();
             } else {

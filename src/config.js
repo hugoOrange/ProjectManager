@@ -1,9 +1,4 @@
-module.exports={
-indexUrlHost: "localhost",
-indexUrlPort: "4200",
-sessionTime: 15 * 60 * 1000,
-dbHost: "localhost",
-dbUser: "root",
-dbPassword: "scutb8303",
-dbDatabase: "ProjectManager",
-}
+var fs = require('fs');
+var obj = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+module.exports = obj;
