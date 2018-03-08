@@ -22,7 +22,7 @@ if indexUrlPort == "":
 sessionTime = raw_input("输入会话保留时间/ms(session)(默认为15 * 60 * 1000): ")
 if sessionTime == "":
     sessionTime = "15 * 60 * 1000"
-configFp = open("src/config.js", "w+")
+configFp = open("../config.js", "w+")
 
 # 初始化数据库
 os.system("mysql -u{} -p{} < src/sql/init.sql".format(dbUser, dbPassword))

@@ -47,6 +47,7 @@ var overviewElement = (function () {
             } else {
                 for (const managerName in managerList) {
                     if (managerList.hasOwnProperty(managerName)) {
+                        projectNum = 0;
                         for (let i = 0; i < managerList[managerName].length; i++) {
                             if (managerList[managerName][i].projectId !== null) {
                                 projectNum += 1;

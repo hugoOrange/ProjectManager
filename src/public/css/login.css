@@ -46,7 +46,7 @@ body {
     margin-bottom: 1.3em;
 }
 
-.username-img, .department-img, .password-img {
+.username-img, .department-img, .password-img, .invitation-img {
     position: absolute;
     width: 26px;
     background: #9ea6ef;

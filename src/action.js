@@ -4,8 +4,28 @@ module.exports = (function () {
     var dateCal = require('./dateCal.js');
 
     db.connect();
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+    
+    String.prototype.replaceAt=function(index, replacement) {
+        return this.slice(0, index) + replacement+ this.slice(index + replacement.length);
+    }
 
     return {
+
+        gen_inviteCode: (bit = 6) => {
+            let inviteCode = "" + Math.floor(Math.random() * Math.pow(10, bit));
+            let convertBit = new Array(getRandomInt(0, bit)).fill(1).map(() => getRandomInt(0, 25));
+            convertBit.forEach((value, index) => {
+                inviteCode = inviteCode.replaceAt(getRandomInt(0, bit), getRandomInt(0, 1) ? String.fromCharCode(65 + value) : String.fromCharCode(97 + value))
+            });
+            return inviteCode;
+        },
+
         loginVerif: (userInfo, res, succ) => {
             db.queryUser(userInfo.username, userInfo.password, (userId) => {
                 if (userId.length < 1) {

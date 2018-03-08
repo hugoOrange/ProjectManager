@@ -86,6 +86,10 @@ var serverIO = (function () {
             ajaxSend({ type: 'clearWorkPath' }, 'GET', 'storage', succ, fail);
         },
 
+        queryInviteCode: (succ = () => {}, fail = () => {}) => {
+            ajaxSend({ type: 'inviteCode'}, 'GET', '/storage', succ, fail);
+        },
+
         /** query */
 
         queryAllOverView: (succ = () => {}, fail = () => {}) => {
@@ -135,6 +139,6 @@ var serverIO = (function () {
                 opList: changeList
             }
             ajaxSend(editData, 'POST', '/edit', succ, fail);
-        }
+        },
     }
 })();

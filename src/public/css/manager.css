@@ -1,15 +1,4 @@
-#gaidufghn { 
- color: #bfb7e6;
- color: #7d86c1;
- color: #403874;
- color: #261c4e;
- color: #1f0937;
- color: #574331;
- color: #9d9121;
- color: #a49959;
- color: #b6b37e;
- color: #91a3f5;
- 
+#color_scheme {
     color: #f7fbff;
     color: #deebf7;
     color: #c6dbef;
@@ -21,7 +10,6 @@
     color: #2171b5;
     color: #08519c;
     color: #08306b;
-
 }
 
 /* container */
@@ -726,4 +714,23 @@ article {
     background: #030507;
     opacity: 0.5;
     z-index: 20;
+}
+
+/* invitation */
+#invite_code {
+    position: fixed;
+    left: 1%;
+    top: 90%;
+    background: #2a7fde;
+    color: #d2d5ff;
+    width: 8em;
+    height: 1.4em;
+    font-size: 16px;
+    padding: 0.5em 0.5em;
+    border-radius: 5px;
+    opacity: 0.4;
+    transition: all .2s ease-in-out;
+}
+#invite_code:hover {
+    opacity: 1;
 }

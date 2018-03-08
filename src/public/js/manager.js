@@ -78,6 +78,15 @@ $(document).ready(() => {
 
     /** run when page load */
 
+    serverIO.queryInviteCode((code) => {
+        var inviteCode = code.ret_data;
+        if (inviteCode !== "") {
+            $("#invite_code").show().text("邀请码： " + inviteCode);
+        } else {
+            $("#invite_code").hide();
+        }
+    });
+
     serverIO.queryWorkPath((p) => {
         var path = p.ret_path;
         serverIO.queryAllOverView((data) => {
@@ -93,6 +102,7 @@ $(document).ready(() => {
                 beInLoadTable(path);
             }
         });
+        $("#manager_signout").show();
     });
 
 

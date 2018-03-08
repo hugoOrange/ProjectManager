@@ -26,6 +26,8 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
     process.exit();
 }
 
+// other initalize
+var inviteCode = action.gen_inviteCode();
 
 logMethod.start();
 // about server
@@ -87,7 +89,15 @@ app.post('/login', (req, res) => {
             break;
     
         case 'signup':
-            action.loginSignup(req.body.opList, res);
+            if (inviteCode === req.body.opList.inviteCode) {                
+                action.loginSignup(req.body.opList, res);
+                inviteCode = action.gen_inviteCode();
+            } else {
+                res.send({
+                    ret_code: 1,
+                    ret_msg: '邀请码错误'
+                });
+            }
             break;
 
         default:
@@ -161,6 +171,22 @@ app.get('/storage', (req, res) => {
                         ret_code: 0,
                         ret_msg: '清除成功',
                     });
+                    break;
+
+                case "inviteCode":
+                    if (loginUser == 1) {
+                        res.send({
+                            ret_code: 0,
+                            ret_msg: '成功获取邀请码',
+                            ret_data: inviteCode
+                        });
+                    } else {
+                        res.send({
+                            ret_code: 0,
+                            ret_msg: '成功获取邀请码',
+                            ret_data: ''
+                        });
+                    }
                     break;
                 
                 default:
