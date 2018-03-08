@@ -8,32 +8,9 @@ var sidebarElement = (function () {
     var tableId = "";
     var pagePath = "";
 
-    var shrinkEvent = event => {
-        var sidebarWid = parseFloat($("#manager_sidebar").css("width")) + 40 + "px";
-
-        if ($(event.target).css("left") === "0px") {
-            // show
-            $(event.target).css("left", sidebarWid);
-            $("#manager_sidebar_shrink_mask").css("left", sidebarWid);
-            $("#manager_sidebar").css("left", "0px");
-        } else {
-            // shrink
-            $(event.target).css("left", "0px");
-            $("#manager_sidebar_shrink_mask").css("left", "0px");
-            $("#manager_sidebar").css("left", "-" + sidebarWid);
-        }
-    };
-
-    var clickDepartment = (event) => {
-        var departmentId = event.target.dataset.id;
-        var preUrl = document.location.host;
-
+    var genTable = (departmentId, needInit = true, callback) => {
         tableOperation.initTable(tableId);
         $("#project_overview").hide();
-        $(".manager-sidebar-departmentChoose").removeClass(".manager-sidebar-departmentChoose");
-        $(event.target).addClass("manager-sidebar-departmentChoose");
-        pagePath = "/department/" + departmentId;
-
         serverIO.queryDepartmentProject(departmentId, (data) => {
             var managerList = {};
             var con = data.ret_con;
@@ -54,7 +31,9 @@ var sidebarElement = (function () {
                 });
             }
 
-            sidebarElement.initDepartment(managerList);
+            if (needInit) {
+                sidebarElement.initDepartment(managerList);
+            }
             tableOperation.addProjects(con, $("#manager_mission"));
             tableOperation.statusSet(tableId);
             tableOperation.progressSet(tableId);
@@ -71,39 +50,51 @@ var sidebarElement = (function () {
                 }, 300);
                 $("#alarmShow_area").hide();
             }, 1000);
-        });
 
+            if (callback !== undefined) {
+                callback();
+            }
+        });
+    };
+
+
+    var shrinkEvent = event => {
+        var sidebarWid = parseFloat($("#manager_sidebar").css("width")) + 40 + "px";
+
+        if ($(event.target).css("left") === "0px") {
+            // show
+            $(event.target).css("left", sidebarWid);
+            $("#manager_sidebar_shrink_mask").css("left", sidebarWid);
+            $("#manager_sidebar").css("left", "0px");
+        } else {
+            // shrink
+            $(event.target).css("left", "0px");
+            $("#manager_sidebar_shrink_mask").css("left", "0px");
+            $("#manager_sidebar").css("left", "-" + sidebarWid);
+        }
+    };
+
+    var clickDepartment = (event) => {
+        sidebarElement.jumpDepartment(event.target.dataset.id, true);
         event.stopPropagation();
     };
 
     var clickManager = (event) => {
-        var mList = [];
         var departmentId = $(".manager-sidebar-departmentChoose").attr("data-id");
-        $("#project_overview").hide();
-        if (event.target.classList.contains("down-triangle")) {
-            event.target.classList.remove("down-triangle");
-            event.target.nextSibling.style.height = "0";
-        } else {
-            event.target.classList.add("down-triangle");
-            event.target.nextSibling.style.height = "auto";
-        }
-        pagePath = "/department/" + departmentId + "/manager/" + event.target.dataset.id;
-        
-        // need to show table on first click
+        var managerId = event.target.dataset.id;
         if ($("#" + tableId).is(":hidden")) {
-            sidebarElement.triggerDepartment(departmentId);
+            sidebarElement.jumpManager(departmentId, managerId, true);
+        } else {
+            sidebarElement.jumpManager(departmentId, managerId, false);
         }
-        $(event.target).next().children("li").each((i, v) => {
-            mList.push(v.childNodes[0].dataset.id);
-        });
-        tableOperation.filtLine("manager_mission", val => mList.indexOf(val.dataset.id) === -1);
+        event.stopPropagation();
     };
 
     var clickProject = event => {
-        var projectId = event.target.dataset.id;
         var departmentId = $(".manager-sidebar-departmentChoose").attr("data-id");
-        pagePath = "/department/" + departmentId + "/manager/" + event.target.parentNode.parentNode.previousSibling.dataset.id + "/project/" + projectId;
-        tableOperation.filtLine("manager_mission", val => val.dataset.id !== projectId);
+        var managerId = event.target.parentNode.parentNode.previousSibling.dataset.id;
+        var projectId = event.target.dataset.id;
+        sidebarElement.jumpProject(departmentId, managerId, projectId, false);
     };
 
     var clickAlarm = event => {
@@ -192,16 +183,55 @@ var sidebarElement = (function () {
             }
         },
 
-        triggerDepartment: (departmentId) => {
-            $(".manager-sidebar-department").filter((i, v) => v.dataset.id === departmentId).click()
+        jumpDepartment: (departmentId, needInit) => {
+            $(".manager-sidebar-departmentChoose").removeClass("manager-sidebar-departmentChoose");
+            $(".manager-sidebar-department").filter((i, v) => v.dataset.id = departmentId).addClass("manager-sidebar-departmentChoose");
+            pagePath = "/department/" + departmentId;
+
+            genTable(departmentId, needInit);
         },
 
-        triggerManager: (managerId) => {
-            $(".manager-sidebar-content-managerCell").filter((i, v) => v.dataset.id === managerId).click()
+        jumpManager: (departmentId, managerId, needInit, changeState = true, callback = () => {}) => {
+            var mList = [];
+            var managerEle = $(".manager-sidebar-content-managerCell").filter((i, v) => v.dataset.id === managerId);
+            pagePath = "/department/" + departmentId + "/manager/" + managerId; // private attribute
+            $("#project_overview").hide();
+            
+            if (changeState) {
+                if (managerEle.hasClass("down-triangle")) {
+                    managerEle.removeClass("down-triangle");
+                    managerEle.next().css("height", "0");
+                } else {
+                    managerEle.addClass("down-triangle");
+                    managerEle.next().css("height", "auto");
+                }
+            }
+
+            managerEle.next().children("li").each((i, v) => {
+                mList.push(v.childNodes[0].dataset.id);
+            });
+            if (needInit) {
+                genTable(departmentId, false, () => {
+                    tableOperation.filtLine("manager_mission", function(val) {
+                        return mList.indexOf(val.dataset.id) === -1;
+                    });
+                    callback();
+                });
+            } else {
+                tableOperation.filtLine("manager_mission", function(val) {
+                    return mList.indexOf(val.dataset.id) === -1;
+                });
+                callback();
+            }
         },
 
-        triggerProject: (projectId) => {
-            $(".manager-sidebar-content-projectCell").filter((i, v) => v.dataset.id === projectId).click()
+        jumpProject: (departmentId, managerId, projectId, needInit) => {
+            sidebarElement.jumpManager(departmentId, managerId, needInit, false, () => {
+                pagePath = "/department/" + departmentId + "/manager/" + managerId + "/project/" + projectId;
+                tableOperation.filtLine("manager_mission", function(val) {
+                    return +val.dataset.id !== +projectId;
+                });
+            });    
         },
 
         getCurrentState: () => pagePath

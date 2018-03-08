@@ -21,7 +21,6 @@ var overviewElement = (function () {
         },
 
         initDepartment: (containerID, departmentId, overviewData, managerList) => {
-            console.dir(managerList)
             var container = $("#" + containerID);
             var projectNum = 0;
             var departmentOverview = $(".project-overview-department-cell").filter(function(index) {

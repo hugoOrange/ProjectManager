@@ -64,12 +64,14 @@ $(document).ready(() => {
         var dId = p.match(/department\/(\d*)/);
         var mId = p.match(/manager\/(\d*)/);
         var pId = p.match(/project\/(\d*)/);
-        sidebarElement.triggerDepartment(dId[1]);
-        if (mId !== null) {
-            sidebarElement.triggerManager(mId[1]);
-        }
+        // attention: function triggerManager will invoke triggerDepartment
+        // because of the asynchronous problem, it will occur problem when use trigger two above function successively
         if (pId !== null) {
-            sidebarElement.triggerProject(pId[1]);
+            sidebarElement.jumpProject(dId[1], mId[1], pId[1], true);
+        } else if (mId !== null) {
+            sidebarElement.jumpManager(dId[1], mId[1], true);
+        } else {
+            sidebarElement.jumpDepartment(dId[1], true);
         }
     }
 
@@ -82,11 +84,12 @@ $(document).ready(() => {
             sidebarElement.initContainer("manager_sidebar", "manager_mission");
             sidebarElement.addDepartment("0", true);
             sidebarElement.addDepartment("1");
-            sidebarElement.initDepartment(data.ret_manager["0"]);
             if (path === "") {
+                sidebarElement.initDepartment(data.ret_manager["0"]);
                 beInOverview(data.ret_overview, data.ret_manager);
             } else {
                 // need jump that url
+                sidebarElement.initDepartment(data.ret_manager[path.match(/department\/(\d*)/)[1]]);
                 beInLoadTable(path);
             }
         });
@@ -208,6 +211,7 @@ $(document).ready(() => {
         var chooseProject = []; // for finish and delete
         var sendData = null;
 
+        console.log(sidebarElement.getCurrentState())
         if(op === confirmDialog.addProject.op){
             // add new project
             sendData = tableOperation.getValueAdd("manager_mission");

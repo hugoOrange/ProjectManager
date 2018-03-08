@@ -268,7 +268,7 @@ var tableOperation = (function () {
             let name = addEle.eq(1).children("input").val();
             let target = addEle.eq(2).children("input").val() || ".";
             let manager = selectElement.selectValByEle(addEle.eq(3).children(".selectJS"));
-            let deadline = addEle.eq(4).children("input").val() || getNowDateFixed(10);
+            let deadline = datePickerElement.valueByEle(addEle.eq(4).children(".datePickerJS"));
             let progressText = progressElement.getProgressInputText($("#new_projectProgress"));
             let priority = selectElement.selectValByEle(addEle.eq(6).children(".selectJS"));
 
@@ -434,6 +434,8 @@ var tableOperation = (function () {
         filtLine: (tableId, filtFunc) => {
             $("#" + tableId + " tr").each((index, val) => {
                 if (index > 1) {
+                    // console.log(val)
+                    // console.log(filtFunc(val))
                     if(filtFunc(val)) {
                         $(val).hide();
                     } else {

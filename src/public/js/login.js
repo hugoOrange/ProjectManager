@@ -30,7 +30,7 @@ $(document).ready(() => {
         let username = $("#signup_username").val();
         let firstPassword = $("#signup_password").val();
         let secondPassword = $("#signup_passwordAgain").val();
-        if (username.search(/[^\w]/) === -1 && username.length >= MIN_USERNAME_LENGTH && username.length <= MAX_USERNAME_LENGTH) {
+        if (username.search(/[^\w\s\.]/) === -1 && username.length >= MIN_USERNAME_LENGTH && username.length <= MAX_USERNAME_LENGTH) {
             if (firstPassword === secondPassword && firstPassword.length >= MIN_PASSWORD_LENGTH && firstPassword.length <= MAX_PASSWORD_LENGTH) {
                 serverIO.signUp({
                     username: username,
