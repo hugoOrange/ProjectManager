@@ -1,6 +1,6 @@
 var tableOperation = (function () {
     const statusMap = [{
-        color: "blue",
+        color: "#0303b3",
         text: "正常",
     }, {
         color: "red",
@@ -133,7 +133,7 @@ var tableOperation = (function () {
                 <td><div id="new_priority"></div></td>
             </tr>
             `);
-            datePickerElement.makeElementByEle($("#new_deadline").css("min-width", "100px"));
+            datePickerElement.makeElementByEle($("#new_deadline"));
             selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
             progressElement.createProgressInput($("#new_projectProgress"));
             tableOperation.bindEvent(tableId);
@@ -187,7 +187,7 @@ var tableOperation = (function () {
                     <input type="checkbox" name="project-choose" value="${project.projectId}">
                 </td>
             </tr>`);
-            datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode").css("min-width", "100px"), undefined, undefined, "d" + project.projectId);
+            datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode"), undefined, undefined, "d" + project.projectId);
             selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
             tableEle.append(tr);
             selectElement.makeSelectByEle(tr.children("td").eq(3).children(".project-edit-mode").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId), "m" + project.projectId);
@@ -404,6 +404,9 @@ var tableOperation = (function () {
             tr.children("td").each((i, val) => {
                 eleW = $(val).children(".project-watch-mode");
                 eleE = $(val).children(".project-edit-mode");
+                if (i === 0) {
+                    eleE.text(" - ")
+                }
                 if (i === 1 || i === 2) {
                     eleE.val(eleW.text());
                 }
@@ -592,8 +595,8 @@ var progressElement = (function () {
             }
             div = $('<div class="progress-line"></div>')
                 .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, "p" + id))
-                .append("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id))
-                .append($("<button class='progress-delete'></button>").click(event => deleteEvent(event, id)));
+                .append($("<button class='progress-delete'></button>").click(event => deleteEvent(event, id).css("width", "120px")))
+                .append("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id));
             container.append(div).addClass("progressJS");
         },
 
@@ -614,8 +617,8 @@ var progressElement = (function () {
             for (let i = 0; i < num; i++) {
                 container.append($(`<div class='progress-line'></div>`)
                     .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, "p" + id))
-                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id)))
-                    .append($("<button class='progress-delete'></button>").click(deleteEvent)));
+                    .append($("<button class='progress-delete'></button>").click(deleteEvent)))
+                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id)));
             }
         },
 
