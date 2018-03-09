@@ -28,6 +28,7 @@ $(document).ready(() => {
     function getNowDateFixed (bit = 10, offset = 0) {
         var day = new Date();
         var nextDay = new Date(day);
+        debugger;
         nextDay.setDate(day.getDate() + offset);
         return nextDay.toISOString().slice(0, bit);
     }
@@ -133,11 +134,13 @@ $(document).ready(() => {
                 $("#no_project").show();
             }
             $("#manager_mission_edit").hide();
+            $("#new_milestone").parent().parent().hide();
             $("#manager_confirm").hide();
         } else {
             resetStatus();
             table_current_state = "add";
             $("#manager_mission_edit").show();
+            $("#new_milestone").parent().parent().show();
             $("#manager_confirm").show();
         }
         $("#confirm_alert p").text(confirmDialog.addProject.txt);
@@ -221,7 +224,6 @@ $(document).ready(() => {
         var chooseProject = []; // for finish and delete
         var sendData = null;
 
-        console.log(sidebarElement.getCurrentState())
         if(op === confirmDialog.addProject.op){
             // add new project
             sendData = tableOperation.getValueAdd("manager_mission");

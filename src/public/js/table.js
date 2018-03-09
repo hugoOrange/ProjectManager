@@ -75,7 +75,7 @@ var tableOperation = (function () {
         var changeProjectId = -1;
 
         $("#" + tableId + " tr").each((index, val) => {
-            if (index > 1) {
+            if (index % 2 !== 0 && index > 1) {
                 $(val).children("td").each((i, v) => {
                     if (i === 1) {
                         // projectName
@@ -132,10 +132,14 @@ var tableOperation = (function () {
                 <td><div id="new_projectProgress"></div></td>
                 <td><div id="new_priority"></div></td>
             </tr>
+            <tr>
+                <td colspan="8"><div id="new_milestone"></div></td>
+            </tr>
             `);
             datePickerElement.makeElementByEle($("#new_deadline"));
             selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
             progressElement.createProgressInput($("#new_projectProgress"));
+            milestoneElement.createMilestoneInput($("#new_milestone"), true).parent().parent().hide();
             tableOperation.bindEvent(tableId);
             serverIO.queryUser((userL) => {
                 userList = userL.ret_con;
@@ -145,7 +149,7 @@ var tableOperation = (function () {
 
         addProjects: (projectsInfo, tableEle) => {
             for (let i = 0; i < projectsInfo.length; i++) {
-                if (projectsInfo[i].projectId) {                    
+                if (projectsInfo[i].projectId) {
                     tableOperation.addProject(projectsInfo[i], tableEle);
                 }
             }
@@ -187,23 +191,25 @@ var tableOperation = (function () {
                     <input type="checkbox" name="project-choose" value="${project.projectId}">
                 </td>
             </tr>`);
+            var milestoneTr = $("<tr></tr>").hide().append(`<td colspan="8"><div></div></td>`);
             datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode"), undefined, undefined, "d" + project.projectId);
-            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
-            tableEle.append(tr);
             selectElement.makeSelectByEle(tr.children("td").eq(3).children(".project-edit-mode").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId), "m" + project.projectId);
+            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
+            milestoneElement.createMilestone(milestoneTr.children("td").children("div"), true, project.projectId);
+            milestoneElement.val(milestoneTr.children("td").children("div"), project.milestone, project.projectId);
+            tableEle.append(tr).append(milestoneTr);
         },
 
         statusSet: (tableId) => {
             $(`#${tableId} tr td:nth-child(1)`).each((index, ele) => {
-                if (index === 0) {
-                    return;
+                if (index % 2 !== 0 && ele.dataset.store !== undefined) {
+                    let s = ele.dataset.store;
+                    if (s > statusMap.length) {
+                        s = statusMap[statusMap.length - 1];
+                    }
+                    $(ele).children(".project-watch-mode").css("color", statusMap[s].color);
+                    $(ele).children(".project-watch-mode").text(statusMap[s].text);
                 }
-                let s = ele.dataset.store;
-                if (s > statusMap.length) {
-                    s = statusMap[statusMap.length - 1];
-                }
-                $(ele).children(".project-watch-mode").css("color", statusMap[s].color);
-                $(ele).children(".project-watch-mode").text(statusMap[s].text);
             });
         },
 
@@ -217,13 +223,15 @@ var tableOperation = (function () {
                 $(ele).children("p").last().show();
             });
             $(`#${tableId} tr td:nth-child(6) button.project-progressShow`).click(event => {
-                let ele = $(event.target.parentNode).children(".project-watch-mode").children("p");
+                let ele = $(event.target).parent().children(".project-watch-mode").children("p");
                 if (ele.first().is(":hidden")) {
                     ele.show();
+                    $(event.target).parent().parent().next().show();
                     $(event.target).css("background-image", 'url("/assets/minus.svg")');
                 } else {
                     ele.hide();
                     ele.last().show();
+                    $(event.target).parent().parent().next().hide();
                     $(event.target).css("background-image", 'url("/assets/plus.svg")');
                 }
             });
@@ -231,15 +239,14 @@ var tableOperation = (function () {
 
         prioritySet: (tableId) => {
             $(`#${tableId} tr td:nth-child(7)`).each((index, ele) => {
-                if (index === 0) {
-                    return;
+                if (ele.dataset.store !== undefined) {
+                    let p = ele.dataset.store;
+                    if (p > priorityMap.length) {
+                        p = priorityMap[priorityMap.length - 1];
+                    }
+                    $(ele).children(".project-watch-mode").css("color", priorityMap[p].color);
+                    $(ele).children(".project-watch-mode").text(priorityMap[p].text);
                 }
-                let p = ele.dataset.store;
-                if (p > priorityMap.length) {
-                    p = priorityMap[priorityMap.length - 1];
-                }
-                $(ele).children(".project-watch-mode").css("color", priorityMap[p].color);
-                $(ele).children(".project-watch-mode").text(priorityMap[p].text);
             });
         },
 
@@ -247,8 +254,11 @@ var tableOperation = (function () {
             $(".project-watch-mode").hide();
             $(".project-edit-mode").show();
             $("#" + tableId).children("tr").each((index, val) => {
-                if (index > 1) {
+                if (index % 2 !== 0 && index > 1) {
                     tableOperation.giveEditModeElementVal($(val), val.dataset.id);
+                    $(val).next().show();
+                } else if (index > 2) {
+                    milestoneElement.beInEditMode($(val), val.dataset.id);
                 }
             });
             valueChangeRecord(tableId);
@@ -257,10 +267,16 @@ var tableOperation = (function () {
         changeInWatchMode: (tableId) => {
             $(".project-watch-mode").show();
             $(".project-edit-mode").hide();
+            $("#" + tableId).children("tr").each((index, val) => {
+                if (index % 2 === 0 && index > 1) {
+                    $(val).hide();
+                }
+            });
             changeRecord = {};
             progressElement.resetChangeRecord();
             selectElement.resetChangeRecord();
-            datePickerElement.clearChangeRecordByFunc(id => id[0] === "d");
+            milestoneElement.resetChangeRecord();
+            datePickerElement.resetChangeRecord();
         },
 
         getValueAdd: (tableId) => {
@@ -271,6 +287,7 @@ var tableOperation = (function () {
             let deadline = datePickerElement.valueByEle(addEle.eq(4).children(".datePickerJS"));
             let progressText = progressElement.getProgressInputText($("#new_projectProgress"));
             let priority = selectElement.selectValByEle(addEle.eq(6).children(".selectJS"));
+            let milestone = milestoneElement.val($("#" + tableId).children("tr").eq(2));
 
             if(name.search(/\<|\>/) !== -1 || name.length < 5 || name.length > 31) {
                 alert("不规范的项目文件名");
@@ -284,7 +301,8 @@ var tableOperation = (function () {
                 deadline: deadline,
                 projectProgress: progressText,
                 priority: priority,
-                userId: manager
+                userId: manager,
+                milestone: milestone
             };
         },
 
@@ -292,16 +310,23 @@ var tableOperation = (function () {
             let crP = progressElement.getChangeRecord();
             let crS = selectElement.getChangeRecord();
             let crD = datePickerElement.getChangeRecord();
+            let crM = milestoneElement.getChangeRecord();
             let changeId = -1;
             var pStr = "";
             $("#" + tableId + " tr").each((index, val) => {
                 changeId = val.dataset.id;
-                if (index > 1) {
+                if (index % 2 !== 0 && index > 1) {
                     if (crP[changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
                         changeRecord[changeId]["projectProgress"] = progressElement.getProgressInputText($(val).children("td").eq(5).children(".project-edit-mode"));
+                    }
+                    if (crM[changeId] !== undefined) {
+                        if (changeRecord[changeId] === undefined) {
+                            changeRecord[changeId] = {};
+                        }
+                        changeRecord[changeId]["milestone"] = milestoneElement.val($(val).children("td").eq(5).children(".project-edit-mode"));
                     }
                     if (crS["p" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
@@ -335,6 +360,7 @@ var tableOperation = (function () {
         lineStickTop: (tableId, id) => {
             let focusEle = null;
             let firstEle = $("#" + tableId + " tr:nth-child(3)");
+            let firstMilestone = $("# " + tableId + " tr:nth-child(4)");
 
             if (id == firstEle[0].dataset.id) {
                 return;
@@ -363,7 +389,7 @@ var tableOperation = (function () {
             }
 
             $("#" + tableId + " tr").each((index, val) => {
-                if (index > 1 && !$(val).is(":hidden")) {
+                if (index % 2 !== 0 && index > 1 && !$(val).is(":hidden")) {
                     deadline = $(val).children("td").eq(4).children(".project-watch-mode").text();
                     pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
                     mName = $(val).children("td").eq(3).children(".project-watch-mode").text();
@@ -436,9 +462,7 @@ var tableOperation = (function () {
 
         filtLine: (tableId, filtFunc) => {
             $("#" + tableId + " tr").each((index, val) => {
-                if (index > 1) {
-                    // console.log(val)
-                    // console.log(filtFunc(val))
+                if (index % 2 !== 0 && index > 1) {
                     if(filtFunc(val)) {
                         $(val).hide();
                     } else {
@@ -536,6 +560,21 @@ var tableOperation = (function () {
                     tableOperation.chooseZeroDelete();
                 }
             });
+        }, 
+
+        deleteLineById: (tableId, id) => {
+            $("#" + tableId + " tr").each((i, v) => {
+                if (v.dataset.id === id) {
+                    $(v).next().remove();
+                    $(v).remove();
+                    return;
+                }
+            });
+        },
+
+        deleteLineByEle: (ele) => {
+            $(ele).next().remove();
+            $(ele).remove();
         }
     }
 })();
@@ -569,7 +608,7 @@ var progressElement = (function () {
 
     // delete button event
     function deleteEvent(event, id) {
-        if ($(event.target.parentNode.parentNode).children(".progress-line").length > 0) {
+        if ($(event.target.parentNode.parentNode).children(".progress-line").length > 1) {
             if (id !== undefined) {
                 progressChangeRecord[id] = id;
             }
@@ -617,8 +656,8 @@ var progressElement = (function () {
             for (let i = 0; i < num; i++) {
                 container.append($(`<div class='progress-line'></div>`)
                     .append(datePickerElement.makeElementByEle($("<div></div>"), undefined, undefined, "p" + id))
-                    .append($("<button class='progress-delete'></button>").click(deleteEvent)))
-                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id)));
+                    .append($("<button class='progress-delete'></button>").click(event => deleteEvent(event, id)))
+                    .append($("<textarea name='progressText' rows='4'></textarea>").on("change", event => lineChangeEvent(event, id))));
             }
         },
 
@@ -639,5 +678,230 @@ var progressElement = (function () {
         getChangeRecord: function () {
             return progressChangeRecord;
         }
+    }
+})();
+
+/**deleteEvent
+ * milestone html constructure:
+ * <container class='milestoneJS'>
+ *  <h3>项目子任务</h3>
+ *  <table class="milestone-table">
+ *   <tr>
+ *    <th>名</th>
+ *    <th>工作日</th>
+ *    <th>开始时间</th>
+ *    <th>实际完成时间</th>
+ *   </tr>
+ *   <tr>
+ *    <td>
+ *     <p class="milestone-watch-mode"></p>
+ *     <textarea name="milestoneName" class="milestone-edit-mode" rows="2"></textarea>
+ *    </td>
+ *    <td>
+ *     <p class="milestone-watch-mode"></p>
+ *     <textarea name="milestoneWork" class="milestone-edit-mode" cols="2" rows="1"></textarea>
+ *    </td>
+ *    <td>
+ *     <p class="milestone-watch-mode"></p>
+ *     <datePicker class="milestone-edit-mode"></datePicker>
+ *    </td>
+ *    <td>
+ *     <p class="milestone-watch-mode"></p>
+ *     <datePicker class="milestone-edit-mode"></datePicker>
+ *    </td>
+ *   <button class="milestone-table-delete"></button>
+ *  </tr>
+ * </table>
+ * </container>
+ */
+var milestoneElement = (function () {
+    var changeRecord = {};
+    var milestoneSep = "^#^";
+
+    var textChangeEvent = (event, id) =>　{
+        if (id !== undefined) {
+            changeRecord[id] = id;
+        }
+    };
+
+    var addLineEvent = (event, id) => {
+        milestoneElement.createMilestone($(event.target).parent().parent().parent(), false, id);
+        if (id !== undefined) {
+            changeRecord[id] = id;
+        }
+    };
+
+    var deleteLineEvent = (event, id) => {
+        $(event.target).parent().remove();
+        if (id !== undefined) {
+            changeRecord[id] = id;
+        }
+    };
+
+    return {
+
+        createMilestoneInput: (container, firstCreate = false) => {
+            var table = null;
+            var tr = $(`
+            <tr>
+                <td>
+                    <input name="milestoneName">
+                </td>
+                <td>
+                    <input name="milestoneWork">
+                </td>
+                <td><div></div></td>
+                <td>
+                    <div></div>
+                    <button class="milestone-table-delete"></button>
+                </td>
+            </tr>
+            `);
+
+            datePickerElement.makeElementByEle(tr.children("td").eq(2).children("div"));
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"));
+            tr.children("td").eq(3).children(".milestone-table-delete").click(event => {
+                var tr = $(event.target).parent().parent();
+                if (tr.parent().children("tr").length > 2) {
+                    tr.remove();
+                } else {
+                    alert("数量不能少于１");
+                }
+            });
+
+            if (firstCreate) {
+                table = $("<table></table>").append($("<tr></tr>")
+                    .append("<th>名</th>")
+                    .append("<th>工作日</th>")
+                    .append("<th>开始时间</th>")
+                    .append($("<th>实际完成时间</th>").append($("<button></button>").addClass("milestone-table-add").click(event => milestoneElement.createMilestoneInput($(event.target).parent().parent().parent().parent())))));
+                container.empty().append($("<h3>项目子任务</h3>")).append(table).addClass("milestoneJS");
+            } else {
+                table = container.children("table");
+            }
+            table.append(tr);
+
+            return container;
+        },
+
+        createMilestone: (container, firstCreate = false, id) => {
+            var table = null;
+            var tr = $(`
+            <tr data-id="${id}">
+                <td>
+                    <p class="milestone-watch-mode"></p>
+                    <input name="milestoneName" class="milestone-edit-mode">
+                </td>
+                <td>
+                    <p class="milestone-watch-mode"></p>
+                    <input name="milestoneWork" class="milestone-edit-mode">
+                </td>
+                <td>
+                    <p class="milestone-watch-mode"></p>
+                    <div class="milestone-edit-mode"></div>
+                </td>
+                <td>
+                    <p class="milestone-watch-mode"></p>
+                    <div class="milestone-edit-mode"></div>
+                </td>
+                <button class="milestone-table-delete"></button>
+            </tr>
+            `);
+
+            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, undefined, "m" + id);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), undefined, undefined, undefined, "m" + id);
+            tr.children("td").eq(1).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
+            tr.children("td").eq(2).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
+            tr.children(".milestone-table-delete").click(event => deleteLineEvent(event, id));
+
+            if (firstCreate) {
+                table = $("<table></table>").append($("<tr></tr>")
+                    .append($("<th>名</th><th>工作日</th><th>开始时间</th><th>实际完成时间</th>"))
+                    .append($("<button></button>").click(event => addLineEvent(event, id))));
+                container.empty().append($("<h3>项目子任务</h3>")).append(table).addClass("milestoneJS");
+            } else {
+                table = container.children("table");
+            }
+            table.append(tr);
+
+            return container;
+        },
+
+        createServeralMilestone: (container, num, id) => {
+            if (num < 0) {
+                console.warn("Too little milestone");
+                return;
+            }
+            milestoneElement.createMilestone(container, true, id);
+            for (let i = 1; i < num; i++) {
+                milestoneElement.createMilestone(container, false, id);
+            }
+        },
+
+        val: (container, value, id) => {
+            var lineTxt = null;
+            var contentTxt = null;
+            var txt = "";
+            var trLength = container.children("table").children("tr").length;
+            if (value === undefined) {   // get
+                container.children("table").children("tr").each((i, v) => {
+                    if (i > 1) {
+                        $(v).children("td").children((index, value) => {
+                            if (index === 3) {
+                                txt += $(value).children(".milestone-watch-mode").text() + i === trLength ? milestoneSep : "";
+                            } else {
+                                txt += $(value).children(".milestone-watch-mode").text() + "~";
+                            }
+                        });
+                    }
+                });
+            } else {   // set
+                lineTxt = value.split("^#^");
+                milestoneElement.createServeralMilestone(container, lineTxt.length, id);
+                container.children("table").children("tr").each((i, v) => {
+                    if (i > 1) {
+                        contentTxt = lineTxt[i].split("~");
+                        if (contentTxt.length > 4) {
+                            contentTxt[3] = contentTxt.slice(3).join("~");
+                        }
+                        $(v).children("td").children((index, value) => {
+                            $(value).children(".milestone-watch-mode").text(contentTxt[index]);
+                        });
+                    }
+                });
+            }
+            return container;
+        },
+
+        getEditVal: (container) => {
+            var txt = "";
+            container.children("table").children("td").each((i, v) => {
+                if (i === 0 || i === 1) {
+                    txt += $(v).children(".milestone-edit-mode").val() + "~";
+                } else {
+                    datePickerElement.valueByEle($(v).children(".milestone-edit-mode"), $(v).children(".milestone-watch-mode"), id);
+                }
+            });
+        },
+
+        beInEditMode: (container, id) => {
+            milestoneElement.resetChangeRecord();
+            container.children("table").children("td").each((i, v) => {
+                if (i === 0 || i === 1) {
+                    $(v).children(".milestone-edit-mode").val($(v).children(".milestone-watch-mode"));
+                } else {
+                    datePickerElement.valueByEle($(v).children(".milestone-edit-mode"), $(v).children(".milestone-watch-mode"), id);
+                }
+                $(v).children(".milestone-watch-mode").hide();
+                $(v).children(".milestone-edit-mode").show();
+            });
+        },
+
+        resetChangeRecord: () => {
+            changeRecord = {};
+            datePickerElement.clearChangeRecordByFunc(id => id[0] === "m");
+        },
+
+        getChangeRecord: () => changeRecord,
     }
 })();

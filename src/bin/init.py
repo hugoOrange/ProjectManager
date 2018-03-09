@@ -26,7 +26,7 @@ if sessionTime == "":
 configFp = open("../config.json", "w+")
 
 # 初始化数据库
-os.system("mysql -u{} -p{} < ../sql/init.sql".format(dbUser, dbPassword))
+os.system("mysql -u{} -p\"{}\" < ../sql/init.sql".format(dbUser, dbPassword))
 
 # 创建配置文件
 indexUrlHost = "\"indexUrlHost\": \"{}\",\n".format(indexUrlHost)

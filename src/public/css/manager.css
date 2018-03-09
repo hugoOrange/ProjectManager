@@ -282,8 +282,7 @@ article {
     margin: 0;
 }
 #manager_mission tr td:nth-child(2) textarea,
-#manager_mission tr td:nth-child(3) textarea,
-#manager_mission tr td:nth-child(4) textarea {
+#manager_mission tr td:nth-child(3) textarea {
     display: none;
     width: 100%;
     resize: none;
@@ -507,6 +506,67 @@ article {
     cursor: pointer;
 }
 
+/* milestone style */
+#manager_mission .milestoneJS h3 { padding-left: 5px; }
+
+#manager_mission .milestoneJS table {
+    display: table;
+    width: 97%;
+}
+#manager_mission .milestoneJS table tr {
+    display: table-row!important;
+}
+#manager_mission .milestoneJS table tr th:nth-child(1), #manager_mission .milestoneJS table tr td:nth-child(1) {
+    width: 60%;
+}
+#manager_mission .milestoneJS table tr th:nth-child(2), #manager_mission .milestoneJS table tr td:nth-child(2) {
+    width: 10%;
+}
+#manager_mission .milestoneJS table tr th:nth-child(3), #manager_mission .milestoneJS table tr td:nth-child(3) {
+    width: 10%;
+}
+#manager_mission .milestoneJS table tr th:nth-child(4), #manager_mission .milestoneJS table tr td:nth-child(4) {
+    width: 10%;
+}
+
+#manager_mission .milestoneJS table tr input {
+    height: 1.6em;
+    padding: 0.2em 0 0.2em 0.3em;
+    font-size: 14px;
+    line-height: 14px;
+    color: rgba(10,21,90,1);
+    transition: .2s all ease-in-out;
+}
+
+#manager_mission .milestoneJS table tr td .datePickerJS {
+    display: inline;
+    text-align: center;
+}
+
+#manager_mission .milestoneJS table .milestone-table-add, #manager_mission .milestoneJS table .milestone-table-delete {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    opacity: 0.3;
+    border-radius: 5px;
+    border: 1px solid;
+    background-position: 2px 2px;
+    background-size: 10px 10px;
+    cursor: pointer;
+}
+#manager_mission .milestoneJS table .milestone-table-add {
+    margin-left: 3%;
+    background: url("/assets/plus.svg") no-repeat;
+}
+#manager_mission .milestoneJS table .milestone-table-delete {
+    margin-left: 10%;
+    margin-top: -1%;
+    background: url("/assets/minus.svg") no-repeat;
+}
+#manager_mission .milestoneJS table .milestone-table-add:hover, #manager_mission .milestoneJS table .milestone-table-delete:hover {
+    opacity: 1;
+}
+
 /* button style */
 #manager_confirm {
     display: none;
@@ -619,7 +679,7 @@ article {
     width: 52px;
     height: 52px;
     left: 91%;
-    top: 3%;
+    top: 2%;
     border: 2px solid #4349c3;
     border-radius: 50%;
     background: url(/assets/info-sign.svg) no-repeat #f6fbff;
