@@ -13,7 +13,7 @@ module.exports = (function() {
     function mapProjectStatus(projectList) {
         return projectList.map((val, index) => {
             if (val.projectStatus === null) {
-                return val
+                return val;
             }
             val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime.toISOString().slice(0, 10) >= val.deadline ? 0 : 1;
             return val;
@@ -93,7 +93,7 @@ module.exports = (function() {
         /** about query */
 
         queryDepartmentProject: (department, succ, fail = () => {}) => {
-            var ql = `SELECT ${userTable}.userId, ${userTable}.username, projectId, projectStatus, projectName, projectTarget, deadline, projectProgress, priority, firstTime, createtime, finishTime FROM
+            var ql = `SELECT ${userTable}.userId, ${userTable}.username, projectId, projectStatus, projectName, projectTarget, deadline, projectProgress, priority, milestone, firstTime, createtime, finishTime FROM
                 ${userTable} LEFT JOIN ${projectTable} ON ${projectTable}.userId = ${userTable}.userId WHERE ${userTable}.department = ${department};`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -112,7 +112,8 @@ module.exports = (function() {
         },
 
         queryProjectTimeAbout: (succ, fail = () => {}) => {
-            var ql = `SELECT ${userTable}.userId, ${userTable}.username, projectId, projectStatus, projectName, finishTime, createTime, department FROM ${userTable} LEFT JOIN ${projectTable} ON ${projectTable}.userId = ${userTable}.userId;`;
+            var ql = `SELECT ${userTable}.userId, ${userTable}.username, projectId, projectStatus, projectName, deadline, finishTime, firstTime, createTime, department
+                FROM ${userTable} LEFT JOIN ${projectTable} ON ${projectTable}.userId = ${userTable}.userId;`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In queryProjectTimeAbout: " + ql, "db");
@@ -120,7 +121,12 @@ module.exports = (function() {
                     return;
                 }
 
-                succ(results);
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].deadline !== null) {
+                        results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
+                    }
+                }
+                succ(mapProjectStatus(results));
             });
         },
 
@@ -139,9 +145,9 @@ module.exports = (function() {
 
         /** about edit */
 
-        addProject: (userId, name, target, deadline, progress, priority, succ, fail = () => {}) => {
-            var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, deadline, projectProgress, priority, firstTime, finishTime)
-                VALUE (${userId}, 0, "${name}", "${target}", "${deadline}", "${progress}", ${priority}, "${deadline}", "1-1-1");`;
+        addProject: (userId, name, target, deadline, progress, priority, milestone, succ, fail = () => {}) => {
+            var ql = `INSERT INTO ${projectTable} (userId, projectStatus, projectName, projectTarget, deadline, projectProgress, priority, milestone, firstTime, finishTime)
+                VALUE (${userId}, 0, "${name}", "${target}", "${deadline}", "${progress}", ${priority}, "${milestone}", "${deadline}", "1-1-1");`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
                     logMethod.error("QL_run", "In addProject: " + ql, "db");
@@ -153,7 +159,7 @@ module.exports = (function() {
             });
         },
         
-        finishProjects: (userId, projectList, succ, fail = () => {}) => {
+        finishProjects: (projectList, succ, fail = () => {}) => {
             if (projectList.length === 0) {
                 succ(0);
                 return;
@@ -175,7 +181,7 @@ module.exports = (function() {
             });
         },
         
-        deleteProjects: (userId, projectList, succ, fail = () => {}) => {
+        deleteProjects: (projectList, succ, fail = () => {}) => {
             if (projectList.length === 0) {
                 succ(0);
                 return;
@@ -197,7 +203,7 @@ module.exports = (function() {
             });
         },
 
-        changeProjects: async (userId, changeList, callback) => {
+        changeProjects: async (changeList, callback) => {
             if (changeList.length === 0) {
                 succ([], []);
                 return;

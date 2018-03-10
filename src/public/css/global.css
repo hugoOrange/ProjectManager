@@ -125,10 +125,10 @@ textarea:focus { outline: 0; }
 .datePicker-show span {
     display: inline-block;
     height: 100%;
-    border: 2px solid #6baed6;
+    border: 2px solid transparent;
+    border-bottom: 1px solid;
     color: #1f268c;
     text-align: center;
-    background: #deebf7;
 }
 .datePicker-show-year { width: 40%; }
 .datePicker-show-month { width: 20%; }
@@ -141,13 +141,17 @@ textarea:focus { outline: 0; }
 }
 .datePicker-list ul {
     display: inline-block;
-    border: 2px solid rgba(63, 131, 255, 0.7);
+    /* border: 2px solid rgba(63, 131, 255, 0.7); */
+    border: 0;
     height: 100px;
     padding: 0;
     margin: 0;
     list-style: none;
     overflow-x: hidden;
     overflow-y: auto;
+}
+.datePicker-list ul:nth-child(1), .datePicker-list ul:nth-child(2) {
+    border-right: 1px solid rgba(63, 131, 255, 0.7);
 }
 .datePicker-list ul::-webkit-scrollbar {
     display: none;
@@ -191,11 +195,12 @@ textarea:focus { outline: 0; }
 }
 .datePicker-button button {
     display: inline-block;
-    width: 40%;
+    width: 30%;
     height: 100%;
     color: #1f268c;
     font-weight: bold;
-    border: 2px solid rgba(63, 131, 255, 0.7);
+    border: 0;
+    border-top: 1px solid rgba(63, 131, 255, 0.7);
     background: #fff;
     cursor: pointer;
 }
@@ -205,4 +210,5 @@ textarea:focus { outline: 0; }
 }
 .datePicker-button button:nth-child(1) {
     width: 52%;
+    border-right: 1px solid rgba(63, 131, 255, 0.7);
 }

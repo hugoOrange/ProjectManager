@@ -157,9 +157,9 @@ module.exports = (function () {
             });
         },
 
-        editAdd: (loginUser, info, res) => {
-            db.addProject(loginUser, info.projectName, info.projectTarget, info.deadline,
-                info.projectProgress, info.priority, (results) => {
+        editAdd: (info, res) => {
+            db.addProject(info.userId, info.projectName, info.projectTarget, info.deadline,
+                info.projectProgress, info.priority, info.milestone, (results) => {
                     logMethod.success("Add new project", "db");
                     res.json({
                         ret_code: 0,
@@ -174,8 +174,8 @@ module.exports = (function () {
                 });
         },
 
-        editFinish: (loginUser, finishList, res) => {
-            db.finishProjects(loginUser, finishList, (deleteRowsNum) => {
+        editFinish: (finishList, res) => {
+            db.finishProjects(finishList, (deleteRowsNum) => {
                 logMethod.success("Finish " + finishList.length + " projects", "db");
                 res.json({
                     ret_code: 0,
@@ -190,8 +190,8 @@ module.exports = (function () {
             });
         },
 
-        editDelete: (loginUser, deleteList, res) => {
-            db.deleteProjects(loginUser, deleteList, (deleteRowsNum) => {
+        editDelete: (deleteList, res) => {
+            db.deleteProjects(deleteList, (deleteRowsNum) => {
                 logMethod.success("Delete " + deleteList.length + " projects", "db");
                 res.json({
                     ret_code: 0,
@@ -206,8 +206,8 @@ module.exports = (function () {
             });
         },
 
-        editChange: (loginUser, changeList, res) => {
-            db.changeProjects(loginUser, changeList, (changeRows, failRows) => {
+        editChange: (changeList, res) => {
+            db.changeProjects(changeList, (changeRows, failRows) => {
                 if (changeRows.length === Object.keys(changeList).length) {
                     logMethod.success("Change some projects' information", "db");
                     res.json({

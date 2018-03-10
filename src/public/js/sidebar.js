@@ -38,6 +38,7 @@ var sidebarElement = (function () {
             tableOperation.statusSet(tableId);
             tableOperation.progressSet(tableId);
             tableOperation.prioritySet(tableId);
+            tableOperation.changeInWatchMode(tableId);
             sidebarElement.loadAlarm(DELAY_TIME);
             $(".floatBtn").show();
             $("#manager_confirm").hide();

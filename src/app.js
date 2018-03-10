@@ -249,19 +249,19 @@ app.post('/edit', (req, res) => {
         if (loginUser > 0) {
             switch(req.body.op) {
                 case 'add':
-                    action.editAdd(loginUser, req.body.opList, res);
+                    action.editAdd(req.body.opList, res);
                     break;
 
                 case 'finish':
-                    action.editFinish(loginUser, req.body.opList, res);
+                    action.editFinish(req.body.opList, res);
                     break;
 
                 case 'delete':
-                    action.editDelete(loginUser, req.body.opList, res);
+                    action.editDelete(req.body.opList, res);
                     break;
 
                 case 'change':
-                    action.editChange(loginUser, req.body.opList, res);
+                    action.editChange(req.body.opList, res);
                     break;
                 
                 default:
