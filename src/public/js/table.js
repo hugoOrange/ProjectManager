@@ -368,7 +368,7 @@ var tableOperation = (function () {
         lineStickTop: (tableId, id) => {
             let focusEle = null;
             let firstEle = $("#" + tableId + " tr:nth-child(3)");
-            let firstMilestone = $("# " + tableId + " tr:nth-child(4)");
+            let firstMilestone = $("#" + tableId + " tr:nth-child(4)");
 
             if (id == firstEle[0].dataset.id) {
                 return;
