@@ -186,7 +186,7 @@ var sidebarElement = (function () {
 
         jumpDepartment: (departmentId, needInit) => {
             $(".manager-sidebar-departmentChoose").removeClass("manager-sidebar-departmentChoose");
-            $(".manager-sidebar-department").filter((i, v) => v.dataset.id = departmentId).addClass("manager-sidebar-departmentChoose");
+            $(".manager-sidebar-department").filter((i, v) => v.dataset.id === departmentId).addClass("manager-sidebar-departmentChoose");
             pagePath = "/department/" + departmentId;
 
             genTable(departmentId, needInit);

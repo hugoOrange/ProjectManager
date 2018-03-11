@@ -319,10 +319,9 @@ var tableOperation = (function () {
             let crM = milestoneElement.getChangeRecord();
             let changeId = -1;
             var pStr = "";
-            $("#" + tableId + " tr").each((index, val) => {
+            $("#" + tableId).children("tr").each((index, val) => {
                 changeId = val.dataset.id;
                 if (index % 2 !== 0 && index > 1 && !$(val).is(":hidden")) {
-                    console.log(val)
                     if (crP[changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
@@ -333,7 +332,6 @@ var tableOperation = (function () {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
-                        // console.log(val)
                         changeRecord[changeId]["milestone"] = milestoneElement.valInEdit($(val).next().children("td").children(".milestoneJS"));
                     }
                     if (crS["p" + changeId] !== undefined) {
@@ -366,21 +364,20 @@ var tableOperation = (function () {
         },
 
         lineStickTop: (tableId, id) => {
-            let focusEle = null;
-            let firstEle = $("#" + tableId + " tr:nth-child(3)");
-            let firstMilestone = $("# " + tableId + " tr:nth-child(4)");
-
-            if (id == firstEle[0].dataset.id) {
-                return;
-            }
-            $("#" + tableId).children("tr").each((index, val) => {
-                if (val.dataset.id === id || id === "all") {
-                    focusEle = $(val).show();
+            var tableEle = document.getElementById(tableId);
+            var archor = tableEle.childNodes[7];
+            var focusEle = null;
+            var focusMileStone = null;
+            
+            for (let i = 0; i < tableEle.childNodes.length; i++) {
+                if (tableEle.childNodes[i].dataset !== undefined && tableEle.childNodes[i].dataset.id === id) {
+                    focusEle = tableEle.childNodes[i];
+                    focusMileStone = focusEle.nextElementSibling;
+                    break;
                 }
-            });
-            window.scrollTo(0, 0);
-            $("#" + tableId).append(firstEle.clone());
-            firstEle.replaceWith(focusEle);
+            }
+            tableEle.insertBefore(focusEle, archor);
+            tableEle.insertBefore(focusMileStone, archor);
         },
 
         getDelay: (tableId, delay) => {
@@ -392,11 +389,8 @@ var tableOperation = (function () {
             var pId = -1;
             var mayDelay = [];
             var isDelay = [];
-            var btnEvent = event => {
-                tableOperation.lineStickTop(tableId, event.target.dataset.id);
-            }
 
-            $("#" + tableId + " tr").each((index, val) => {
+            $("#" + tableId).children("tr").each((index, val) => {
                 if (index % 2 !== 0 && index > 1 && !$(val).is(":hidden")) {
                     deadline = $(val).children("td").eq(4).children(".project-watch-mode").text();
                     pName = $(val).children("td").eq(1).children(".project-watch-mode").text();
@@ -490,11 +484,11 @@ var tableOperation = (function () {
             switching = true;
             while (switching) {
                 switching = false;
-                rows = table.getElementsByTagName("TR");
-                for (i = 2; i < (rows.length - 1); i++) {
+                rows = Array.prototype.slice.call(table.childNodes).filter((v, i) => v.tagName === "TR");
+                for (i = 3; i < (rows.length - 2); i+=2) {
                     shouldSwitch = false;
                     x = rows[i].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
-                    y = rows[i + 1].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
+                    y = rows[i + 2].getElementsByTagName("TD")[lineOffset].getElementsByClassName("project-watch-mode")[0].innerHTML;
                     if (lineOffset === 6) {
                         if (x === y) {
                             continue;
@@ -512,7 +506,8 @@ var tableOperation = (function () {
                     }
                 }
                 if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    rows[i].parentNode.insertBefore(rows[i + 2], rows[i]);
+                    rows[i].parentNode.insertBefore(rows[i + 3], rows[i]);
                     switching = true;
                 }
             }
@@ -900,7 +895,6 @@ var milestoneElement = (function () {
             var lineTxt = null;
             let contentTxt = null;
             if (value === undefined) {   // get
-                console.log(container)
                 container.children("table").children("tr").each((index, v) => {
                     if (index > 0) {
                         tds = $(v).children("td");
@@ -910,8 +904,7 @@ var milestoneElement = (function () {
                         }
                     }
                 }); 
-                console.log(txt)
-                return txt;
+                    return txt;
             } else {   // set
                 lineTxt = value.split("^#^");
                 while (lineTxt.length > container.children("table").children("tr").length - 1) {

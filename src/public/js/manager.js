@@ -242,12 +242,11 @@ $(document).ready(() => {
                 $("#mask_layer").hide();
                 $("#confirm_alert").slideUp();
             } else {
-                console.dir(sendData);                
-                // serverIO.changeProjects(sendData, (result) => {
-                //     serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
-                //         location.reload();
-                //     });
-                // });
+                serverIO.changeProjects(sendData, (result) => {
+                    serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
+                        location.reload();
+                    });
+                });
             }
         } else if (op === confirmDialog.finishProject.op) {
             $(".choose-part input:checked").each((index, val) => {

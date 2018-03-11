@@ -288,6 +288,10 @@ article {
     resize: none;
 }
 
+#manager_mission tr:nth-child(2n + 3) {
+    border-bottom: 17px solid #fff;
+}
+
 #manager_mission input[type="checkbox"] {
     width: auto;
     box-shadow: none;
