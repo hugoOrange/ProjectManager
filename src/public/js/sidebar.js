@@ -186,7 +186,7 @@ var sidebarElement = (function () {
 
         jumpDepartment: (departmentId, needInit) => {
             $(".manager-sidebar-departmentChoose").removeClass("manager-sidebar-departmentChoose");
-            $(".manager-sidebar-department").filter((i, v) => v.dataset.id = departmentId).addClass("manager-sidebar-departmentChoose");
+            $(".manager-sidebar-department").filter((i, v) => v.dataset.id === departmentId).addClass("manager-sidebar-departmentChoose");
             pagePath = "/department/" + departmentId;
 
             genTable(departmentId, needInit);
@@ -213,13 +213,13 @@ var sidebarElement = (function () {
             });
             if (needInit) {
                 genTable(departmentId, false, () => {
-                    tableOperation.filtLine("manager_mission", function(val) {
+                    tableOperation.filtLine(tableId, function(val) {
                         return mList.indexOf(val.dataset.id) === -1;
                     });
                     callback();
                 });
             } else {
-                tableOperation.filtLine("manager_mission", function(val) {
+                tableOperation.filtLine(tableId, function(val) {
                     return mList.indexOf(val.dataset.id) === -1;
                 });
                 callback();
@@ -229,10 +229,10 @@ var sidebarElement = (function () {
         jumpProject: (departmentId, managerId, projectId, needInit) => {
             sidebarElement.jumpManager(departmentId, managerId, needInit, false, () => {
                 pagePath = "/department/" + departmentId + "/manager/" + managerId + "/project/" + projectId;
-                tableOperation.filtLine("manager_mission", function(val) {
+                tableOperation.filtLine(tableId, function(val) {
                     return +val.dataset.id !== +projectId;
-                });
-            });    
+                }, true);
+            });
         },
 
         getCurrentState: () => pagePath

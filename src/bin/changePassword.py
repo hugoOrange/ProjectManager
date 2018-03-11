@@ -11,7 +11,7 @@ with open('../config.json') as json_data:
 
 
 # input previous account
-print("输入账户密码进行设置: ")
+print("输入账户信息进行设置: ")
 username = raw_input("输入账户(username): ")
 password = getpass.getpass("输入密码(password): ")
 databaseName = "ProjectManager"
@@ -25,8 +25,7 @@ MAX_RETRY_TIME = 3
 # connect database
 db = mdb.connect(config["dbHost"], config["dbUser"], config["dbPassword"], databaseName)
 cursor = db.cursor()
-cursor.close()
-db.close()
+
 def getCountInput(retryTime = 1):
     passwordSet = getpass.getpass("请输入需要设置的密码(password)： ")
     passwordAgainSet = getpass.getpass("请再次输入密码(password)： ")
@@ -49,11 +48,9 @@ try:
     cursor.execute('SELECT * FROM {};'.format(userTable))
     usersInfo = cursor.fetchall()
 except:
-    import traceback
-    traceback.print_exc()
+    print("Query fail or incorrect username and password, rollback.")
     db.rollback()
-finally:
-    disconnectDatabase()
+    exit(0)
 
 # get new set password
 for userInfo in usersInfo:
@@ -70,8 +67,7 @@ if isCorrectAccount:
         db.commit()
         print("修改成功")
     except:
-        import traceback
-        traceback.print_exc()
+        print("Delete fail, rollback.")        
         db.rollback()
     finally:
         disconnectDatabase()

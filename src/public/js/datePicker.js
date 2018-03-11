@@ -8,13 +8,13 @@
  *  </button>
  *  <div class="datePicker-list">
  *   <ul class="datePicker-list-year">
- *    <li><button></button></li>
+ *    <li><button data-value=""></button></li>
  *   </ul>
  *   <ul class="datePicker-list-month">
- *    <li><button></button></li>
+ *    <li><button data-value=""></button></li>
  *   </ul>
  *   <ul class="datePicker-list-day">
- *    <li><button></button></li>
+ *    <li><button data-value=""></button></li>
  *   </ul>
  *  </div>
  *  <div class="datePicker-button">
@@ -96,7 +96,6 @@ var datePickerElement = (function () {
         container.children("button").show();
 
         if (id !== undefined && lastValue !== nowValue) {
-            // value changed
             changeRecord[id] = nowValue;
         }
     };
@@ -111,7 +110,7 @@ var datePickerElement = (function () {
         makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, id) => {
             var nowYear = new Date().getFullYear();
             var defaultV = getDateList(defaultValue);
-            var yearMap = new Array(offsetYear * 2).fill(1).map((val, index) => nowYear + index - offsetYear);
+            var yearMap = new Array(offsetYear * 2).fill(1).map((val, index) => nowYear + index - offsetYear).push("9999");
             var yearList = $("<ul></ul>").addClass("datePicker-list-year").attr("data-value", defaultV[0]);
             var monthList = $("<ul></ul>").addClass("datePicker-list-month").attr("data-value", defaultV[1]);
             var dayList = $("<ul></ul>").addClass("datePicker-list-day").attr("data-value", defaultV[2]);
