@@ -190,6 +190,7 @@ var sidebarElement = (function () {
             pagePath = "/department/" + departmentId;
 
             genTable(departmentId, needInit);
+            tableOperation.changeInWatchMode(tableId);
         },
 
         jumpManager: (departmentId, managerId, needInit, changeState = true, callback = () => {}) => {
@@ -224,6 +225,7 @@ var sidebarElement = (function () {
                 });
                 callback();
             }
+            $("#confirm_cancel").click();
         },
 
         jumpProject: (departmentId, managerId, projectId, needInit) => {
@@ -233,6 +235,7 @@ var sidebarElement = (function () {
                     return +val.dataset.id !== +projectId;
                 }, true);
             });
+            $("#confirm_cancel").click();
         },
 
         getCurrentState: () => pagePath

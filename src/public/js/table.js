@@ -677,7 +677,7 @@ var progressElement = (function () {
             var lineTxt = str.split(progressSep);
             progressElement.setProgressEditNum(container, lineTxt.length, id);
             container.children(".progress-line").each((index, value) => {
-                datePickerElement.valueByEle($(value).children("datePickerJS"), lineTxt[index].slice(0, 10));
+                datePickerElement.valueByEle($(value).children(".datePickerJS"), lineTxt[index].slice(0, 10));
                 $(value).children("textarea").val(lineTxt[index].slice(13));
             });
         },

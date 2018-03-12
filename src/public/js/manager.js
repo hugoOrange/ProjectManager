@@ -50,6 +50,7 @@ $(document).ready(() => {
         progressElement.createProgressInput($("#new_projectProgress"));
 
         $("#no_project").hide();
+        table_current_state = "normal";
     }
 
     function beInOverview(o, m) {
@@ -285,5 +286,6 @@ $(document).ready(() => {
         });
         $("#mask_layer").hide();
         $("#confirm_alert").slideUp();
+        resetStatus();
     });
 });
