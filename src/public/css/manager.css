@@ -593,6 +593,7 @@ article {
 
 #manager_mission .milestoneJS table tr td p {
     font-family: "Inconsolata", monospace;
+    text-align: center;
 }
 
 /* button style */

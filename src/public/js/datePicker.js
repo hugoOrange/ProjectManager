@@ -39,7 +39,11 @@ var datePickerElement = (function () {
         }
         return dayInMonth;
     };
-    var judgeDateValidate = (y, m, d) => +d <= getDayInMonth(+y)[+m];
+    var judgeDateValidate = (y, m, d) => {
+        return +d <= getDayInMonth(+y)[+m - 1];
+    };
+
+    // var judgeDateValidate = (y, m, d) => +d <= getDayInMonth(+y)[+m];
     var getDateList = (date) => [date.slice(0, 4), date.slice(5, 7), date.slice(8, 10)];
 
     var getChooseNow = container => {
@@ -87,8 +91,12 @@ var datePickerElement = (function () {
         var container = $(event.target).parent().parent();
         var lastValue = datePickerElement.valueByEle(container);
         var nowValue = getChooseNow(container);
+        if (!judgeDateValidate(nowValue.slice(0, 4), nowValue.slice(5, 7), nowValue.slice(8, 10))) {
+            alert("日期不对");
+            return;
+        }
         if (nowValue < new Date().toISOString().slice(0, 10)) {
-            alert("不合理的项目日期");
+            alert("项目日期过前");
             return;
         }
         datePickerElement.valueByEle(container, nowValue);

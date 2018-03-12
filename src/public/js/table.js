@@ -322,13 +322,13 @@ var tableOperation = (function () {
             $("#" + tableId).children("tr").each((index, val) => {
                 changeId = val.dataset.id;
                 if (index % 2 !== 0 && index > 1 && !$(val).is(":hidden")) {
-                    if (crP[changeId] !== undefined) {
+                    if (crP[changeId] !== undefined || crD["p" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
                         changeRecord[changeId]["projectProgress"] = progressElement.getProgressInputText($(val).children("td").eq(5).children(".project-edit-mode"));
                     }
-                    if (crM[changeId] !== undefined) {
+                    if (crM[changeId] !== undefined || crD["m" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
@@ -351,13 +351,7 @@ var tableOperation = (function () {
                             changeRecord[changeId] = {};
                         }
                         changeRecord[changeId]["deadline"] = crD["d" + changeId];
-                    }
-                    if (crD["p" + changeId] !== undefined) {
-                        if (changeRecord[changeId] === undefined) {
-                            changeRecord[changeId] = {};
-                        }
-                        changeRecord[changeId]["projectProgress"] = progressElement.getProgressInputText($(val).children("td").eq(5).children(".project-edit-mode"));;                        
-                    }
+                    }   
                 }
             });
             return changeRecord;
@@ -736,6 +730,7 @@ var milestoneElement = (function () {
         if (id !== undefined) {
             changeRecord[id] = id;
         }
+        console.log(changeRecord)
     };
 
     var addLineEvent = (event, id) => {
@@ -782,7 +777,7 @@ var milestoneElement = (function () {
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => {
                 var tr = $(event.target).parent().parent();
                 if (tr.parent().children("tr").length > 2) {
-                    tr.remove();createServeralMilestone
+                    tr.remove();
                 } else {
                     alert("数量不能少于１");
                 }
@@ -790,7 +785,7 @@ var milestoneElement = (function () {
 
             if (firstCreate) {
                 table = $("<table></table>").append($("<tr></tr>")
-                    .append("<th>名</th>")
+                    .append("<th>任务</th>")
                     .append("<th>工作日</th>")
                     .append("<th>开始时间</th>")
                     .append($("<th>实际完成时间</th>").append($("<button></button>").addClass("milestone-table-add").click(event => milestoneElement.createMilestoneInput($(event.target).parent().parent().parent().parent())))));
@@ -827,15 +822,15 @@ var milestoneElement = (function () {
             </tr>
             `);
 
-            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, undefined, "m" + id);
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), undefined, undefined, undefined, "m" + id);
+            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, "m" + id);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), undefined, undefined, "m" + id);
+            tr.children("td").eq(0).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(1).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
-            tr.children("td").eq(2).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => deleteLineEvent(event, id));
 
             if (firstCreate) {
                 table = $("<table></table>").append($("<tr></tr>")
-                    .append("<th>名</th>")
+                    .append("<th>任务</th>")
                     .append("<th>工作日</th>")
                     .append("<th>开始时间</th>")
                     .append($("<th>实际完成时间</th>").append($("<button></button>").addClass("milestone-table-add").click(event => addLineEvent(event, id)))));
@@ -848,17 +843,6 @@ var milestoneElement = (function () {
             return container;
         },
 
-        createServeralMilestone: (container, num, id) => {
-            if (num < 0) {
-                console.warn("Too little milestone");
-                return;
-            }
-            milestoneElement.createMilestone(container, true, id);
-            for (let i = 1; i < num; i++) {
-                milestoneElement.createMilestone(container, false, id);
-            }
-        },
-
         valInWatch: (container, id, value) => {
             var lineTxt = null;
             var contentTxt = null;
@@ -868,15 +852,14 @@ var milestoneElement = (function () {
             if (value === undefined) {   // get
                 container.children("table").children("tr").each((i, v) => {
                     if (i > 0) {
-                        $(v).children("td").each((index, ele) => {
-                            if (index === 3) {
-                                txt += $(ele).children("p").text() + (i === milestoneLength ? "" : milestoneSep);
-                            } else {
-                                txt += $(ele).children("p").text() + "~";
-                            }
-                        });
+                        tds = $(v).children("td");
+                        txt += `${tds.eq(1).children("p").text()}~${tds.eq(2).children("p").text()}~${tds.eq(3).children("p").text()}~${tds.eq(0).children("p").text()}`;
+                        if (i < container.children("table").children("tr").length - 1) {
+                            txt += milestoneSep;
+                        }
                     }
                 });
+                
                 return txt;
             } else {   // set
                 lineTxt = value.split("^#^");
@@ -889,9 +872,10 @@ var milestoneElement = (function () {
                         if (contentTxt.length > 4) {
                             contentTxt[3] = contentTxt.slice(3).join("~");
                         }
-                        $(v).children("td").each((index, ele) => {
-                            $(ele).children("p").text(contentTxt[index]);
-                        });
+                        $(v).children("td").eq(0).children("p").text(contentTxt[3]);
+                        $(v).children("td").eq(1).children("p").text(contentTxt[0]);
+                        $(v).children("td").eq(2).children("p").text(contentTxt[1]);
+                        $(v).children("td").eq(3).children("p").text(contentTxt[2]);
                     }
                 });
                 return container;
