@@ -137,7 +137,7 @@ var tableOperation = (function () {
             </tr>
             `);
             datePickerElement.makeElementByEle($("#new_deadline"));
-            selectElement.makeSelectById("new_priority", ["高", "中", "低"], [0, 1, 2]);
+            selectElement.makeSelectByEle($("#new_priority"), ["高", "中", "低"], [0, 1, 2]);
             progressElement.createProgressInput($("#new_projectProgress"));
             milestoneElement.createMilestoneInput($("#new_milestone"), true).parent().parent().hide();
             tableOperation.bindEvent(tableId);
@@ -193,8 +193,8 @@ var tableOperation = (function () {
             </tr>`);
             var milestoneTr = $("<tr></tr>").hide().append(`<td colspan="8"><div></div></td>`);
             datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".project-edit-mode"), undefined, undefined, "d" + project.projectId);
-            selectElement.makeSelectByEle(tr.children("td").eq(3).children(".project-edit-mode").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId), "m" + project.projectId);
-            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode").css("width", "30px"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
+            selectElement.makeSelectByEle(tr.children("td").eq(3).children(".project-edit-mode"), userList.map(v => v.username), userList.map(v => v.userId), "m" + project.projectId);
+            selectElement.makeSelectByEle(tr.children("td").eq(6).children(".project-edit-mode"), ["高", "中", "低"], [0, 1, 2], "p" + project.projectId);
             milestoneElement.createMilestone(milestoneTr.children("td").children("div"), true, project.projectId);
             milestoneElement.valInWatch(milestoneTr.children("td").children(".milestoneJS"), project.projectId, project.milestone);
             tableEle.append(tr).append(milestoneTr);

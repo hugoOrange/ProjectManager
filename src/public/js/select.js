@@ -61,7 +61,7 @@ var selectElement = (function () {
             if (option.length !== optionValue.length) {
                 return false;
             }
-            var chooseArea = $("<div class='select-chooseArea'></div>").hide().css("width", container.css("width"));
+            var chooseArea = $("<div class='select-chooseArea'></div>").hide();
 
             for (let i = 0; i < option.length; i++) {
                 chooseArea.append($("<button class='select-choose' data-value='" + optionValue[i] + "'></button>")

@@ -25,8 +25,14 @@ if sessionTime == "":
     sessionTime = "900000"
 configFp = open("../config.json", "w+")
 
+
 # 初始化数据库
-os.system("mysql -u{} -p\"{}\" < ../sql/init.sql".format(dbUser, dbPassword))
+needInitDB = raw_input("是否初始化数据库(Whether to initialize database)[Y/n]：　")
+if needInitDB == "" or needInitDB == "y" or needInitDB == "Y":
+    os.system("mysql -u{} -p\"{}\" < ../sql/init.sql".format(dbUser, dbPassword))
+else:
+    pass
+
 
 # 创建配置文件
 indexUrlHost = "\"indexUrlHost\": \"{}\",\n".format(indexUrlHost)

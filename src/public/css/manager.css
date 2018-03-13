@@ -332,11 +332,10 @@ article {
 #new_priority, #new_projectManager,
 #manager_mission tr td:nth-child(4) .project-edit-mode,
 #manager_mission tr td:nth-child(7) .project-edit-mode {
-    height: 1.6em;
+    min-height: 20px;
     margin: 0 auto;
-    padding: 0.2em 0 0.2em 0.3em;
     font-size: 14px;
-    line-height: 14px;
+    line-height: 20px;
     text-align: center;
     color: rgba(10,21,90,1);
     background: #fff;

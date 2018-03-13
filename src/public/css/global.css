@@ -75,7 +75,7 @@ textarea:focus { outline: 0; }
 }
 .baseBtn:hover {
     background: #0a143c;
-  color: #c7c7c7;
+    color: #c7c7c7;
 }
 
 /* select css */
@@ -86,16 +86,18 @@ textarea:focus { outline: 0; }
 
 .select-chooseArea {
     position: absolute;
+    background: #fff;
     margin-top: -39px;
-    z-index: 10;
+    padding: 0 1em;
     box-shadow: 0 0 13px #a4a6d4;
+    z-index: 10;
     cursor: pointer;
 }
 
 .select-choose {
-    width: 100%;
-    line-height: 40px;
-    font-size: 17px;
+    display: block;
+    line-height: 30px;
+    font-size: 15px;
     background: #fff;
     border: 0;
     cursor: pointer;

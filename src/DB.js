@@ -220,12 +220,13 @@ module.exports = (function() {
                     for (var ci in changeItem) {
                         if (changeItem.hasOwnProperty(ci)) {
                             if (ci === "projectStatus" || ci === "priority" || ci === "userId") {                                
-                                ql += ` ${projectTable}.${ci} = ${changeItem[ci]}`;
+                                ql += ` ${projectTable}.${ci} = ${changeItem[ci]},`;
                             } else {
-                                ql += ` ${projectTable}.${ci} = "${changeItem[ci]}"`;
+                                ql += ` ${projectTable}.${ci} = "${changeItem[ci]}",`;
                             }
                         }
                     }
+                    ql = ql.slice(0, ql.length - 1);
                     ql += ` WHERE ${projectTable}.projectId = ${projectId};`
                     connection.query(ql, function (error, results, fields) {
                         if (error) {
