@@ -344,7 +344,7 @@ var tableOperation = (function () {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
-                        changeRecord[changeId]["projectManager"] = crS["m" + changeId];                        
+                        changeRecord[changeId]["userId"] = crS["m" + changeId];                        
                     }
                     if (crD["d" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
@@ -773,7 +773,7 @@ var milestoneElement = (function () {
             `);
 
             datePickerElement.makeElementByEle(tr.children("td").eq(2).children("div"));
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"));
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"), "9999-01-01");
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => {
                 var tr = $(event.target).parent().parent();
                 if (tr.parent().children("tr").length > 2) {
@@ -823,7 +823,7 @@ var milestoneElement = (function () {
             `);
 
             datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, "m" + id);
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), undefined, undefined, "m" + id);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), "9999-01-01", undefined, "m" + id);
             tr.children("td").eq(0).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(1).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => deleteLineEvent(event, id));
@@ -891,7 +891,8 @@ var milestoneElement = (function () {
                 container.children("table").children("tr").each((index, v) => {
                     if (index > 0) {
                         tds = $(v).children("td");
-                        txt += `${tds.eq(1).children("input").val()}~${datePickerElement.valueByEle(tds.eq(2).children(".datePickerJS"))}~${datePickerElement.valueByEle(tds.eq(3).children(".datePickerJS"))}~${tds.eq(0).children("input").val()}`;
+                        txt += `${tds.eq(1).children("input").val() || "."}~${datePickerElement.valueByEle(tds.eq(2).children(".datePickerJS"))}~`;
+                        txt += `${datePickerElement.valueByEle(tds.eq(3).children(".datePickerJS"))}~${tds.eq(0).children("input").val() || "."}`;
                         if (index < container.children("table").children("tr").length - 1) {
                             txt += milestoneSep;
                         }

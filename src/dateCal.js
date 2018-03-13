@@ -10,9 +10,7 @@ module.exports = (function () {
     };
 
     return {
-        getNowDate: () => {
-            return new Date().toISOString().slice(0, 10);
-        },
+        getNowDate: () => new Date().toISOString().slice(0, 10),
     
         getNowTime: (offset = 8) => {
             var d = new Date();
@@ -33,6 +31,9 @@ module.exports = (function () {
         },
 
         judgeInWeek: (jTime, offsetWeek = 0) => {
+            if (jTime === null || jTime === undefined) {
+                return false;
+            }
             var jTime = new Date(jTime);
             var nowDay = new Date();
             var jMon = module.exports.getDateOffsetSpec(jTime, 0 - dayMap[jTime.toString().slice(0, 3)] + 1);

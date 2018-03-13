@@ -88,7 +88,7 @@ module.exports = (function () {
                     if (data[i].projectStatus === 2 && dateCal.judgeInWeek(data[i].finishTime, -1)) {
                         overviewData[data[i].department].finished += 1;
                     }
-                    if (data[i].projectStatus !== 2) {
+                    if (data[i].projectStatus !== 2 && data[i].projectId !== null) {
                         overviewData[data[i].department].working += 1;                        
                     }
                     if (dateCal.judgeInWeek(data[i].createTime)) {

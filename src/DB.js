@@ -15,7 +15,7 @@ module.exports = (function() {
             if (val.projectStatus === null) {
                 return val;
             }
-            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime.toISOString().slice(0, 10) >= val.deadline ? 0 : 1;
+            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime >= val.deadline ? 0 : 1;
             return val;
         });
     }
@@ -26,7 +26,8 @@ module.exports = (function() {
                 host     : config.dbHost,
                 user     : config.dbUser,
                 password : config.dbPassword,
-                database : config.dbDatabase
+                database : config.dbDatabase,
+                dateStrings: true
             });
             
             connection.connect(function (err) {
@@ -53,6 +54,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In queryUser: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -66,6 +68,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In addUser: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -79,6 +82,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In isUserExisted: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -99,14 +103,10 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In queryDepartmentProject: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].deadline !== null) {
-                        results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
-                    }
-                }
                 succ(mapProjectStatus(results));
             });
         },
@@ -118,14 +118,10 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In queryProjectTimeAbout: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].deadline !== null) {
-                        results[i].deadline = results[i].deadline.toISOString().slice(0, 10);
-                    }
-                }
                 succ(mapProjectStatus(results));
             });
         },
@@ -136,6 +132,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In queryUserInfo: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -152,6 +149,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In addProject: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -174,6 +172,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In finishProjects: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -196,6 +195,7 @@ module.exports = (function() {
                 if (error) {
                     logMethod.error("QL_run", "In deleteProjects: " + ql, "db");
                     fail();
+                    module.exports.connect();
                     return;
                 }
 
@@ -215,14 +215,14 @@ module.exports = (function() {
             for (var projectId in changeList) {
                 if (changeList.hasOwnProperty(projectId)) {
                     var changeItem = changeList[projectId];
-                    ql = `UPDATE ${projectTable} SET `;
+                    ql = `UPDATE ${projectTable} SET`;
                     
                     for (var ci in changeItem) {
                         if (changeItem.hasOwnProperty(ci)) {
-                            if (ci === "projectStatus" || ci === "priority") {                                
-                                ql += `${projectTable}.${ci} = ${changeItem[ci]}`;
+                            if (ci === "projectStatus" || ci === "priority" || ci === "userId") {                                
+                                ql += ` ${projectTable}.${ci} = ${changeItem[ci]}`;
                             } else {
-                                ql += `${projectTable}.${ci} = "${changeItem[ci]}"`;
+                                ql += ` ${projectTable}.${ci} = "${changeItem[ci]}"`;
                             }
                         }
                     }
@@ -231,6 +231,7 @@ module.exports = (function() {
                         if (error) {
                             logMethod.error("QL_run", "In changeProjects: " + ql, "db");
                             failChangeList.push(projectId);
+                            module.exports.connect();
                         }
                         succChangeList.push(projectId);
                         if ((succChangeList.length + failChangeList.length) === Object.keys(changeList).length) {
