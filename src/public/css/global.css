@@ -140,6 +140,7 @@ textarea:focus { outline: 0; }
     position: relative;
     width: 100%;
     float: left;
+    z-index: 10;
 }
 .datePicker-list ul {
     display: inline-block;
