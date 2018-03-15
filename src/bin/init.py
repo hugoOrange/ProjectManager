@@ -27,8 +27,8 @@ configFp = open("../config.json", "w+")
 
 
 # 初始化数据库
-needInitDB = raw_input("是否初始化数据库(Whether to initialize database)[Y/n]：　")
-if needInitDB == "" or needInitDB == "y" or needInitDB == "Y":
+needInitDB = raw_input("是否初始化数据库(Whether to initialize database)[y/N]：　")
+if needInitDB == "y" or needInitDB == "Y":
     os.system("mysql -u{} -p\"{}\" < ../sql/init.sql".format(dbUser, dbPassword))
 else:
     pass
