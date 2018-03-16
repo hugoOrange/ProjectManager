@@ -772,8 +772,8 @@ var milestoneElement = (function () {
             </tr>
             `);
 
-            datePickerElement.makeElementByEle(tr.children("td").eq(2).children("div"));
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"), "9999-01-01");
+            datePickerElement.makeElementByEle(tr.children("td").eq(2).children("div"), undefined, undefined, undefined, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"), "9999-01-01", undefined, undefined, true);
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => {
                 var tr = $(event.target).parent().parent();
                 if (tr.parent().children("tr").length > 2) {
@@ -822,8 +822,8 @@ var milestoneElement = (function () {
             </tr>
             `);
 
-            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, "m" + id);
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), "9999-01-01", undefined, "m" + id);
+            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, "m" + id, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), "9999-01-01", undefined, "m" + id, true);
             tr.children("td").eq(0).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(1).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => deleteLineEvent(event, id));

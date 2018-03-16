@@ -87,7 +87,7 @@ var datePickerElement = (function () {
     };
 
 
-    var okBtnEvent = (event, id) => {
+    var okBtnEvent = (event, id, canEarlier = false) => {
         var container = $(event.target).parent().parent();
         var lastValue = datePickerElement.valueByEle(container);
         var nowValue = getChooseNow(container);
@@ -95,7 +95,7 @@ var datePickerElement = (function () {
             alert("日期不对");
             return;
         }
-        if (nowValue < new Date().toISOString().slice(0, 10)) {
+        if (!canEarlier && nowValue < new Date().toISOString().slice(0, 10)) {
             alert("项目日期过前");
             return;
         }
@@ -115,7 +115,7 @@ var datePickerElement = (function () {
     };
 
     return {
-        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, id) => {
+        makeElementByEle: (container, defaultValue = new Date().toISOString().slice(0, 10), offsetYear = 10, id, canEarlier = false) => {
             var nowYear = new Date().getFullYear();
             var defaultV = getDateList(defaultValue);
             var yearMap = new Array(offsetYear * 2).fill(1).map((val, index) => nowYear + index - offsetYear);
@@ -136,7 +136,7 @@ var datePickerElement = (function () {
 
             container.addClass("datePickerJS")
                 .append($("<div></div>").addClass("datePicker-list").append(yearList).append(monthList).append(dayList).hide()).append($("<div></div>").addClass("datePicker-button")
-                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(event => okBtnEvent(event, id)))
+                .append($("<button class='datePicker-button-ok'>&radic;</button>").click(event => okBtnEvent(event, id, canEarlier)))
                 .append($("<button class='datePicker-button-cancel'>&Chi;</button>").click(cancelBtnEvent)).hide());
 
             return container;
