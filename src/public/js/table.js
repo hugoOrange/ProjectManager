@@ -74,7 +74,7 @@ var tableOperation = (function () {
         changeRecord = {};
         var changeProjectId = -1;
 
-        $("#" + tableId + " tr").each((index, val) => {
+        $("#" + tableId).children("tr").each((index, val) => {
             if (index % 2 !== 0 && index > 1) {
                 $(val).children("td").each((i, v) => {
                     if (i === 1) {

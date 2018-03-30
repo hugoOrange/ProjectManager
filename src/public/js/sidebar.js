@@ -8,8 +8,8 @@ var sidebarElement = (function () {
     var tableId = "";
     var pagePath = "";
 
-    var genTable = (departmentId, needInit = true, callback) => {
-        tableOperation.initTable(tableId);
+    var genTable = async (departmentId, needInit = true, callback) => {
+        await tableOperation.initTable(tableId);
         $("#project_overview").hide();
         serverIO.queryDepartmentProject(departmentId, (data) => {
             var managerList = {};
