@@ -3,11 +3,14 @@ var tableOperation = (function () {
         color: "#0303b3",
         text: "正常",
     }, {
-        color: "red",
+        color: "#ff00dc",
         text: "延期",
     }, {
         color: "green",
         text: "已完成"
+    }, {
+        color: "red",
+        text: "过期"
     }];
     const progressSep = "^#^";
     const priorityMap = [{
@@ -178,7 +181,7 @@ var tableOperation = (function () {
                     <p class="project-watch-mode">${project.deadline}</p>
                     <div class="project-edit-mode"></div>
                 </td>
-                <td class="project-progress" data-progress="${project.projectProgress}">
+                <td class="project-progress" data-progress="${project.projectProgress.replace(/"/g, "&quot;")}">
                     <button class="project-progressShow"></button>
                     <div class="project-watch-mode"></div>
                     <div class="project-edit-mode"></div>
@@ -344,16 +347,26 @@ var tableOperation = (function () {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
-                        changeRecord[changeId]["userId"] = crS["m" + changeId];                        
+                        changeRecord[changeId]["userId"] = crS["m" + changeId];
                     }
                     if (crD["d" + changeId] !== undefined) {
                         if (changeRecord[changeId] === undefined) {
                             changeRecord[changeId] = {};
                         }
                         changeRecord[changeId]["deadline"] = crD["d" + changeId];
-                    }   
+                    }
                 }
             });
+            for (const key in changeRecord) {
+                if (changeRecord.hasOwnProperty(key)) {
+                    for (const key2 in changeRecord[key]) {
+                        if (changeRecord[key].hasOwnProperty(key2)) {
+                            changeRecord[key][key2] = changeRecord[key][key2].replace(/\\/g, "\\\\");
+                            changeRecord[key][key2] = changeRecord[key][key2].replace(/"/g, "\\\"");
+                        }
+                    }                    
+                }
+            }
             return changeRecord;
         },
 
@@ -695,6 +708,7 @@ var progressElement = (function () {
  *   <tr>
  *    <th>名</th>
  *    <th>工作日</th>
+ *    <th>负责人</th>
  *    <th>开始时间</th>
  *    <th>实际完成时间
  *     <button class="milestone-table-add"></button>
@@ -707,7 +721,11 @@ var progressElement = (function () {
  *    </td>
  *    <td>
  *     <p class="milestone-watch-mode"></p>
- *     <textarea name="milestoneWork" class="milestone-edit-mode" cols="2" rows="1"></textarea>
+ *     <textarea name="milestoneWork" class="milestone-edit-mode" rows="1"></textarea>
+ *    </td>
+ *    <td>
+ *     <p class="milestone-watch-mode"></p>
+ *     <textarea name="milestoneManager" class="milestone-edit-mode" rows="1"></textarea>
  *    </td>
  *    <td>
  *     <p class="milestone-watch-mode"></p>
@@ -730,7 +748,6 @@ var milestoneElement = (function () {
         if (id !== undefined) {
             changeRecord[id] = id;
         }
-        console.log(changeRecord)
     };
 
     var addLineEvent = (event, id) => {
@@ -764,6 +781,9 @@ var milestoneElement = (function () {
                 <td>
                     <input name="milestoneWork">
                 </td>
+                <td>
+                    <input name="milestoneManager">
+                </td>
                 <td><div></div></td>
                 <td>
                     <div></div>
@@ -772,8 +792,8 @@ var milestoneElement = (function () {
             </tr>
             `);
 
-            datePickerElement.makeElementByEle(tr.children("td").eq(2).children("div"), undefined, undefined, undefined, true);
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"), "9999-01-01", undefined, undefined, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children("div"), undefined, undefined, undefined, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(4).children("div"), "9999-01-01", undefined, undefined, true);
             tr.children("td").eq(3).children(".milestone-table-delete").click(event => {
                 var tr = $(event.target).parent().parent();
                 if (tr.parent().children("tr").length > 2) {
@@ -787,6 +807,7 @@ var milestoneElement = (function () {
                 table = $("<table></table>").append($("<tr></tr>")
                     .append("<th>任务</th>")
                     .append("<th>工作日</th>")
+                    .append("<th>负责人</th>")
                     .append("<th>开始时间</th>")
                     .append($("<th>实际完成时间</th>").append($("<button></button>").addClass("milestone-table-add").click(event => milestoneElement.createMilestoneInput($(event.target).parent().parent().parent().parent())))));
                 container.empty().append($("<h3>项目子任务</h3>")).append(table).addClass("milestoneJS");
@@ -812,6 +833,10 @@ var milestoneElement = (function () {
                 </td>
                 <td>
                     <p class="milestone-watch-mode"></p>
+                    <input name="milestoneManager" class="milestone-edit-mode">
+                </td>
+                <td>
+                    <p class="milestone-watch-mode"></p>
                     <div class="milestone-edit-mode"></div>
                 </td>
                 <td>
@@ -822,22 +847,24 @@ var milestoneElement = (function () {
             </tr>
             `);
 
-            datePickerElement.makeElementByEle(tr.children("td").eq(2).children(".milestone-edit-mode"), undefined, undefined, "m" + id, true);
-            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), "9999-01-01", undefined, "m" + id, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(3).children(".milestone-edit-mode"), undefined, undefined, "m" + id, true);
+            datePickerElement.makeElementByEle(tr.children("td").eq(4).children(".milestone-edit-mode"), "9999-01-01", undefined, "m" + id, true);
             tr.children("td").eq(0).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
             tr.children("td").eq(1).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
-            tr.children("td").eq(3).children(".milestone-table-delete").click(event => deleteLineEvent(event, id));
+            tr.children("td").eq(2).children(".milestone-edit-mode").on("change", event => textChangeEvent(event, id));
+            tr.children("td").eq(4).children(".milestone-table-delete").click(event => deleteLineEvent(event, id));
 
             if (firstCreate) {
                 table = $("<table></table>").append($("<tr></tr>")
                     .append("<th>任务</th>")
                     .append("<th>工作日</th>")
+                    .append("<th>负责人</th>")
                     .append("<th>开始时间</th>")
                     .append($("<th>实际完成时间</th>").append($("<button></button>").addClass("milestone-table-add").click(event => addLineEvent(event, id)))));
                 container.empty().append($("<h3>项目子任务</h3>")).append(table).addClass("milestoneJS");
             } else {
                 table = container.children("table");
-            }   
+            }
             table.append(tr);
 
             return container;
@@ -853,7 +880,7 @@ var milestoneElement = (function () {
                 container.children("table").children("tr").each((i, v) => {
                     if (i > 0) {
                         tds = $(v).children("td");
-                        txt += `${tds.eq(1).children("p").text()}~${tds.eq(2).children("p").text()}~${tds.eq(3).children("p").text()}~${tds.eq(0).children("p").text()}`;
+                        txt += `${tds.eq(1).children("p").text()}~${tds.eq(2).children("p").text()}~${tds.eq(3).children("p").text()}~${tds.eq(4).children("p").text()}~${tds.eq(0).children("p").text()}`;
                         if (i < container.children("table").children("tr").length - 1) {
                             txt += milestoneSep;
                         }
@@ -869,13 +896,14 @@ var milestoneElement = (function () {
                 container.children("table").children("tr").each((i, v) => {
                     if (i > 0) {
                         contentTxt = lineTxt[i - 1].split("~");
-                        if (contentTxt.length > 4) {
-                            contentTxt[3] = contentTxt.slice(3).join("~");
+                        if (contentTxt.length > 5) {
+                            contentTxt[4] = contentTxt.slice(4).join("~");
                         }
-                        $(v).children("td").eq(0).children("p").text(contentTxt[3]);
+                        $(v).children("td").eq(0).children("p").text(contentTxt[4]);
                         $(v).children("td").eq(1).children("p").text(contentTxt[0]);
                         $(v).children("td").eq(2).children("p").text(contentTxt[1]);
                         $(v).children("td").eq(3).children("p").text(contentTxt[2]);
+                        $(v).children("td").eq(4).children("p").text(contentTxt[3]);
                     }
                 });
                 return container;
@@ -891,14 +919,14 @@ var milestoneElement = (function () {
                 container.children("table").children("tr").each((index, v) => {
                     if (index > 0) {
                         tds = $(v).children("td");
-                        txt += `${tds.eq(1).children("input").val() || "."}~${datePickerElement.valueByEle(tds.eq(2).children(".datePickerJS"))}~`;
-                        txt += `${datePickerElement.valueByEle(tds.eq(3).children(".datePickerJS"))}~${tds.eq(0).children("input").val() || "."}`;
+                        txt += `${tds.eq(1).children("input").val() || "."}~${tds.eq(2).children("input").val() || "."}~${datePickerElement.valueByEle(tds.eq(3).children(".datePickerJS"))}~`;
+                        txt += `${datePickerElement.valueByEle(tds.eq(4).children(".datePickerJS"))}~${tds.eq(0).children("input").val() || "."}`;
                         if (index < container.children("table").children("tr").length - 1) {
                             txt += milestoneSep;
                         }
                     }
                 }); 
-                    return txt;
+                return txt;
             } else {   // set
                 lineTxt = value.split("^#^");
                 while (lineTxt.length > container.children("table").children("tr").length - 1) {
@@ -907,14 +935,15 @@ var milestoneElement = (function () {
                 container.children("table").children("tr").each((i, v) => {
                     if (i > 0) {
                         contentTxt = lineTxt[i - 1].split("~");
-                        if (contentTxt.length > 4) {
-                            contentTxt[3] = contentTxt.slice(3).join("~");
+                        if (contentTxt.length > 5) {
+                            contentTxt[4] = contentTxt.slice(4).join("~");
                         }
                         tds = $(v).children("td");
-                        tds.eq(0).children("input").val(contentTxt[3]);
+                        tds.eq(0).children("input").val(contentTxt[4]);
                         tds.eq(1).children("input").val(contentTxt[0]);
-                        datePickerElement.valueByEle(tds.eq(2).children(".datePickerJS"), (contentTxt[1]));
+                        tds.eq(2).children("input").val(contentTxt[1]);
                         datePickerElement.valueByEle(tds.eq(3).children(".datePickerJS"), (contentTxt[2]));
+                        datePickerElement.valueByEle(tds.eq(4).children(".datePickerJS"), (contentTxt[3]));
                     }
                 });
                 return container;
@@ -946,9 +975,9 @@ var milestoneElement = (function () {
                         $(v).children(".datePickerJS").show();
                         $(v).children("input").show();
                     });
-                    $(value).children("td").eq(3).children(".milestone-table-delete").show();
+                    $(value).children("td").eq(4).children(".milestone-table-delete").show();
                 } else {
-                    $(value).children("th").eq(3).children(".milestone-table-add").show();
+                    $(value).children("th").eq(4).children(".milestone-table-add").show();
                 }
             });
         },

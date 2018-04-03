@@ -15,7 +15,7 @@ module.exports = (function() {
             if (val.projectStatus === null) {
                 return val;
             }
-            val.projectStatus = val.projectStatus === 2 ? 2 : val.firstTime >= val.deadline ? 0 : 1;
+            val.projectStatus = val.projectStatus === 2 ? 2 : (val.deadline < getNowDate() ? 3 : (val.firstTime >= val.deadline ? 0 : 1));
             return val;
         });
     }

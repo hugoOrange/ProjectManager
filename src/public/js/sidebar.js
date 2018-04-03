@@ -118,7 +118,7 @@ var sidebarElement = (function () {
                 .append("<div id='manager_sidebar_shrink_mask'></div>").append($("<button id='manager_sidebar_shrink'></button>").click(shrinkEvent));
             
             if (firstInit) {
-                $(document.body).append($("<div id='alarmShow_area'></div>").append("<h2>加急项目<br>（土黄色为延期项目，红色为已过期项目）</h2>").append("<ul></ul>").hide())
+                $(document.body).append($("<div id='alarmShow_area'></div>").append("<h2>Project in abnormal status<br>(Green-Becoming due; Red- Expired)</h2>").append("<ul></ul>").hide())
                     .append($("<button id='alarmShow_btn' class='alarmShow-tip' data-maydelay='0' data-delay='0'></button>").click(clickAlarm).hide());
             }
         },
@@ -175,7 +175,7 @@ var sidebarElement = (function () {
             }
 
             if (delaySet.mayDelay.length + delaySet.isDelay.length === 0) {
-                container.append("<li><p>未有将到期项目</p></li>");
+                container.append("<li><p>no project delay</p></li>");
                 $("#alarmShow_btn").removeClass("alarmShow-tip");
             } else {
                 $("#alarmShow_btn").addClass("alarmShow-tip");

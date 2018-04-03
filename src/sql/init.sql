@@ -35,3 +35,4 @@ CREATE INDEX uId ON User (userId);
 
 -- row level
 INSERT INTO User VALUE (1, "admin", "123456", 0);
+-- alter table Project MODIFY projectName VARCHAR(100); 
