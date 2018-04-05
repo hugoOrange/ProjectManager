@@ -73,7 +73,7 @@ var selectElement = (function () {
         },
 
         selectValById: (eleId, text) => {
-            if (text === undefined) {                
+            if (text === undefined) {
                 return $("#" + eleId).children("div").eq(0).attr("data-value");
             } else {
                 var v = getValue($("#" + eleId), text);

@@ -241,6 +241,37 @@ module.exports = (function() {
                     });
                 }
             }
+        },
+
+        /* other convenient */
+        queryProjectsAttr: (attriName, callback) => {
+            const ql = `SELECT projectId, ${attriName} FROM ${projectTable}`;
+            connection.query(ql, function (error, results, fields) {
+                if (error) {
+                    logMethod.error("QL_run", "In queryProjectsAttr: " + ql, "db");
+                    fail();
+                    module.exports.connect();
+                    return;
+                }
+
+                callback(results);
+            });
+        },
+
+        changeProjectsAttri: (changeList, changeAttri, succList = []) => {
+            const qlPre = `UPDATE ${projectTable} FIELD SET ${changeAttri}=`;
+            const qlSuf = ` where projectId=`;            
+            for (let i = 0; i < changeList.length; i++) {
+                connection.query(qlPre + changeList[i].txt + qlSuf + changeList[i].id, function (error, results, fields) {
+                    if (error) {
+                        logMethod.error("QL_run", "In changeProjectsAttri: " + changeList[i].id, "db");
+                        fail();
+                        module.exports.connect();
+                        return;
+                    }
+                    succList.push(changeList[i].id);
+                });
+            }
         }
     }
 })();
