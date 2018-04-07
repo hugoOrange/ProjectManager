@@ -39,6 +39,10 @@ var tableOperation = (function () {
         class: "delay-arrow",
         title: "查看延期项目",
         filt: "延期"
+    }, {
+        class: "expire-arrow",
+        title: "查看过期项目",
+        filt: "过期"
     }];
 
     var userList = [];
