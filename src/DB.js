@@ -259,7 +259,6 @@ module.exports = (function() {
         },
 
         changeProjectsAttri: (changeList, changeAttri, succList = [], fail = () => {}) => {
-            console.dir(changeList)
             const qlPre = `UPDATE ${projectTable} FIELD SET ${changeAttri}=`;
             const qlSuf = ` where projectId=`;            
             for (let i = 0; i < changeList.length; i++) {

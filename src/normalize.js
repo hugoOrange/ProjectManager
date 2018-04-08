@@ -5,7 +5,6 @@ db.connect();
 
 db.queryProjectsAttr("milestone", (res) => {
     let tmpPart = [], tmpRes = "";
-    console.dir(res)
     db.changeProjectsAttri(res.map((v, i) => {
         tmpPart = v.milestone.split(milestoneSep);
         tmpRes = "";

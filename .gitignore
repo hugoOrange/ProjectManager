@@ -10,7 +10,7 @@
 /fabfile.pyc
 
 # config
-/src/config.js
+/src/config.json
 
 # log
 /src/log
