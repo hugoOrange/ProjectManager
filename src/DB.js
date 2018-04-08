@@ -244,7 +244,7 @@ module.exports = (function() {
         },
 
         /* other convenient */
-        queryProjectsAttr: (attriName, callback) => {
+        queryProjectsAttr: (attriName, callback, fail = () => {}) => {
             const ql = `SELECT projectId, ${attriName} FROM ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -258,7 +258,7 @@ module.exports = (function() {
             });
         },
 
-        changeProjectsAttri: (changeList, changeAttri, succList = []) => {
+        changeProjectsAttri: (changeList, changeAttri, succList = [], fail = () => {}) => {
             const qlPre = `UPDATE ${projectTable} FIELD SET ${changeAttri}=`;
             const qlSuf = ` where projectId=`;            
             for (let i = 0; i < changeList.length; i++) {
