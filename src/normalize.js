@@ -11,7 +11,7 @@ db.queryProjectsAttr("milestone", (res) => {
         tmpPart = v.milestone.split(milestoneSep);
         tmpRes = "";
         for (let i = 0; i < tmpPart.length; i++) {
-            tmpRes += tmpPart[i].split("~")[0] + "~." + "~.~" + tmpPart[i].split("~").slice(1).join("~");
+            tmpRes += tmpPart[i].split("~")[0] + "~.~.~" + tmpPart[i].split("~").slice(1).join("~") + milestoneSep;
         }
         v.milestone = tmpRes;
         return v;
