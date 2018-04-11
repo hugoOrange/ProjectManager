@@ -30,7 +30,6 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 var inviteCode = action.gen_inviteCode();
 
 logMethod.start();
-console.log(hostName)
 // about server
 app.listen(port, hostName, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
 
