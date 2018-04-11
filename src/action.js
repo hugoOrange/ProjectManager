@@ -123,16 +123,16 @@ module.exports = (function () {
             });
         },
 
-        queryUser: (req, res) => {
+        queryUser: (loginUser, req, res) => {
             db.queryUserInfo((userInfo) => {
-                logMethod.success("Query all users ", "db");
+                logMethod.success("Query all users ", "db", loginUser);
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库查询成功',
                     ret_con: userInfo
                 });
             }, () => {
-                logMethod.error("Query_database", "All user", "db");
+                logMethod.error("Query_database", "All user", "db", loginUser);
                 res.json({
                     ret_code: 5,
                     ret_msg: '数据库查询出错'
@@ -142,14 +142,14 @@ module.exports = (function () {
 
         queryDepartment: (loginUser, department, req, res) => {
             db.queryDepartmentProject(department, (projectInfo) => {
-                logMethod.success("Query " + department + "'s project", "db");
+                logMethod.success("Query " + department + "'s project", "db", loginUser);
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库查询成功',
                     ret_con: projectInfo
                 });
             }, () => {
-                logMethod.error("Query_database", "All project", "db");
+                logMethod.error("Query_database", "All project", "db", loginUser);
                 res.json({
                     ret_code: 5,
                     ret_msg: '数据库查询出错'
@@ -157,16 +157,16 @@ module.exports = (function () {
             });
         },
 
-        editAdd: (info, res) => {
+        editAdd: (loginUser, info, res) => {
             db.addProject(info.userId, info.projectName, info.projectTarget, info.deadline,
                 info.projectProgress, info.priority, info.milestone, (results) => {
-                    logMethod.success("Add new project", "db");
+                    logMethod.success("Add new project", "db", loginUser);
                     res.json({
                         ret_code: 0,
                         ret_msg: '数据库修改成功',
                     });
                 }, () => {
-                    logMethod.error("Edit_database", "Add new project", "db");
+                    logMethod.error("Edit_database", "Add new project", "db", loginUser);
                     res.send({
                         ret_code: 6,
                         ret_msg: '数据库修改出错'
@@ -174,15 +174,15 @@ module.exports = (function () {
                 });
         },
 
-        editFinish: (finishList, res) => {
+        editFinish: (loginUser, finishList, res) => {
             db.finishProjects(finishList, (deleteRowsNum) => {
-                logMethod.success("Finish " + finishList.length + " projects", "db");
+                logMethod.success("Finish " + finishList.length + " projects", "db", loginUser);
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库修改成功',
                 });
             }, () => {
-                logMethod.error("Edit_database", "Finish " + finishList.length + " projects", "db");
+                logMethod.error("Edit_database", "Finish " + finishList.length + " projects", "db", loginUser);
                 res.json({
                     ret_code: 6,
                     ret_msg: '数据库修改出错'
@@ -190,15 +190,15 @@ module.exports = (function () {
             });
         },
 
-        editDelete: (deleteList, res) => {
+        editDelete: (loginUser, deleteList, res) => {
             db.deleteProjects(deleteList, (deleteRowsNum) => {
-                logMethod.success("Delete " + deleteList.length + " projects", "db");
+                logMethod.success("Delete " + deleteList.length + " projects", "db", loginUser);
                 res.json({
                     ret_code: 0,
                     ret_msg: '数据库修改成功',
                 });
             }, () => {
-                logMethod.error("Edit_database", "Delete " + deleteList.length + " projects", "db");
+                logMethod.error("Edit_database", "Delete " + deleteList.length + " projects", "db", loginUser);
                 res.json({
                     ret_code: 6,
                     ret_msg: '数据库修改出错'
@@ -206,22 +206,22 @@ module.exports = (function () {
             });
         },
 
-        editChange: (changeList, res) => {
+        editChange: (loginUser, changeList, res) => {
             db.changeProjects(changeList, (changeRows, failRows) => {
                 if (changeRows.length === Object.keys(changeList).length) {
-                    logMethod.success("Change some projects' information", "db");
+                    logMethod.success("Change some projects' information", "db", loginUser);
                     res.json({
                         ret_code: 0,
                         ret_msg: '数据库修改成功',
                     });
                 } else if (failRows.length === Object.keys(changeList).length) {
-                    logMethod.error("Edit_database", "change some projects' information", "db");
+                    logMethod.error("Edit_database", "change some projects' information", "db", loginUser);
                     res.json({
                         ret_code: 6,
                         ret_msg: '数据库修改出错'
                     });
                 } else {
-                    logMethod.warn("Some projects' information change failed", "db")
+                    logMethod.warn("Some projects' information change failed", "db", loginUser);
                     res.json({
                         ret_code: 7,
                         ret_msg: '成功修改部分',

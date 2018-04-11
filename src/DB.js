@@ -3,8 +3,8 @@ module.exports = (function() {
     var config = require('./config');
     var logMethod = require("./log.js");
     var connection = null;
-    var userTable = 'User';
-    var projectTable = 'Project';
+    var userTable = config.userTable;
+    var projectTable = config.projectTable;
 
     function getNowDate() {
         return new Date().toISOString().slice(0, 10);

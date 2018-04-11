@@ -28,9 +28,8 @@ if (port.search(/[^\d]/) !== -1 || port.length > 8) {
 
 // other initalize
 var inviteCode = action.gen_inviteCode();
-
 logMethod.start();
-console.log(hostName)
+
 // about server
 app.listen(port, hostName, () => logMethod.log("Run on http://" + hostName + ":" + port, "normal"));
 
@@ -51,10 +50,10 @@ app.get('/', function (req, res) {
 
     if (isLogined) {
         if (loginUser > 0) {
-            logMethod.log("Get manager.html", "http");
+            logMethod.log("Get manager.html", "http", loginUser);
             res.sendfile(__dirname + '/public/manager.html');
         } else {
-            logMethod.log("Get login.html", "http");
+            logMethod.log("Get login.html", "http", loginUser);
             res.sendfile(__dirname + '/public/login.html');
         }
     } else {
@@ -79,7 +78,7 @@ app.post('/login', (req, res) => {
                         });
                     }
                     
-                    logMethod.success("User login", "db");
+                    logMethod.success("User login", "db", userId);
                     req.session.loginUser = userId;
                     res.json({
                         ret_code: 0,
@@ -115,10 +114,10 @@ app.get('/signout', (req, res) => {
     if (loginUser) {
         sess.destroy(err => {
             if (err) {
-                logMethod.error("Session", "Sign out", "normal");
+                logMethod.error("Session", "Sign out", "normal", loginUser);
             }
 
-            logMethod.success("Sign out", "normal");
+            logMethod.success("Sign out", "normal", loginUser);
             res.send({
                 ret_code: 0,
                 ret_msg: '成功注销'
@@ -142,7 +141,7 @@ app.get('/storage', (req, res) => {
         if (loginUser > 0) {
             switch (req.query.type) {
                 case "workPath":
-                    logMethod.log("Save path: " + req.query.data, "normal");
+                    logMethod.log("Save path: " + req.query.data, "normal", loginUser);
                     sess.queryPath = req.query.data;
                     res.send({
                         ret_code: 0,
@@ -217,7 +216,7 @@ app.post('/project', (req, res) => {
                     break;
 
                 case 'user':
-                    action.queryUser(req, res);
+                    action.queryUser(loginUser, req, res);
                     break;
 
                 case 'department':
@@ -250,19 +249,19 @@ app.post('/edit', (req, res) => {
         if (loginUser > 0) {
             switch(req.body.op) {
                 case 'add':
-                    action.editAdd(req.body.opList, res);
+                    action.editAdd(loginUser, req.body.opList, res);
                     break;
 
                 case 'finish':
-                    action.editFinish(req.body.opList, res);
+                    action.editFinish(loginUser, req.body.opList, res);
                     break;
 
                 case 'delete':
-                    action.editDelete(req.body.opList, res);
+                    action.editDelete(loginUser, req.body.opList, res);
                     break;
 
                 case 'change':
-                    action.editChange(req.body.opList, res);
+                    action.editChange(loginUser, req.body.opList, res);
                     break;
                 
                 default:
