@@ -244,7 +244,7 @@ module.exports = (function() {
         },
 
         /* other convenient */
-        queryProjectsAttr: (attriName, callback) => {
+        queryProjectsAttr: (attriName, callback, fail = () => {}) => {
             const ql = `SELECT projectId, ${attriName} FROM ${projectTable}`;
             connection.query(ql, function (error, results, fields) {
                 if (error) {
@@ -258,18 +258,18 @@ module.exports = (function() {
             });
         },
 
-        changeProjectsAttri: (changeList, changeAttri, succList = []) => {
+        changeProjectsAttri: (changeList, changeAttri, succList = [], fail = () => {}) => {
             const qlPre = `UPDATE ${projectTable} FIELD SET ${changeAttri}=`;
             const qlSuf = ` where projectId=`;            
             for (let i = 0; i < changeList.length; i++) {
-                connection.query(qlPre + changeList[i].txt + qlSuf + changeList[i].id, function (error, results, fields) {
+                connection.query(`${qlPre}"${changeList[i].milestone}" ${qlSuf} ${changeList[i].projectId}`, function (error, results, fields) {
                     if (error) {
-                        logMethod.error("QL_run", "In changeProjectsAttri: " + changeList[i].id, "db");
+                        logMethod.error("QL_run", `In changeProjectsAttri: ${qlPre}"${changeList[i].milestone}" ${qlSuf} ${changeList[i].projectId}`, "db");
                         fail();
                         module.exports.connect();
                         return;
                     }
-                    succList.push(changeList[i].id);
+                    succList.push(changeList[i].projectId);
                 });
             }
         }

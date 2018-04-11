@@ -39,6 +39,10 @@ var tableOperation = (function () {
         class: "delay-arrow",
         title: "查看延期项目",
         filt: "延期"
+    }, {
+        class: "expire-arrow",
+        title: "查看过期项目",
+        filt: "过期"
     }];
 
     var userList = [];
@@ -750,6 +754,11 @@ var milestoneElement = (function () {
     var milestoneSep = "^#^";
     const statusMapVal = [0, 1];
     const statusMapTxt = ["未完成", "已完成"];
+    const statusMapCol = [{
+        "已完成": "green",
+    }, {
+        "未完成": "#000",
+    }];
 
     var textChangeEvent = (event, id) =>　{
         if (id !== undefined) {
@@ -902,7 +911,6 @@ var milestoneElement = (function () {
                         }
                     }
                 });
-                
                 return txt;
             } else {   // set
                 lineTxt = value.split("^#^");

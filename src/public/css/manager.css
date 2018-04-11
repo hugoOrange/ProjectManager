@@ -421,6 +421,13 @@ article {
 }
 .delay-arrow {
     height: 0!important;
+    border: 5px solid #ff00dc!important;
+    border-radius: 50%;
+    position: relative;
+    top: -5px;
+}
+.expire-arrow {
+    height: 0!important;
     border: 5px solid red!important;
     border-radius: 50%;
     position: relative;
@@ -546,9 +553,15 @@ article {
     width: 10%;
 }
 #manager_mission .milestoneJS table tr th:nth-child(3), #manager_mission .milestoneJS table tr td:nth-child(3) {
-    width: 10%;
+    width: 5%;
 }
 #manager_mission .milestoneJS table tr th:nth-child(4), #manager_mission .milestoneJS table tr td:nth-child(4) {
+    width: 5%;
+}
+#manager_mission .milestoneJS table tr th:nth-child(5), #manager_mission .milestoneJS table tr td:nth-child(5) {
+    width: 10%;
+}
+#manager_mission .milestoneJS table tr th:nth-child(6), #manager_mission .milestoneJS table tr td:nth-child(6) {
     width: 10%;
 }
 
@@ -593,6 +606,11 @@ article {
 #manager_mission .milestoneJS table tr td p {
     font-family: "Inconsolata", monospace;
     text-align: center;
+}
+#manager_mission .milestoneJS table tr td:nth-child(4) .selectJS {
+    background: #fff;
+    height: 1.6em;
+    padding: 0.2em 0 0.2em 0.3em;
 }
 
 /* button style */
