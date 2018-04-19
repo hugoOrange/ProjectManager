@@ -48,7 +48,7 @@ try:
     cursor.execute('SELECT * FROM {};'.format(userTable))
     usersInfo = cursor.fetchall()
 except:
-    print("Query fail or incorrect username and password, rollback.")
+    print("Query fail or incorrect username and password.")
     db.rollback()
     exit(0)
 
@@ -72,5 +72,6 @@ if isCorrectAccount:
     finally:
         disconnectDatabase()
 else:
+    print("Unexisted username and password.")
     disconnectDatabase()
     exit(0)
