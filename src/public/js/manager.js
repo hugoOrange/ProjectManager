@@ -251,7 +251,9 @@ $(document).ready(() => {
             }
         } else if (op === confirmDialog.finishProject.op) {
             $(".choose-part input:checked").each((index, val) => {
-                chooseProject.push($(val).val());
+                if (!$(val).is(":hidden")) {
+                    chooseProject.push($(val).val());
+                }
             });
             serverIO.finishProjects(chooseProject, (data) => {
                 serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
@@ -260,7 +262,9 @@ $(document).ready(() => {
             });
         } else if (op === confirmDialog.deleteProject.op) {
             $(".choose-part input:checked").each((index, val) => {
-                chooseProject.push($(val).val());
+                if (!$(val).is(":hidden")) {
+                    chooseProject.push($(val).val());
+                }
             });
             serverIO.deleteProjects(chooseProject, (data) => {
                 serverIO.addWorkPath(sidebarElement.getCurrentState(), () => {
