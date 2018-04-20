@@ -38,7 +38,8 @@ except:
     db.rollback()
     exit(0)
 
-if all(usersInfo):
+print(usersInfo)
+if not usersInfo:
     print("Unexisted user, please check your account.")
 else:        
     userId = usersInfo[0][0]
