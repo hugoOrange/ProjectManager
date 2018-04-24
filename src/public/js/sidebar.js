@@ -9,52 +9,56 @@ var sidebarElement = (function () {
     var pagePath = "";
 
     var genTable = async (departmentId, needInit = true, callback) => {
-        await tableOperation.initTable(tableId);
+        // await tableOperation.initTable(tableId);
         $("#project_overview").hide();
-        serverIO.queryDepartmentProject(departmentId, (data) => {
-            var managerList = {};
-            var con = data.ret_con;
-            if (con.length === 0) {
-                $("#no_project").show();
-            } else {
-                $("#no_project").hide();
-            }
-            
-            for (let i = 0; i < con.length; i++) {
-                if (managerList[con[i].userId] === undefined) {
-                    managerList[con[i].userId] = [];
+        serverIO.queryUser((userL) => {
+            userList = userL.ret_con;
+            serverIO.queryDepartmentProject(departmentId, (data) => {
+                var managerList = {};
+                var con = data.ret_con;
+                if (con.length === 0) {
+                    $("#no_project").show();
+                } else {
+                    $("#no_project").hide();
                 }
-                managerList[con[i].userId].push({
-                    projectName: con[i].projectName,
-                    projectId: con[i].projectId,
-                    username: con[i].username
-                });
-            }
+                
+                for (let i = 0; i < con.length; i++) {
+                    if (managerList[con[i].userId] === undefined) {
+                        managerList[con[i].userId] = [];
+                    }
+                    managerList[con[i].userId].push({
+                        projectName: con[i].projectName,
+                        projectId: con[i].projectId,
+                        username: con[i].username
+                    });
+                }
 
-            if (needInit) {
-                sidebarElement.initDepartment(managerList);
-            }
-            tableOperation.addProjects(con, $("#manager_mission"));
-            tableOperation.statusSet(tableId);
-            tableOperation.progressSet(tableId);
-            tableOperation.prioritySet(tableId);
-            tableOperation.changeInWatchMode(tableId);
-            sidebarElement.loadAlarm(DELAY_TIME);
-            $(".floatBtn").show();
-            $("#manager_confirm").hide();
-            $("#alarmShow_btn").show();
-            $("#alarmShow_area").show();
+                if (needInit) {
+                    sidebarElement.initDepartment(managerList);
+                }
+                tableOperation.initTable(tableId, userList)
+                tableOperation.addProjects(con, $("#manager_mission"), userList);
+                tableOperation.statusSet(tableId);
+                tableOperation.progressSet(tableId);
+                tableOperation.prioritySet(tableId);
+                tableOperation.changeInWatchMode(tableId);
+                sidebarElement.loadAlarm(DELAY_TIME);
+                $(".floatBtn").show();
+                $("#manager_confirm").hide();
+                $("#alarmShow_btn").show();
+                $("#alarmShow_area").show();
 
-            setTimeout(() => {
-                $("#alarmShow_area").animate({
-                    transfrom: "scale(0)"
-                }, 300);
-                $("#alarmShow_area").hide();
-            }, 1000);
+                setTimeout(() => {
+                    $("#alarmShow_area").animate({
+                        transfrom: "scale(0)"
+                    }, 300);
+                    $("#alarmShow_area").hide();
+                }, 1000);
 
-            if (callback !== undefined) {
-                callback();
-            }
+                if (callback !== undefined) {
+                    callback();
+                }
+            });
         });
     };
 

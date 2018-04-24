@@ -45,7 +45,7 @@ var tableOperation = (function () {
         filt: "过期"
     }];
 
-    var userList = [];
+    // var userList = [];
     var changeRecord = {};
 
     // private method 
@@ -109,7 +109,7 @@ var tableOperation = (function () {
     };
 
     return {
-        initTable: (tableId) => {
+        initTable: (tableId, userList) => {
             $("#" + tableId).empty().show().append(`
             <tr>
                 <th>项目状态<button id="status_sort" class="all-arrow" title="查看全部项目"></button></th>
@@ -148,21 +148,21 @@ var tableOperation = (function () {
             progressElement.createProgressInput($("#new_projectProgress"));
             milestoneElement.createMilestoneInput($("#new_milestone"), true).parent().parent().hide();
             tableOperation.bindEvent(tableId);
-            serverIO.queryUser((userL) => {
-                userList = userL.ret_con;
+            // serverIO.queryUser((userL) => {
+            //     userList = userL.ret_con;
                 selectElement.makeSelectByEle($("#new_projectManager").css("width", "100px"), userList.map(v => v.username), userList.map(v => v.userId));
-            });
+            // });
         },
 
-        addProjects: (projectsInfo, tableEle) => {
+        addProjects: (projectsInfo, tableEle, userList) => {
             for (let i = 0; i < projectsInfo.length; i++) {
                 if (projectsInfo[i].projectId) {
-                    tableOperation.addProject(projectsInfo[i], tableEle);
+                    tableOperation.addProject(projectsInfo[i], tableEle, userList);
                 }
             }
         },
 
-        addProject: (project, tableEle) => {
+        addProject: (project, tableEle, userList) => {
             var tr = $(`
             <tr data-id="${project.projectId}">
                 <td data-store="${project.projectStatus}">

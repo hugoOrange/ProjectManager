@@ -38,7 +38,6 @@ except:
     db.rollback()
     exit(0)
 
-print(usersInfo)
 if not usersInfo:
     print("Unexisted user, please check your account.")
 else:        
